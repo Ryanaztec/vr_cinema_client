@@ -1,31 +1,48 @@
 <template>
-  <div id="wrapper">
-    <img id="logo" src="~@/assets/logo.png" alt="electron-vue">
-    <main>
-      <div class="left-side">
-        <span class="title">
-          Welcome to your new project!
-        </span>
-        <system-information></system-information>
-      </div>
+  <div>
+    <b-navbar toggleable="md" type="dark" variant="info">
 
-      <div class="right-side">
-        <div class="doc">
-          <div class="title">Getting Started</div>
-          <p>
-            electron-vue comes packed with detailed documentation that covers everything from
-            internal configurations, using the project structure, building your application,
-            and so much more.
-          </p>
-          <button @click="open('https://simulatedgreg.gitbooks.io/electron-vue/content/')">Read the Docs</button><br><br>
-        </div>
-        <div class="doc">
-          <div class="title alt">Other Documentation</div>
-          <button class="alt" @click="open('https://electron.atom.io/docs/')">Electron</button>
-          <button class="alt" @click="open('https://vuejs.org/v2/guide/')">Vue.js</button>
-        </div>
-      </div>
-    </main>
+  <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
+
+  <b-navbar-brand href="#">NavBar</b-navbar-brand>
+
+  <b-collapse is-nav id="nav_collapse">
+
+    <b-navbar-nav>
+      <b-nav-item href="#">Link</b-nav-item>
+      <b-nav-item href="#" disabled>Disabled</b-nav-item>
+    </b-navbar-nav>
+
+    <!-- Right aligned nav items -->
+    <b-navbar-nav class="ml-auto">
+
+      <b-nav-form>
+        <b-form-input size="sm" class="mr-sm-2" type="text" placeholder="Search"/>
+        <b-button size="sm" class="my-2 my-sm-0" type="submit">Search</b-button>
+      </b-nav-form>
+
+      <b-nav-item-dropdown text="Lang" right>
+        <b-dropdown-item href="#">EN</b-dropdown-item>
+        <b-dropdown-item href="#">ES</b-dropdown-item>
+        <b-dropdown-item href="#">RU</b-dropdown-item>
+        <b-dropdown-item href="#">FA</b-dropdown-item>
+      </b-nav-item-dropdown>
+
+      <b-nav-item-dropdown right>
+        <!-- Using button-content slot -->
+        <template slot="button-content">
+          <em>User</em>
+        </template>
+        <b-dropdown-item href="#">Profile</b-dropdown-item>
+        <b-dropdown-item href="#">Signout</b-dropdown-item>
+      </b-nav-item-dropdown>
+    </b-navbar-nav>
+
+  </b-collapse>
+</b-navbar>
+
+<!-- navbar-1.vue -->
+   <system-information></system-information>
   </div>
 </template>
 
@@ -64,65 +81,5 @@
     height: 100vh;
     padding: 60px 80px;
     width: 100vw;
-  }
-
-  #logo {
-    height: auto;
-    margin-bottom: 20px;
-    width: 420px;
-  }
-
-  main {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  main > div { flex-basis: 50%; }
-
-  .left-side {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .welcome {
-    color: #555;
-    font-size: 23px;
-    margin-bottom: 10px;
-  }
-
-  .title {
-    color: #2c3e50;
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 6px;
-  }
-
-  .title.alt {
-    font-size: 18px;
-    margin-bottom: 10px;
-  }
-
-  .doc p {
-    color: black;
-    margin-bottom: 10px;
-  }
-
-  .doc button {
-    font-size: .8em;
-    cursor: pointer;
-    outline: none;
-    padding: 0.75em 2em;
-    border-radius: 2em;
-    display: inline-block;
-    color: #fff;
-    background-color: #4fc08d;
-    transition: all 0.15s ease;
-    box-sizing: border-box;
-    border: 1px solid #4fc08d;
-  }
-
-  .doc button.alt {
-    color: #42b983;
-    background-color: transparent;
   }
 </style>
