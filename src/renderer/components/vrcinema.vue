@@ -74,9 +74,9 @@
                               </div>
                           </div>
                       </div>
-                      <div class="pagination">
-                          <b-pagination-nav prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="10" v-model="currentPage" hide-goto-end-buttons="true" hide-ellipsis=""true/>
-                          <span><span>共10页</span> 跳转到 页 <a href="#" class="jump_btn">跳转</a></span>
+                      <div class="pagination_body">
+                          <b-pagination-nav size="sm" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="10" hide-goto-end-buttons hide-ellipsis/>
+                          <span><span>共10页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to"/>页 <a href="#" class="jump_btn">跳转</a></span>
                       </div>
                   </div>
                   <div class="col-lg-3 col-sm-3 col-xs-3 seat">
@@ -102,7 +102,7 @@
                                   <img class="seat_img" src="../assets/seat.png"/>
                               </div>
                           </div>
-                          <div class="broadcast_pace_bg">《 播放进度 》</div>
+                          <div class="broadcast_pace_bg"><a href="">《 播放进度 》</a></div>
                       </div>
                       <div class="play_stop">
                           <div><b-button class="play">播放</b-button></div>
@@ -116,11 +116,10 @@
 </template>
 
 <script>
-  import HeaderInfo from './HomePage/HeaderInfo'
-//  return '#page/' + pageNum + '/foobar'
+  import HeaderInfo from './header'
   export default {
-    name: 'landing-page',
     components: { HeaderInfo },
+
     methods: {
       open (link) {
         this.$electron.shell.openExternal(link)
@@ -132,21 +131,8 @@
   }
 </script>
 
-<style>
-  @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro');
-
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    font-family: 'Source Sans Pro', sans-serif;
-    background: url("../assets/homePageBg.png") no-repeat center center fixed;
-    background-size:cover;
-  }
-
+<style scoped>
+    @import '../css/index.css';
     .container_body {
         padding: 2% 1%;
         color: white;
@@ -178,17 +164,18 @@
   }
 
   .container_body .col-lg-4 .video.active .acttive_bg{
-      background: url("../assets/active_mv_bg_center1.png");
+      background: url("../assets/active_mv_bg_center1.png") 0 10px;
       background-size: contain;
       padding: 2%;
       border-radius: 5px;
   }
   .container_body .col-lg-4 .video_info {
       margin-top: 2%;
+      padding: 1%;
   }
   .container_body .col-lg-4 .video.active .video_info {
       margin-top: 2%;
-      padding: 1% 0px;
+      padding: 2% 0px;
   }
   .seat {
       margin-top: 20px;
@@ -213,14 +200,16 @@
         margin-bottom: 20px;
     }
   .seat .broadcast_pace_bg {
-      font-size: 1.5vw;
-      font-family: "Microsoft YaHei";
-      /*color: rgb(255, 255, 255);*/
-      color: rgb(25, 236, 236);
       padding: 3%;
       background-image: -moz-linear-gradient( 0deg, rgba(153,153,153,0.05098) 0%, rgba(153,153,153,0.4) 49%, rgba(153,153,153,0.05098) 100%);
       background-image: -webkit-linear-gradient( 0deg, rgba(153,153,153,0.05098) 0%, rgba(153,153,153,0.4) 49%, rgba(153,153,153,0.05098) 100%);
       background-image: -ms-linear-gradient( 0deg, rgba(153,153,153,0.05098) 0%, rgba(153,153,153,0.4) 49%, rgba(153,153,153,0.05098) 100%);
+  }
+  .seat .broadcast_pace_bg a {
+      font-size: 1.5vw;
+      font-family: "Microsoft YaHei";
+      color: rgb(25, 236, 236);
+      text-decoration: none;
   }
   .seat .seat_list {
       padding: 0px 8%;
@@ -262,31 +251,38 @@
   .seat .play_stop .stop:hover{
       border-color: rgb(102, 102, 102);
   }
-  .pagination .page-item {
-  margin: 0px 10px;
+  .pagination_body {
+      text-align: center;
+      margin-right: 40px;
+      margin-top: 3%;
+  }
+  .pagination_body nav {
+      display: inline-block;
+  }
 
-  }
-  .pagination .page-item .page-link {
-      padding: 0.4rem 0.75rem;
-  }
-  .pagination .page-item a, .pagination .page-item .page-link {
+  .pagination_body .page-item.active a, .pagination_body .jump_btn {
+      color: rgb(25, 236, 236);
       border-width: 1px;
-      border-color: rgb(255, 255, 255);
+      border-color: rgba(25, 236, 236, 0.7);
+      border-style: solid;
+      border-radius: 5px;
+      box-shadow: none;
+  }
+  .pagination_body .jump_btn {
+      padding: 0.2rem 1rem;
+      text-decoration: none;
+      margin-left: 20px;
+  }
+  .pagination_body .jump_to {
+      width: 40px;
+      border-width: 1px;
+      border-color: rgba(25, 236, 236, 0.7);
       border-style: solid;
       border-radius: 5px;
       background: rgb(0, 0, 0);
-      color: rgb(255, 255, 255);
-  }
-  .pagination .page-item.active a, .pagination .jump_btn {
-      color: rgb(25, 236, 236);
-      border-width: 1px;
-      border-color: rgb(25, 236, 236);
-      border-style: solid;
-      border-radius: 5px;
-  }
-  .pagination .jump_btn {
-      padding: 0.4rem 1.5rem;
-  }
-
+      margin: 0px 5px;
+      color: white;
+      padding: 0px 5px;
+    }
 
 </style>

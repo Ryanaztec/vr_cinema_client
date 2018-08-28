@@ -7,8 +7,8 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'homepage',
-      component: require('@/components/homepage').default
+      name: 'vr_cinema',
+      component: require('@/components/vrcinema').default
     },
     {
       path: '*',
