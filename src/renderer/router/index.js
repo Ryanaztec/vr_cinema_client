@@ -11,8 +11,9 @@ export default new Router({
       component: require('@/components/vrcinema').default
     },
     {
-      path: '*',
-      redirect: '/'
+      path: '/cinema_resources',
+      name: 'cinema_resources',
+      component: require('@/components/cinemaresources').default
     }
   ]
 })

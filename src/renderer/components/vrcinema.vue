@@ -5,10 +5,10 @@
       <div class="row container_body">
           <div class="col-md-12">
               <div class="row ">
-                  <div class="col-lg-9 col-sm-9 col-xs-9">
+                  <div class="col-md-9">
                       <div class="row video_list">
-                          <div class="col-lg-4 col-sm-4 col-xs-4 video_box">
-                              <div class="video active">
+                          <div class="col-md-4 video_box">
+                              <div class="video active" @click="activeVideo">
                                   <div class="acttive_bg">
                                       <img class="navbar_bg" src="../assets/xiongchumo.png"/>
                                       <div class="video_info">
@@ -18,7 +18,18 @@
                                   </div>
                               </div>
                           </div>
-                          <div class="col-lg-4 col-sm-4 col-xs-4 video_box">
+                          <div class="col-md-4 video_box">
+                              <div class="video " @click="activeVideo" :class="appendclass">
+                                  <div class="acttive_bg">
+                                      <img class="navbar_bg" src="../assets/xiongchumo.png"/>
+                                      <div class="video_info">
+                                          <span class="video_name">熊出没</span>
+                                          <span class="video_time">12:00</span>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="col-md-4 video_box">
                               <div class="video ">
                                   <div class="acttive_bg">
                                       <img class="navbar_bg" src="../assets/xiongchumo.png"/>
@@ -29,7 +40,7 @@
                                   </div>
                               </div>
                           </div>
-                          <div class="col-lg-4 col-sm-4 col-xs-4 video_box">
+                          <div class="col-md-4 video_box">
                               <div class="video ">
                                   <div class="acttive_bg">
                                       <img class="navbar_bg" src="../assets/xiongchumo.png"/>
@@ -40,7 +51,7 @@
                                   </div>
                               </div>
                           </div>
-                          <div class="col-lg-4 col-sm-4 col-xs-4 video_box">
+                          <div class="col-md-4 video_box">
                               <div class="video ">
                                   <div class="acttive_bg">
                                       <img class="navbar_bg" src="../assets/xiongchumo.png"/>
@@ -51,18 +62,7 @@
                                   </div>
                               </div>
                           </div>
-                          <div class="col-lg-4 col-sm-4 col-xs-4 video_box">
-                              <div class="video ">
-                                  <div class="acttive_bg">
-                                      <img class="navbar_bg" src="../assets/xiongchumo.png"/>
-                                      <div class="video_info">
-                                          <span class="video_name">熊出没</span>
-                                          <span class="video_time">12:00</span>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-lg-4 col-sm-4 col-xs-4 video_box">
+                          <div class="col-md-4 video_box">
                               <div class="video ">
                                   <div class="acttive_bg">
                                       <img class="navbar_bg" src="../assets/xiongchumo.png"/>
@@ -79,26 +79,26 @@
                           <span><span>共10页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to"/>页 <a href="#" class="jump_btn">跳转</a></span>
                       </div>
                   </div>
-                  <div class="col-lg-3 col-sm-3 col-xs-3 seat">
+                  <div class="col-md-3 seat">
                       <div class="seat_body text-center">
                           <div class="choose_seat_text">选择座椅</div>
                           <div class="row seat_list">
-                              <div class="col-lg-4 col-sm-4 col-xs-4">
+                              <div class="col-md-4">
                                   <img class="seat_img" src="../assets/seat.png"/>
                               </div>
-                              <div class="col-lg-4 col-sm-4 col-xs-4">
+                              <div class="col-md-4">
                                   <img class="seat_img" src="../assets/seat.png"/>
                               </div>
-                              <div class="col-lg-4 col-sm-4 col-xs-4">
+                              <div class="col-md-4">
                                   <img class="seat_img" src="../assets/seat.png"/>
                               </div>
-                              <div class="col-lg-4 col-sm-4 col-xs-4">
+                              <div class="col-md-4">
                                   <img class="seat_img" src="../assets/seat.png"/>
                               </div>
-                              <div class="col-lg-4 col-sm-4 col-xs-4">
+                              <div class="col-md-4">
                                   <img class="seat_img" src="../assets/seat.png"/>
                               </div>
-                              <div class="col-lg-4 col-sm-4 col-xs-4">
+                              <div class="col-md-4">
                                   <img class="seat_img" src="../assets/seat.png"/>
                               </div>
                           </div>
@@ -115,68 +115,31 @@
   </div>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
   import HeaderInfo from './header'
   export default {
     components: { HeaderInfo },
+
+    data () {
+      return {
+        appendclass: '',
+        info: '',
+        info2: ''
+      }
+    },
 
     methods: {
       open (link) {
         this.$electron.shell.openExternal(link)
       },
-      linkGen (pageNum) {
-
+      activeVideo: function (event) {
+        console.log(event)
       }
     }
   }
 </script>
 
 <style scoped>
-    @import '../css/index.css';
-    .container_body {
-        padding: 2% 1%;
-        color: white;
-        margin: 0px;
-    }
-  .container_body .video_list .video_box{
-      margin: 20px -5px;
-  }
-  .container_body .col-lg-4 img {
-      width: 100%;
-  }
-  .container_body .col-lg-4 .video {
-      border-radius: 10px;
-      background: rgba(255, 255, 255, 0.102);
-      padding: 2%;
-      cursor: pointer;
-  }
-  .container_body .col-lg-4 .video .video_time {
-      float: right;
-  }
-  .container_body .col-lg-4 .video.active{
-      background: url("../assets/active_mv_bg_top.png") top no-repeat,
-                  url("../assets/active_mv_bg_bottom.png") bottom no-repeat;
-      background-size: contain;
-      padding: 3px;
-      font-family: "Microsoft YaHei";
-      color: rgb(25, 236, 236);
-      margin-top: -2%;
-  }
-
-  .container_body .col-lg-4 .video.active .acttive_bg{
-      background: url("../assets/active_mv_bg_center1.png") 0 10px;
-      background-size: contain;
-      padding: 2%;
-      border-radius: 5px;
-  }
-  .container_body .col-lg-4 .video_info {
-      margin-top: 2%;
-      padding: 1%;
-  }
-  .container_body .col-lg-4 .video.active .video_info {
-      margin-top: 2%;
-      padding: 2% 0px;
-  }
   .seat {
       margin-top: 20px;
   }
@@ -251,38 +214,6 @@
   .seat .play_stop .stop:hover{
       border-color: rgb(102, 102, 102);
   }
-  .pagination_body {
-      text-align: center;
-      margin-right: 40px;
-      margin-top: 3%;
-  }
-  .pagination_body nav {
-      display: inline-block;
-  }
 
-  .pagination_body .page-item.active a, .pagination_body .jump_btn {
-      color: rgb(25, 236, 236);
-      border-width: 1px;
-      border-color: rgba(25, 236, 236, 0.7);
-      border-style: solid;
-      border-radius: 5px;
-      box-shadow: none;
-  }
-  .pagination_body .jump_btn {
-      padding: 0.2rem 1rem;
-      text-decoration: none;
-      margin-left: 20px;
-  }
-  .pagination_body .jump_to {
-      width: 40px;
-      border-width: 1px;
-      border-color: rgba(25, 236, 236, 0.7);
-      border-style: solid;
-      border-radius: 5px;
-      background: rgb(0, 0, 0);
-      margin: 0px 5px;
-      color: white;
-      padding: 0px 5px;
-    }
 
 </style>

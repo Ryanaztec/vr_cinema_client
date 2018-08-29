@@ -11,5 +11,5 @@
 </script>
 
 <style>
-  /* CSS */
+  @import 'css/index.css';
 </style>

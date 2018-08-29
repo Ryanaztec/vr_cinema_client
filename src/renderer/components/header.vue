@@ -1,38 +1,46 @@
 <template>
   <div>
     <div class="header">
-      <img class="navbar_bg" src="../assets/header/logo.png"/>
+      <img class="cinema_logo" src="../assets/header/logo.png"/>
       <div class="header_text">
-          <a class="text selected" href="#" style="margin-right: 6%;padding: 20px 8px;"><span>VR影院</span></a>
-          <a class="text"  href="#"><span>影片库</span></a>
+          <router-link class="text vr_cinema_text selected" to="/"><span>VR影院</span></router-link>
+          <router-link class="text cinema_resources_text" to="/cinema_resources"><span>影片库</span></router-link>
           <span class="new_mv_count">2</span>
       </div>
+        <img class="navbar_right_bg" src="../assets/header/navbar_right_bg1.png"/>
       <div class="set_body">
-              <b-dropdown variant="link" size="lg" no-caret toggle-class="new_class">
+              <b-dropdown variant="link" size="lg" no-caret toggle-class="set_dropdown">
                   <template slot="button-content">
                       <img class="navbar_bg" src="../assets/header/setting_btn.png"/>
                   </template>
-                  <b-dropdown-item href="#" class="account_name">账户CIN001</b-dropdown-item>
-                  <b-dropdown-item href="#" class="manage_admin">影院管理后台</b-dropdown-item>
-                  <b-dropdown-item href="#" class="dmz_host">关闭所有主机</b-dropdown-item>
-                  <b-dropdown-item href="#" class="log_out">注销登录</b-dropdown-item>
+                  <b-dropdown-item to="/" class="account_name">账户CIN001</b-dropdown-item>
+                  <b-dropdown-item to="/" class="manage_admin">影院管理后台</b-dropdown-item>
+                  <b-dropdown-item to="/" class="dmz_host">关闭所有主机</b-dropdown-item>
+                  <b-dropdown-item to="/cinema_resources" class="log_out">注销登录</b-dropdown-item>
               </b-dropdown>
-          <img class="navbar_small" src="../assets/header/setting_btn.png"/>
-          <img class="navbar_close" src="../assets/header/setting_btn.png"/>
+          <img class="navbar_small" src="../assets/header/small.png"/>
+          <img class="navbar_close" src="../assets/header/close.png"/>
       </div>
     </div>
     <div class="menubar_bg">
         <div class="menubar_body">
           <b-nav class="menubar_list">
-              <b-nav-item class="active">全部</b-nav-item>
-              <b-nav-item>最新</b-nav-item>
-              <b-nav-item>喜剧</b-nav-item>
-              <b-nav-item>爱情</b-nav-item>
-              <b-nav-item>科幻</b-nav-item>
-              <b-nav-item>科普</b-nav-item>
-              <b-nav-item>惊悚</b-nav-item>
-              <b-nav-item>动作</b-nav-item>
+              <b-nav-item class="active" to="/cinema_resources">全部</b-nav-item>
+              <b-nav-item to="/" onclick="changeToText();">最新</b-nav-item>
+              <b-nav-item to="/cinema_resources" onclick="changeToText();">喜剧</b-nav-item>
+              <b-nav-item to="/">爱情</b-nav-item>
+              <b-nav-item to="/cinema_resources">科幻</b-nav-item>
+              <b-nav-item to="/">科普</b-nav-item>
+              <b-nav-item to="/cinema_resources">惊悚</b-nav-item>
+              <b-nav-item to="/cinema_resources">动作</b-nav-item>
+              <div class="search_box">
+                  <input id="search_input" type="input" placeholder="输入要搜索的影片"/>
+                  <span class="glyphicon glyphicon-search"></span>
+              </div>
           </b-nav>
+
+
+
         </div>
     </div>
   </div>
@@ -49,28 +57,50 @@
         platform: require('os').platform(),
         vue: require('vue/package.json').version
       }
+    },
+    methods: {
+      open: function () {
+
+      }
+
     }
   }
 </script>
 
 <style scoped>
-    /*@import '../css/index.css';*/
     .header {
         background: url("../assets/header/navbar_bg.png");
         background-size: 100% 270%;
         z-index: 99;
         position: relative;
+        /*background: url("../assets/header/navbar_bg.png") left no-repeat,*/
+        /*url("../assets/header/navbar_right_bg1.png") right no-repeat;*/
+        /*!*url("../assets/header/navbar_center_bg.png") center no-repeat;*!*/
+        /*z-index: 99;*/
+        /*position: relative;*/
+        margin-top: -3px;
+        height: 140px;
     }
 
-    .header .navbar_bg {
+    .header .vr_cinema_text {
+        margin-right: 6% !important;
+
+    }
+    .header .navbar_right_bg {
+        position: absolute;
+        right: 0px;
+        top: -2px;
+    }
+    .header .cinema_logo {
         margin: 0.5% 2%;
+        position: absolute;
     }
 
-    .header .header_text .selected {
+    .header .header_text .router-link-exact-active {
         background: url("../assets/header/choosed_header_top.png") top no-repeat,
         url("../assets/header/choosed_header_bottom.png") bottom no-repeat;
         background-size: contain;
-
+        padding: 20px 8px !important;
     }
 
     .header .header_text .new_mv_count {
@@ -81,11 +111,10 @@
         height: 30px;
         color: white;
         text-align: center;
-        top: 35px;
-        margin-left: -20px;
+        margin-left: -10px;
     }
 
-    .header .header_text .selected span {
+    .header .header_text .router-link-exact-active span {
         background: url("../assets/header/choosed_header_center.png") 0 2px;
         padding: 14px 13px;
         background-size: 100% 100%;
@@ -105,25 +134,35 @@
         width: 100%;
         position: static;
         margin-top: 35px;
-        margin-left: 17%;
+        text-align: center;
+        position: absolute;
     }
 
     .header .header_text a:hover {
         text-decoration: none;
     }
 
+
     .header .set_body {
         display: inline-block;
         position: absolute;
-        right: 4.5%;
+        right: 5px;
     }
-
-
-
-
-
-
-
+    .header .set_body .btn-group {
+        position: absolute;
+        right: 70px;
+        margin-top: 6px;
+    }
+    .header .set_body .navbar_small {
+        position: absolute;
+        right: 50px;
+        padding: 2rem 0px;
+    }
+    .header .set_body .navbar_close {
+        position: absolute;
+        right: 10px;
+        padding: 1.5rem 0px;
+    }
 
     .menubar_bg {
         margin-left: 30px;
@@ -141,8 +180,8 @@
         left: -15px;
         right: -10px;
         bottom: 0;
-        background: url("../assets/02.png") left no-repeat,
-        url("../assets/01.png") right no-repeat;
+        background: url("../assets/chain_left.png") left no-repeat,
+        url("../assets/chain_right.png") right no-repeat;
         content: '';
         top: -115px;
         bottom: 0;
@@ -151,7 +190,7 @@
     }
 
     .menubar_bg .menubar_body {
-        padding-top: 20px;
+        padding-top: 30px;
     }
 
     .menubar_bg .menubar_body .menubar_list a {
@@ -165,6 +204,9 @@
 
     .menubar_bg .menubar_body .menubar_list li:not(:last-child) a {
         border-right: 1px solid rgb(0, 0, 0);
+    }
+    .menubar_bg .menubar_body .menubar_list li:nth-last-child(2) a {
+        border-right: none;
     }
     .menubar_bg .menubar_body .menubar_list li:not(:first-child) a  {
         border-left: 1px solid rgb(69, 69, 70);
@@ -186,6 +228,28 @@
         position: relative;
         z-index: 99;
     }
-
+    .search_box {
+        position: absolute;
+        right: 165px;
+        margin-top: 13px;
+        z-index: 9;
+    }
+    .search_box #search_input {
+        font-size: 18px;
+        font-family: "Microsoft YaHei";
+        color: rgb(222, 222, 222);
+        background-color: rgb(0, 0, 0);
+        opacity: 0.6;
+        border-radius: 30px;
+        padding: 8px 15px;
+        border: 1px solid rgb(52, 58, 64);
+        width: 120%;
+    }
+    .search_box #search_input::-webkit-input-placeholder {
+        color: rgb(153, 153, 153);
+    }
+    .search_box #search_input:focus {
+        outline: none;
+    }
 
 </style>
