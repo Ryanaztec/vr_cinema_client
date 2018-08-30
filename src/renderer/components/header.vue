@@ -24,23 +24,25 @@
     </div>
     <div class="menubar_bg">
         <div class="menubar_body">
-          <b-nav class="menubar_list">
-              <b-nav-item class="active" to="/cinema_resources">全部</b-nav-item>
-              <b-nav-item to="/" onclick="changeToText();">最新</b-nav-item>
-              <b-nav-item to="/cinema_resources" onclick="changeToText();">喜剧</b-nav-item>
-              <b-nav-item to="/">爱情</b-nav-item>
-              <b-nav-item to="/cinema_resources">科幻</b-nav-item>
-              <b-nav-item to="/">科普</b-nav-item>
-              <b-nav-item to="/cinema_resources">惊悚</b-nav-item>
-              <b-nav-item to="/cinema_resources">动作</b-nav-item>
+
+          <b-nav class="menubar_list" v-if="this.$route.path != '/video_detail'">
+              <b-nav-item :class="{active:$index==active}" to="/cinema_resources" v-for="(item,$index) in tags" @click="activeTag($index)">
+                  {{item}}
+              </b-nav-item>
+
               <div class="search_box">
                   <input id="search_input" type="input" placeholder="输入要搜索的影片"/>
                   <span class="glyphicon glyphicon-search"></span>
               </div>
           </b-nav>
-
-
-
+          <b-nav class="video_detail_menubar" v-else>
+            <div class="return_resource">
+                <router-link class="" to="/cinema_resources">く 返回列表</router-link>
+            </div>
+            <div class="video_name">
+                {{video_name}}
+            </div>
+          </b-nav>
         </div>
     </div>
   </div>
@@ -55,12 +57,30 @@
         node: process.versions.node,
         path: this.$route.path,
         platform: require('os').platform(),
-        vue: require('vue/package.json').version
+        vue: require('vue/package.json').version,
+        tags: [
+          '全部',
+          '最新',
+          '喜剧',
+          '爱情',
+          '文艺',
+          '科幻',
+          '动作',
+          '惊悚',
+          '科普',
+          '动画',
+          '纪录片'
+        ],
+        active: 0
       }
     },
+    props: ['video_name'],
     methods: {
       open: function () {
 
+      },
+      activeTag: function (index) {
+        this.active = index
       }
 
     }
@@ -132,7 +152,6 @@
     .header .header_text {
         display: inline;
         width: 100%;
-        position: static;
         margin-top: 35px;
         text-align: center;
         position: absolute;
@@ -162,6 +181,13 @@
         position: absolute;
         right: 10px;
         padding: 1.5rem 0px;
+    }
+    .menubar_bg .menubar_body .video_name {
+        width: 100%;
+        margin-top: -55px;
+        text-align: center;
+        font-size: 30px;
+        color: rgb(68, 247, 247);
     }
 
     .menubar_bg {
@@ -250,6 +276,24 @@
     }
     .search_box #search_input:focus {
         outline: none;
+    }
+    .return_resource {
+        padding: 20px 0;
+        position: relative;
+        z-index: 99;
+    }
+    .return_resource a {
+        font-size: 20px;
+        color: white;
+    }
+    .return_resource a:hover {
+        text-decoration: none;
+    }
+    .video_detail_menubar {
+        font-size: 20px;
+        font-family: "Microsoft YaHei";
+        color: rgb(255, 255, 255);
+
     }
 
 </style>

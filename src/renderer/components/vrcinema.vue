@@ -7,10 +7,10 @@
               <div class="row ">
                   <div class="col-md-9">
                       <div class="row video_list">
-                          <div class="col-md-4 video_box">
-                              <div class="video active" @click="activeVideo">
+                          <div class="col-md-4 video_box" v-for="(item,$index) in arr" @click="activeVideo($index)">
+                              <div class="video" :class="{active:$index==active}">
                                   <div class="acttive_bg">
-                                      <img class="navbar_bg" src="../assets/xiongchumo.png"/>
+                                      <img class="video_picture" src="../assets/xiongchumo.png"/>
                                       <div class="video_info">
                                           <span class="video_name">熊出没</span>
                                           <span class="video_time">12:00</span>
@@ -18,61 +18,7 @@
                                   </div>
                               </div>
                           </div>
-                          <div class="col-md-4 video_box">
-                              <div class="video " @click="activeVideo" :class="appendclass">
-                                  <div class="acttive_bg">
-                                      <img class="navbar_bg" src="../assets/xiongchumo.png"/>
-                                      <div class="video_info">
-                                          <span class="video_name">熊出没</span>
-                                          <span class="video_time">12:00</span>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-md-4 video_box">
-                              <div class="video ">
-                                  <div class="acttive_bg">
-                                      <img class="navbar_bg" src="../assets/xiongchumo.png"/>
-                                      <div class="video_info">
-                                          <span class="video_name">熊出没</span>
-                                          <span class="video_time">12:00</span>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-md-4 video_box">
-                              <div class="video ">
-                                  <div class="acttive_bg">
-                                      <img class="navbar_bg" src="../assets/xiongchumo.png"/>
-                                      <div class="video_info">
-                                          <span class="video_name">熊出没</span>
-                                          <span class="video_time">12:00</span>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-md-4 video_box">
-                              <div class="video ">
-                                  <div class="acttive_bg">
-                                      <img class="navbar_bg" src="../assets/xiongchumo.png"/>
-                                      <div class="video_info">
-                                          <span class="video_name">熊出没</span>
-                                          <span class="video_time">12:00</span>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          <div class="col-md-4 video_box">
-                              <div class="video ">
-                                  <div class="acttive_bg">
-                                      <img class="navbar_bg" src="../assets/xiongchumo.png"/>
-                                      <div class="video_info">
-                                          <span class="video_name">熊出没</span>
-                                          <span class="video_time">12:00</span>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
+
                       </div>
                       <div class="pagination_body">
                           <b-pagination-nav size="sm" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="10" hide-goto-end-buttons hide-ellipsis/>
@@ -81,29 +27,36 @@
                   </div>
                   <div class="col-md-3 seat">
                       <div class="seat_body text-center">
-                          <div class="choose_seat_text">选择座椅</div>
-                          <div class="row seat_list">
-                              <div class="col-md-4">
-                                  <img class="seat_img" src="../assets/seat.png"/>
+                          <div v-if="show_seat">
+                              <div class="choose_seat_text">选择座椅</div>
+                              <div class="row seat_list">
+                                  <div class="col-md-4" v-for="(item,$index) in seats">
+                                      <img class="seat_img" src="../assets/seat.png"/>
+                                  </div>
+
                               </div>
-                              <div class="col-md-4">
-                                  <img class="seat_img" src="../assets/seat.png"/>
-                              </div>
-                              <div class="col-md-4">
-                                  <img class="seat_img" src="../assets/seat.png"/>
-                              </div>
-                              <div class="col-md-4">
-                                  <img class="seat_img" src="../assets/seat.png"/>
-                              </div>
-                              <div class="col-md-4">
-                                  <img class="seat_img" src="../assets/seat.png"/>
-                              </div>
-                              <div class="col-md-4">
-                                  <img class="seat_img" src="../assets/seat.png"/>
-                              </div>
+                              <div class="broadcast_pace_bg" @click="broadcast_pace()"><a href="#">《 播放进度 》</a></div>
                           </div>
-                          <div class="broadcast_pace_bg"><a href="">《 播放进度 》</a></div>
+                          <div class="broadcast_list" v-else>
+                              <div class="choose_seat_text">播放进度</div>
+                              <div class="row seat_list">
+                                  <div v-for="bar in seats" class="col-md-12 row">
+                                      <div class="col-sm-2 seat_num">{{ bar.seat_num }}</div>
+                                      <div class="col-sm-10">
+                                          <b-progress :value="bar.value"
+                                                      :key="bar.variant"
+                                                      class="mb-4"
+                                                      striped :animated="animate"
+                                                      height="12px"
+                                          ></b-progress>
+                                      </div>
+                                  </div>
+                              </div>
+                              <div class="broadcast_pace_bg" @click="choose_seat()"><a href="#">《 选择座椅 》</a></div>
+                          </div>
+
                       </div>
+
                       <div class="play_stop">
                           <div><b-button class="play">播放</b-button></div>
                           <div><b-button class="stop">停止</b-button></div>
@@ -123,8 +76,27 @@
     data () {
       return {
         appendclass: '',
-        info: '',
-        info2: ''
+        active: 0,
+        arr: [
+          '熊出没',
+          '熊出没',
+          '熊出没',
+          '熊出没',
+          '熊出没',
+          '熊出没'
+        ],
+        show_seat: true,
+        max: 50,
+        value: 33.333333333,
+        seats: [
+          {seat_num: '1', value: 75},
+          {seat_num: '2', value: 35},
+          {seat_num: '3', value: 35},
+          {seat_num: '4', value: 55},
+          {seat_num: '5', value: 95},
+          {seat_num: '6', value: 75}
+        ],
+        animate: true
       }
     },
 
@@ -132,8 +104,17 @@
       open (link) {
         this.$electron.shell.openExternal(link)
       },
-      activeVideo: function (event) {
-        console.log(event)
+      linkGen (pageNum) {
+
+      },
+      activeVideo: function (index) {
+        this.active = index
+      },
+      broadcast_pace: function () {
+        this.show_seat = false
+      },
+      choose_seat: function () {
+        this.show_seat = true
       }
     }
   }
@@ -153,7 +134,7 @@
       box-shadow: 0px 0px 5px 1px #aaa;
   }
   .seat .choose_seat_text {
-      font-size: 1.5vw;
+      font-size: 24px;
       font-family: "Microsoft YaHei";
       color: rgb(255, 255, 255);
       padding: 5%;
@@ -169,7 +150,7 @@
       background-image: -ms-linear-gradient( 0deg, rgba(153,153,153,0.05098) 0%, rgba(153,153,153,0.4) 49%, rgba(153,153,153,0.05098) 100%);
   }
   .seat .broadcast_pace_bg a {
-      font-size: 1.5vw;
+      font-size: 24px;
       font-family: "Microsoft YaHei";
       color: rgb(25, 236, 236);
       text-decoration: none;
@@ -189,7 +170,7 @@
   }
 
   .seat .play_stop .play {
-      font-size: 1.5vw;
+      font-size: 24px;
       font-family: "Microsoft YaHei";
       color: rgb(0, 0, 0);
       border-radius: 5px;
@@ -207,12 +188,15 @@
       border-color: rgb(255, 255, 255);
       border-style: solid;
       border-radius: 5px;
-      font-size: 1.5vw;
+      font-size: 24px;
       font-family: "Microsoft YaHei";
       color: rgb(255, 255, 255);
   }
   .seat .play_stop .stop:hover{
       border-color: rgb(102, 102, 102);
+  }
+  .broadcast_list .seat_num {
+      font-size: 22px;
   }
 
 
