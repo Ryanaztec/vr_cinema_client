@@ -10,17 +10,18 @@ import BootstrapVue from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-window.jQuery = window.$ = require('jquery/dist/jquery.min')
+import api from './service/index'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
 Vue.config.productionTip = false
 
 Vue.use(BootstrapVue)
+Vue.use(api)
 
 /* eslint-disable no-new */
 new Vue({
-  components: { App },
+  components: {App},
   router,
   store,
   template: '<App/>'
