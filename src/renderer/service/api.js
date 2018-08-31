@@ -8,6 +8,15 @@ export const example = params => {
   })
 }
 
+export const login = params => {
+  return axios({
+    url: '/auth/login',
+    method: 'post',
+    params
+  })
+}
+
 export default {
-  example
+  example,
+  login
 }

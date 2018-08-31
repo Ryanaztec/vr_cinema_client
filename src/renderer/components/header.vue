@@ -13,6 +13,7 @@
                   <template slot="button-content">
                       <img class="navbar_bg" src="../assets/header/setting_btn.png"/>
                   </template>
+                  <b-dropdown-item v-b-modal.modalLogin class="user_login">用户登陆</b-dropdown-item>
                   <b-dropdown-item to="/" class="account_name">账户CIN001</b-dropdown-item>
                   <b-dropdown-item to="/" class="manage_admin">影院管理后台</b-dropdown-item>
                   <b-dropdown-item to="/" class="dmz_host">关闭所有主机</b-dropdown-item>
@@ -45,11 +46,16 @@
           </b-nav>
         </div>
     </div>
+    <login-modal></login-modal>
   </div>
 </template>
 
 <script>
+  import LoginModal from './login/login.vue'
   export default {
+    components: {
+      LoginModal
+    },
     data () {
       return {
         electron: process.versions['atom-shell'],
@@ -82,7 +88,6 @@
       activeTag: function (index) {
         this.active = index
       }
-
     }
   }
 </script>

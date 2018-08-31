@@ -5,7 +5,7 @@ export default function $axios (options) {
   return new Promise((resolve, reject) => {
     const instance = axios.create({
       method: 'POST',
-      baseURL: '',
+      baseURL: 'http://vr-cinema.com/api',
       headers: {
         'Content-Type': 'application/json;charset=UTF-8'
       },
