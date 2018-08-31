@@ -10,6 +10,8 @@ body {
     font-family: 'Source Sans Pro', sans-serif;
     background: url("../assets/homePageBg.png") no-repeat center center fixed;
     background-size:cover;
+    min-width: 1080px;
+    overflow: scroll;
 }
 
 .container_body {
@@ -156,7 +158,5 @@ body {
 }
 
 @media all and (max-width: 1024px) {
-    .header .cinema_logo {
-        display: none;
-    }
+
 }

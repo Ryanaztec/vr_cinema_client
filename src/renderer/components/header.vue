@@ -26,7 +26,7 @@
         <div class="menubar_body">
 
           <b-nav class="menubar_list" v-if="this.$route.path != '/video_detail'">
-              <b-nav-item :class="{active:$index==active}" to="/cinema_resources" v-for="(item,$index) in tags" @click="activeTag($index)">
+              <b-nav-item :class="{active:$index==active}" to="/cinema_resources" v-for="(item, $index) in tag" :key="item.id" @click="activeTag($index)">
                   {{item}}
               </b-nav-item>
 
@@ -49,6 +49,8 @@
 </template>
 
 <script>
+  import api from '../service/api'
+
   export default {
     data () {
       return {
@@ -58,7 +60,7 @@
         path: this.$route.path,
         platform: require('os').platform(),
         vue: require('vue/package.json').version,
-        tags: [
+        tag: [
           '全部',
           '最新',
           '喜剧',
@@ -66,10 +68,7 @@
           '文艺',
           '科幻',
           '动作',
-          '惊悚',
-          '科普',
-          '动画',
-          '纪录片'
+          '惊悚'
         ],
         active: 0
       }
@@ -81,8 +80,23 @@
       },
       activeTag: function (index) {
         this.active = index
+      },
+      getTag: function () {
+        api.getAllTags({}).then((response) => {
+          console.log(response)
+          if (response.success) {
+            this.tags = response.data
+            console.log(this.tags)
+          }
+        })
+      },
+      test: function () {
+        console.log(11111)
+        this.getTag()
       }
 
+    },
+    mounted: function () {
     }
   }
 </script>
@@ -176,11 +190,13 @@
         position: absolute;
         right: 50px;
         padding: 2rem 0px;
+        cursor: pointer;
     }
     .header .set_body .navbar_close {
         position: absolute;
         right: 10px;
         padding: 1.5rem 0px;
+        cursor: pointer;
     }
     .menubar_bg .menubar_body .video_name {
         width: 100%;
@@ -293,7 +309,6 @@
         font-size: 20px;
         font-family: "Microsoft YaHei";
         color: rgb(255, 255, 255);
-
     }
 
 </style>

@@ -9,14 +9,8 @@
                       <div class="row ">
                           <div id="topBanner" class="slide" >
                               <div v-for="(imgUrl, index) in video_picture_list" v-show="index===mark" :key="index" class="slideshow">
-                                  <a href="#" v-if="index == 1">
-                                      <img src="../assets/video.png" style="width:100%;">
-                                  </a>
-                                  <a href="#" v-else-if="index == 0">
-                                      <img src="../assets/video01.png" style="width:100%;">
-                                  </a>
-                                  <a href="#" v-else>
-                                      <img src="../assets/video01.png" style="width:100%;">
+                                  <a href="#">
+                                      <img :src="imgUrl" style="width:100%;">
                                   </a>
                               </div>
                               <div class="switch">
@@ -62,9 +56,9 @@
           },
         mark: 0,
         video_picture_list: [
-          'http://p3.so.qhimgs1.com/t01f3c2fbbfc190da13.jpg',
-          'http://p1.so.qhimgs1.com/t01fb8af23fa1c93441.jpg',
-          'http://p0.so.qhimgs1.com/t013e7b12d08f155a4c.jpg'
+          '../static/video01.png',
+          '../static/video.png',
+          '../static/video01.png'
         ]
       }
     },

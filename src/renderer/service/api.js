@@ -1,13 +1,13 @@
 import axios from './config'
 
-export const example = params => {
+export const getAllTags = params => {
   return axios({
-    url: '/example',
-    method: 'post',
+    url: '/allTags',
+    method: 'get',
     params
   })
 }
 
 export default {
-  example
+  getAllTags
 }
