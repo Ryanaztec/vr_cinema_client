@@ -23,11 +23,6 @@ export default function $axios (options) {
 
         if (localStorage.token) {
           config.headers.Authorization = 'bearer ' + localStorage.token
-          // config.headers['X-Token'] = localStorage.token
-        } else {
-          router.push({
-            path: '/login'
-          })
         }
         return config
       },
@@ -40,9 +35,7 @@ export default function $axios (options) {
         //  1.判断请求超时
         if (error.code === 'ECONNABORTED' && error.message.indexOf('timeout') !== -1) {
           console.log('根据你设置的timeout/真的请求超时 判断请求现在超时了，你可以在这里加入超时的处理方案')
-          router.push({
-            path: '/login'
-          })
+          // TODO 显示登陆框
         }
         //  2.需要重定向到错误页面
         const errorInfo = error.response
@@ -130,7 +123,8 @@ export default function $axios (options) {
             default:
           }
         }
-        console.error(err)
+        router.push({ path: '/' })
+        alert(err)
         // 可在此处添加消息提示
         return Promise.reject(err)
       }
