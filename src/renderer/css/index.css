@@ -191,6 +191,7 @@ body {
 
 .login-form .modal-footer .btn-primary {
     margin-bottom: 25px;
+    color: black;
 }
 
 .login-form .modal-footer .btn-primary:hover {
