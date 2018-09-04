@@ -202,7 +202,8 @@ body {
 }
 
 .login-form .form .btn-primary {
-    width: 80%  
+    width: 80%;
+    color: #000 !important;
 }
 
 .login-form .form .btn-primary:hover {
