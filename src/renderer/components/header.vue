@@ -13,11 +13,15 @@
                   <template slot="button-content">
                       <img class="navbar_bg" src="../assets/header/setting_btn.png"/>
                   </template>
-                  <b-dropdown-item v-b-modal.modalLogin class="user_login">用户登陆</b-dropdown-item>
-                  <b-dropdown-item to="/" class="account_name">账户CIN001</b-dropdown-item>
-                  <b-dropdown-item to="/" class="manage_admin">影院管理后台</b-dropdown-item>
-                  <b-dropdown-item to="/" class="dmz_host">关闭所有主机</b-dropdown-item>
-                  <b-dropdown-item to="/cinema_resources" class="log_out">注销登录</b-dropdown-item>
+                  <template v-if="!hasLogin">
+                    <b-dropdown-item v-b-modal.modalLogin class="user_login">用户登陆</b-dropdown-item>
+                  </template>
+                  <template v-else>
+                    <b-dropdown-item to="/" class="account_name">账户CIN001</b-dropdown-item>
+                    <b-dropdown-item to="/" class="manage_admin">影院管理后台</b-dropdown-item>
+                    <b-dropdown-item to="/" class="dmz_host">关闭所有主机</b-dropdown-item>
+                    <b-dropdown-item to="/cinema_resources" class="log_out" @click="logout">注销登录</b-dropdown-item>
+                  </template>
               </b-dropdown>
           <img class="navbar_small" src="../assets/header/small.png"/>
           <img class="navbar_close" src="../assets/header/close.png"/>
@@ -82,11 +86,17 @@
     },
     props: ['video_name'],
     methods: {
-      open: function () {
-
-      },
       activeTag: function (index) {
         this.active = index
+      },
+      logout: function () {
+        localStorage.removeItem('token')
+        location.reload()
+      }
+    },
+    computed: {
+      hasLogin () {
+        return localStorage.token && localStorage.token.length > 0
       }
     }
   }

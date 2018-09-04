@@ -11,7 +11,7 @@ export default function $axios (options) {
       },
       data: {},
       timeout: 10000,
-      withCredentials: true,
+      withCredentials: false,
       responseType: 'json'
     })
 
@@ -22,7 +22,7 @@ export default function $axios (options) {
         // 请求开始的时候可以结合 vuex 开启全屏的 loading 动画
 
         if (localStorage.token) {
-          config.headers.Authorization = localStorage.token
+          config.headers.Authorization = 'bearer ' + localStorage.token
           // config.headers['X-Token'] = localStorage.token
         } else {
           router.push({

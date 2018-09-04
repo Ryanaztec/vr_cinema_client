@@ -1,9 +1,9 @@
 <template>
-  <div>
-    <b-modal id="modalLogin" ref="modal" title="管理员登陆" @ok="handleOk" @shown="clearName" centered>
-      <form @submit.stop.prevent="handleSubmit">
-        <b-form-input type="text" placeholder="请输入用户名" v-model="username"></b-form-input>
-        <b-form-input type="password" placeholder="请输入密码" v-model="password"></b-form-input>
+  <div class="login-form">
+    <b-modal id="modalLogin" ref="modal" title="管理员登录" @ok="handleOk" @shown="shownEvents" centered ok-only ok-title="登录">
+      <form @submit.stop.prevent="handleSubmit" class="input-area">
+        <b-form-input type="text" placeholder="请输入用户名" v-model="username" ref="focusText"></b-form-input>
+        <b-form-input type="password" placeholder="请输入密码" v-model="password" style="margin-top: 20px;"></b-form-input>
       </form>
     </b-modal>
   </div>
@@ -18,57 +18,33 @@ export default {
     }
   },
   methods: {
-    clearName () {
+    shownEvents () {
+      this.$refs.focusText.focus()
       this.username = ''
       this.password = ''
     },
     handleOk (evt) {
       // Prevent modal from closing
       evt.preventDefault()
-      // if (!this.username) {
-      //   alert('请输入用户名')
-      // } else {
-      this.handleSubmit()
-      // }
+      if (!this.username || !this.password) {
+        alert('请输入用户名或密码')
+      } else {
+        this.handleSubmit()
+      }
     },
     handleSubmit () {
-      const self = this
-      window.jQuery.ajax({
-        url: 'http://vr-cinema.com/api/auth/login',
-        type: 'POST',
-        dataType: 'JSONP',
-        data: {username: self.username, password: self.password},
-        success: function (res) {
-          console.log(res)
-          // self.data = res.data.slice(0, 3)
-          // self.opencode = res.data[0].opencode.split(',')
-        }
+      this.$store.dispatch('Login', {username: this.username, password: this.password}).then(() => {
+        this.$router.push({ path: '/' })
+      }).catch(() => {
+        alert('用户名或密码错误！')
       })
-      // this.clearName()
-      // this.$refs.modal.hide()
     }
   }
 }
 </script>
 
 <style scoped>
-
-  .modal-content {
-    .modal-header {
-      .modal-title {
-        width: 100%;
-        text-align: center;
-      }
-    }
+  .login-form .input-area {
+    text-align: -webkit-center;
   }
-
-
-
-.log_in_btn {
-  border-radius: 5px;
-  background-image: -moz-linear-gradient( -90deg, rgb(97,255,255) 0%, rgb(25,236,236) 100%);
-  background-image: -webkit-linear-gradient( -90deg, rgb(97,255,255) 0%, rgb(25,236,236) 100%);
-  background-image: -ms-linear-gradient( -90deg, rgb(97,255,255) 0%, rgb(25,236,236) 100%);
-}
-
 </style>

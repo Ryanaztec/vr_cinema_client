@@ -16,6 +16,13 @@ export const login = params => {
   })
 }
 
+export const getInfo = () => {
+  return axios({
+    url: '/auth/currentUserInfo',
+    method: 'get'
+  })
+}
+
 export default {
   example,
   login

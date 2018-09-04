@@ -161,8 +161,54 @@ body {
     border-radius: 23px;
     box-shadow: 0px 0px 5px 1px #aaa;
 }
+
 @media all and (max-width: 1024px) {
     .header .cinema_logo {
         display: none;
     }
+}
+
+.btn-primary {
+  border-radius: 5px;
+  background-image: -moz-linear-gradient( -90deg, rgb(97,255,255) 0%, rgb(25,236,236) 100%);
+  background-image: -webkit-linear-gradient( -90deg, rgb(97,255,255) 0%, rgb(25,236,236) 100%);
+  background-image: -ms-linear-gradient( -90deg, rgb(97,255,255) 0%, rgb(25,236,236) 100%);
+  color: black;
+  width: 70%;
+}
+
+.login-from .input-field {
+    text-align: center;
+}
+
+.login-form .modal-footer {
+    display: initial;
+    text-align: center;
+    border-top: 0px;
+    margin-top: -25px;
+}
+
+.login-form .modal-footer .btn-primary {
+    margin-bottom: 25px;
+}
+
+.login-form .modal-body {
+    padding: 3rem;
+}
+
+.login-form .modal-header {
+    color: white;
+}
+
+.login-form .modal-header .modal-title {
+    margin-left: 180px;
+}
+
+.login-form .modal-header .close {
+    margin: -1rem -1rem -1rem 0px;
+}
+
+.login-form .form-control {
+    width: 80%;
+    color: #373737;
 }
