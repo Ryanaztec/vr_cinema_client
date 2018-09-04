@@ -178,26 +178,6 @@ body {
   width: 70%;
 }
 
-.login-from .input-field {
-    text-align: center;
-}
-
-.login-form .modal-footer {
-    display: initial;
-    text-align: center;
-    border-top: 0px;
-    margin-top: -25px;
-}
-
-.login-form .modal-footer .btn-primary {
-    margin-bottom: 25px;
-}
-
-.login-form .modal-footer .btn-primary:hover {
-    border-color: rgb(255, 255, 255);
-    color: rgb(0, 0, 0);
-}
-
 .login-form .modal-body {
     padding: 3rem;
 }
@@ -219,4 +199,17 @@ body {
 .login-form .form-control {
     width: 80%;
     color: #373737;
+}
+
+.login-form .form .btn-primary {
+    width: 80%  
+}
+
+.login-form .form .btn-primary:hover {
+    border-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+}
+
+.modal-body {
+    text-align: center;
 }

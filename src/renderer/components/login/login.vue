@@ -9,11 +9,32 @@
           ok-only
           ok-title="登录"
           no-close-on-backdrop
+          hide-footer
       >
-      <form @submit.stop.prevent="handleSubmit" class="input-area">
-        <b-form-input type="text" placeholder="请输入用户名" v-model="username" ref="focusText"></b-form-input>
-        <b-form-input type="password" placeholder="请输入密码" v-model="password" style="margin-top: 20px;" @keyup.enter.native="handleOk()"></b-form-input>
-      </form>
+      <b-form @submit.stop.prevent="handleOk" class="form">
+        <b-form-group class="login-username">
+          <b-form-input type="text"
+                        v-model="username"
+                        required
+                        ref="focusText"
+                        placeholder="请输入用户名">
+          </b-form-input>
+        </b-form-group>
+        <b-form-group class="login-password">
+          <b-form-input type="password"
+                        v-model="password"
+                        required
+                        placeholder="请输入密码"
+                        @keyup.enter.native="handleOk()">
+          </b-form-input>
+        </b-form-group>
+        <b-form-group class="button">
+          <b-button type="submit" variant="primary">登录</b-button>
+        </b-form-group>
+        <b-form-group class="phone">
+          <p>客服电话：400-931-8700</p>
+        </b-form-group>
+      </b-form>
     </b-modal>
   </div>
 </template>
@@ -53,7 +74,16 @@ export default {
 </script>
 
 <style scoped>
-  .login-form .input-area {
+  .login-form .form {
     text-align: -webkit-center;
+    padding: 1px;
+  }
+  .login-form .form .login-password {
+    margin-top: 30px;
+    margin-bottom: 40px;
+  }
+  .login-form .form .phone {
+    color: white;
+    margin-bottom: -25px;
   }
 </style>
