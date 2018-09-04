@@ -17,7 +17,7 @@
                     <b-dropdown-item v-b-modal.modalLogin class="user_login">用户登陆</b-dropdown-item>
                   </template>
                   <template v-else>
-                    <b-dropdown-item to="/" class="account_name">账户CIN001</b-dropdown-item>
+                    <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
                     <b-dropdown-item to="/" class="manage_admin">影院管理后台</b-dropdown-item>
                     <b-dropdown-item to="/" class="dmz_host">关闭所有主机</b-dropdown-item>
                     <b-dropdown-item to="/cinema_resources" class="log_out" @click="logout">注销登录</b-dropdown-item>
@@ -90,13 +90,16 @@
         this.active = index
       },
       logout: function () {
-        localStorage.removeItem('token')
-        location.reload()
+        this.$store.dispatch('FedLogOut')
+        this.$router.push({ path: '/' })
       }
     },
     computed: {
       hasLogin () {
-        return localStorage.token && localStorage.token.length > 0
+        return !!this.$store.state.currentUser.token
+      },
+      username () {
+        return this.$store.state.currentUser.username
       }
     }
   }
