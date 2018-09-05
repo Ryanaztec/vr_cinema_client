@@ -58,8 +58,8 @@
                       </div>
 
                       <div class="play_stop">
-                          <div><b-button class="play">播放</b-button></div>
-                          <div><b-button class="stop">停止</b-button></div>
+                          <div><b-button class="play" @click="start()">播放</b-button></div>
+                          <div><b-button class="stop" @click="stop()">停止</b-button></div>
                       </div>
                   </div>
               </div>
@@ -70,6 +70,7 @@
 
 <script type="text/ecmascript-6">
   import HeaderInfo from './header'
+  import Sender from '../udp/sender'
   export default {
     components: { HeaderInfo },
 
@@ -115,6 +116,12 @@
       },
       choose_seat: function () {
         this.show_seat = true
+      },
+      start: function () {
+        Sender.sendMessage('start Movie')
+      },
+      stop: function () {
+        Sender.stopMovie()
       }
     }
   }
