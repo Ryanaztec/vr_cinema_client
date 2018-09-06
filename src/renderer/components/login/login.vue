@@ -69,6 +69,9 @@ export default {
           group: 'foo',
           text: '欢迎' + this.username
         })
+        this.$router.push({
+          path: '/vr_cinema'
+        })
       }).catch(() => {
         alert('用户名或密码错误！')
       })
