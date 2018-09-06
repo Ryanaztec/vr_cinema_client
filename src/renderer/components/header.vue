@@ -92,6 +92,10 @@
       logout: function () {
         this.$store.dispatch('FedLogOut')
         this.$router.push({ path: '/' })
+        this.$notify({
+          group: 'foo',
+          text: '注销成功'
+        })
       }
     },
     computed: {

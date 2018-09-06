@@ -65,6 +65,10 @@ export default {
     handleSubmit () {
       this.$store.dispatch('Login', {username: this.username, password: this.password}).then((response) => {
         this.$refs.modal.hide()
+        this.$notify({
+          group: 'foo',
+          text: '欢迎' + this.username
+        })
       }).catch(() => {
         alert('用户名或密码错误！')
       })
