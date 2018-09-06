@@ -31,8 +31,8 @@
         <div class="menubar_body">
 
           <b-nav class="menubar_list" v-if="this.$route.path != '/video_detail'">
-              <b-nav-item :class="{active:$index==active}" to="/cinema_resources" v-for="(item,$index) in tags" @click="activeTag($index)">
-                  {{item}}
+              <b-nav-item :class="{active:$index==active}" v-for="(item,$index) in tags" @click="activeTag($index)">
+                  {{item.name}}
               </b-nav-item>
 
               <div class="search_box">
@@ -56,6 +56,8 @@
 
 <script>
   import LoginModal from './login/login.vue'
+  import API from '../service/api'
+
   export default {
     components: {
       LoginModal
@@ -68,19 +70,7 @@
         path: this.$route.path,
         platform: require('os').platform(),
         vue: require('vue/package.json').version,
-        tags: [
-          '全部',
-          '最新',
-          '喜剧',
-          '爱情',
-          '文艺',
-          '科幻',
-          '动作',
-          '惊悚',
-          '科普',
-          '动画',
-          '纪录片'
-        ],
+        tags: null,
         active: 0
       }
     },
@@ -101,6 +91,14 @@
       username () {
         return this.$store.state.currentUser.username
       }
+    },
+    mounted: function () {
+      API.getAllTags().then((response) => {
+        if (response.success) {
+          console.log(response)
+          this.tags = response.data
+        }
+      })
     }
   }
 </script>

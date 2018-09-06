@@ -18,12 +18,12 @@
                                   </div>
                               </div>
                           </div>
-                          <div class="col-md-3 video_box" v-for="(item,$index) in arr" @click="activeVideo($index)">
+                          <div class="col-md-3 video_box" v-for="(item,$index) in all_movies" @click="activeVideo($index)">
                               <div class="video" :class="{active:$index==active}">
                                   <div class="acttive_bg">
                                       <router-link class="video_picture_box" to="/video_detail"><img class="video_picture" src="../assets/jueji.png"/></router-link>
                                       <div class="video_info">
-                                          <span class="video_name">熊出没</span>
+                                          <span class="video_name">{{item.name}}</span>
                                           <span class="video_status downloaded">已下载</span>
                                       </div>
                                   </div>
@@ -44,21 +44,14 @@
 
 <script>
   import HeaderInfo from './header'
+  import API from '../service/api'
   export default {
     components: { HeaderInfo },
     data () {
       return {
         appendclass: '',
         active: 0,
-        arr: [
-          '熊出没',
-          '熊出没',
-          '熊出没',
-          '熊出没',
-          '熊出没',
-          '熊出没',
-          '熊出没'
-        ]
+        all_movies: []
       }
     },
     methods: {
@@ -71,6 +64,13 @@
       activeVideo: function (index) {
         this.active = index
       }
+    },
+    mounted: function () {
+      API.getAllMovies().then((response) => {
+        if (response.success) {
+          this.all_movies = response.data
+        }
+      })
     }
   }
 </script>

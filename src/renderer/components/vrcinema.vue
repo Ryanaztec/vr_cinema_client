@@ -30,8 +30,16 @@
                           <div v-if="show_seat">
                               <div class="choose_seat_text">选择座椅</div>
                               <div class="row seat_list">
-                                  <div class="col-md-4" v-for="(item,$index) in seats">
-                                      <img class="seat_img" src="../assets/seat.png"/>
+                                  <!--<div class="col-md-4" v-for="(item,$index) in seats">-->
+                                  <div class="col-md-3" >
+
+                                  </div>
+                                  <div class="col-md-6" @click="activeSeat">
+                                      <img class="seat_img" src="../assets/seat.png" v-show="!active_seat"/>
+                                      <img class="seat_img" src="../assets/active_seat.png" v-show="active_seat"/>
+                                  </div>
+                                  <div class="col-md-3" >
+
                                   </div>
 
                               </div>
@@ -58,7 +66,7 @@
                       </div>
 
                       <div class="play_stop">
-                          <div><b-button class="play" @click="start()">播放</b-button></div>
+                          <div><b-button class="play" @click="start()" :disabled="is_play">播放</b-button></div>
                           <div><b-button class="stop" @click="stop()">停止</b-button></div>
                       </div>
                   </div>
@@ -90,14 +98,11 @@
         max: 50,
         value: 33.333333333,
         seats: [
-          {seat_num: '1', value: 75},
-          {seat_num: '2', value: 35},
-          {seat_num: '3', value: 35},
-          {seat_num: '4', value: 55},
-          {seat_num: '5', value: 95},
-          {seat_num: '6', value: 75}
+          {seat_num: '1', value: 75}
         ],
-        animate: true
+        animate: true,
+        active_seat: false,
+        is_play: true
       }
     },
 
@@ -119,9 +124,15 @@
       },
       start: function () {
         Sender.sendMessage('start Movie')
+        this.is_play = true
       },
       stop: function () {
         Sender.stopMovie()
+        this.is_play = false
+      },
+      activeSeat: function () {
+        this.active_seat = !this.active_seat
+        this.is_play = false
       }
     }
   }
@@ -149,6 +160,7 @@
     .seat .seat_img {
         width: 80%;
         margin-bottom: 20px;
+        margin-top: 15px;
     }
   .seat .broadcast_pace_bg {
       padding: 3%;
@@ -165,6 +177,7 @@
   .seat .seat_list {
       padding: 0px 8%;
       margin-bottom: 5%;
+      min-height: 220px;
   }
   .play_stop {
       text-align: center;

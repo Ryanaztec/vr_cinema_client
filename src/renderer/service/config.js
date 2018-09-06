@@ -20,7 +20,7 @@ export default function $axios (options) {
       config => {
         // Tip: 1
         // 请求开始的时候可以结合 vuex 开启全屏的 loading 动画
-
+        console.log(localStorage)
         if (localStorage.token) {
           config.headers.Authorization = 'bearer ' + localStorage.token
         }

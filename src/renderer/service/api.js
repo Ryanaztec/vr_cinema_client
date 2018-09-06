@@ -23,9 +23,22 @@ export const getInfo = params => {
     params: { params }
   })
 }
-
+export const getAllTags = () => {
+  return axios({
+    url: '/allMovieTags',
+    method: 'get'
+  })
+}
+export const getAllMovies = () => {
+  return axios({
+    url: '/all_movies',
+    method: 'get'
+  })
+}
 export default {
   example,
   login,
-  getInfo
+  getInfo,
+  getAllTags,
+  getAllMovies
 }
