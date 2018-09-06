@@ -7,6 +7,11 @@ export default new Router({
   routes: [
     {
       path: '/',
+      name: 'cinema_resources',
+      component: require('@/components/cinemaresources').default
+    },
+    {
+      path: '/vr_cinema',
       name: 'vr_cinema',
       component: require('@/components/vrcinema').default
     },

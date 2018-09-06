@@ -3,8 +3,8 @@
     <div class="header">
       <img class="cinema_logo" src="../assets/header/logo.png"/>
       <div class="header_text">
-          <router-link class="text vr_cinema_text selected" to="/"><span>VR影院</span></router-link>
-          <router-link class="text cinema_resources_text" to="/cinema_resources"><span>影片库</span></router-link>
+          <router-link class="text vr_cinema_text" to="/vr_cinema"><span>VR影院</span></router-link>
+          <router-link class="text cinema_resources_text selected" to="/"><span>影片库</span></router-link>
           <span class="new_mv_count">2</span>
       </div>
         <img class="navbar_right_bg" src="../assets/header/navbar_right_bg1.png"/>
