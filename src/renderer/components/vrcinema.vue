@@ -124,10 +124,18 @@
       },
       start: function () {
         Sender.sendMessage('start Movie')
+        this.$notify({
+          group: 'foo',
+          text: '开始播放《复仇者联盟》'
+        })
         this.is_play = true
       },
       stop: function () {
         Sender.stopMovie()
+        this.$notify({
+          group: 'foo',
+          text: '停止播放《复仇者联盟》'
+        })
         this.is_play = false
       },
       activeSeat: function () {
