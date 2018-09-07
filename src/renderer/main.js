@@ -9,6 +9,10 @@ import BootstrapVue from 'bootstrap-vue'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+
+import 'vue-awesome/icons'
+import Icon from 'vue-awesome/components/Icon'
+
 import api from './service/index'
 import './permission'
 import Notifications from 'vue-notification'
@@ -21,6 +25,7 @@ Vue.config.productionTip = false
 Vue.use(BootstrapVue)
 Vue.use(api)
 Vue.use(Notifications, {velocity})
+Vue.component('icon', Icon)
 
 /* eslint-disable no-new */
 new Vue({
