@@ -4,7 +4,7 @@
       <img class="cinema_logo" src="../assets/header/logo.png"/>
       <div class="header_text">
           <router-link class="text vr_cinema_text" to="/vr_cinema"><span>VR影院</span></router-link>
-          <router-link class="text cinema_resources_text selected" to="/"><span>影片库</span></router-link>
+          <router-link class="text cinema_resources_text selected" :class="(path == '/video_detail' || path == '/')?'router-link-exact-active':''" to="/"><span>影片库</span></router-link>
           <span class="new_mv_count">2</span>
       </div>
         <img class="navbar_right_bg" src="../assets/header/navbar_right_bg1.png"/>
@@ -20,7 +20,7 @@
                     <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
                     <b-dropdown-item to="/" class="manage_admin">影院管理后台</b-dropdown-item>
                     <b-dropdown-item to="/" class="dmz_host">关闭所有主机</b-dropdown-item>
-                    <b-dropdown-item to="/cinema_resources" class="log_out" @click="logout">注销登录</b-dropdown-item>
+                    <b-dropdown-item to="/" class="log_out" @click="logout">注销登录</b-dropdown-item>
                   </template>
               </b-dropdown>
           <img class="navbar_small" src="../assets/header/small.png"/>
@@ -30,7 +30,7 @@
     <div class="menubar_bg">
         <div class="menubar_body">
 
-          <b-nav class="menubar_list" v-if="this.$route.path != '/video_detail'">
+          <b-nav class="menubar_list" v-if="path != '/video_detail'">
               <b-nav-item :class="{active:$index==active}" v-for="(item, $index) in tags" @click="activeTag($index, item)">
                   {{item.name}}
               </b-nav-item>
@@ -42,7 +42,7 @@
           </b-nav>
           <b-nav class="video_detail_menubar" v-else>
             <div class="return_resource">
-                <router-link class="" to="/cinema_resources">く 返回列表</router-link>
+                <router-link class="" to="/">く 返回列表</router-link>
             </div>
             <div class="video_name">
                 {{video_name}}

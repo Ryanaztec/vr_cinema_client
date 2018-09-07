@@ -25,13 +25,13 @@ export const getInfo = params => {
 }
 export const getAllTags = () => {
   return axios({
-    url: '/allMovieTags',
+    url: '/tags/all-movie-tags',
     method: 'get'
   })
 }
 export const getAllMovies = () => {
   return axios({
-    url: '/all_movies',
+    url: '/movie/all-movies',
     method: 'get'
   })
 }
