@@ -59,17 +59,17 @@ const actions = {
     let moviePic = ''
     return API.getMovie(info).then(response => {
       let movies = []
-      response.data.forEach((value, key) => {
-        if (value.pictures.is_main === 1) {
+      response.data.data.forEach((value, key) => {
+        if (value.movie.pictures.is_main === 1) {
           moviePic = value.pictures.path
         }
         movies.push({
-          movie_name: value.name,
-          movie_time: value.running_time,
+          movie_name: value.movie.name,
+          movie_time: value.movie.running_time,
           movie_pic: moviePic
         })
       })
-      return movies
+      return {data: movies, page: response.data.page}
     })
   }
 }

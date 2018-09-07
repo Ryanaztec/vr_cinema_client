@@ -77,11 +77,7 @@
     methods: {
       activeTag: function (index, item) {
         this.active = index
-        if (this.routeName === 'vr_cinema') {
-          this.$emit('search-with-tag', item)
-        } else {
-          console.log('Todo')
-        }
+        this.$parent.searchByTag(item)
       },
       logout: function () {
         this.$store.dispatch('FedLogOut')
@@ -92,11 +88,7 @@
         })
       },
       handleSearch: function (val) {
-        if (this.routeName === 'vr_cinema') {
-          this.$emit('search-movies', val)
-        } else {
-          console.log('Todo')
-        }
+        this.$parent.getMovies(val)
       }
     },
     computed: {
@@ -110,7 +102,6 @@
     mounted: function () {
       API.getAllTags().then((response) => {
         if (response.success) {
-          console.log(response)
           this.tags = response.data
         }
       })
