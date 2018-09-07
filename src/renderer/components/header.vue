@@ -37,7 +37,7 @@
 
               <div class="search_box">
                   <input id="search_input" type="input" placeholder="输入要搜索的影片"/>
-                  <span class="glyphicon glyphicon-search"></span>
+                  <!--<icon name="search" class="text-white" />-->
               </div>
           </b-nav>
           <b-nav class="video_detail_menubar" v-else>
