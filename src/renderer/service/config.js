@@ -1,5 +1,6 @@
 import axios from 'axios'
 import router from '.././router'
+import store from '.././store'
 
 export default function $axios (options) {
   return new Promise((resolve, reject) => {
@@ -20,7 +21,7 @@ export default function $axios (options) {
       config => {
         // Tip: 1
         // 请求开始的时候可以结合 vuex 开启全屏的 loading 动画
-        console.log(localStorage)
+        store.dispatch('StartLoading')
         if (localStorage.token) {
           config.headers.Authorization = 'bearer ' + localStorage.token
         }
@@ -30,6 +31,7 @@ export default function $axios (options) {
         // 请求错误时做些事(接口错误、超时等)
         // Tip: 4
         // 关闭loadding
+        store.dispatch('StopLoading')
         console.log('request:', error)
 
         //  1.判断请求超时
@@ -51,6 +53,7 @@ export default function $axios (options) {
     // response 拦截器
     instance.interceptors.response.use(
       response => {
+        store.dispatch('StopLoading')
         let data
         // IE9时response.data是undefined，因此需要使用response.request.responseText(Stringify后的字符串)
         if (response.data === 'undefined') {
@@ -74,6 +77,7 @@ export default function $axios (options) {
         return data
       },
       err => {
+        store.dispatch('StopLoading')
         if (err && err.response) {
           switch (err.response.status) {
             case 400:
