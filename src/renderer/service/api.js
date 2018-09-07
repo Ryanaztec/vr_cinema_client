@@ -37,7 +37,7 @@ export const getAllMovies = () => {
 }
 export const getMovie = params => {
   return axios({
-    url: 'movie-by-seat',
+    url: '/cinema_movie/movie-by-seat',
     method: 'post',
     params
   })
