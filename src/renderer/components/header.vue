@@ -14,7 +14,7 @@
                       <img class="navbar_bg" src="../assets/header/setting_btn.png"/>
                   </template>
                   <template v-if="!hasLogin">
-                    <b-dropdown-item v-b-modal.modalLogin class="user_login">用户登陆</b-dropdown-item>
+                    <b-dropdown-item v-b-modal.modalLogin class="user_login">管理员登录</b-dropdown-item>
                   </template>
                   <template v-else>
                     <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
@@ -31,12 +31,12 @@
         <div class="menubar_body">
 
           <b-nav class="menubar_list" v-if="this.$route.path != '/video_detail'">
-              <b-nav-item :class="{active:$index==active}" to="/cinema_resources" v-for="(item,$index) in tags" @click="activeTag($index)">
+              <b-nav-item :class="{active:$index==active}" v-for="(item,$index) in tags" @click="activeTag($index)">
                   {{item}}
               </b-nav-item>
 
               <div class="search_box">
-                  <input id="search_input" type="input" placeholder="输入要搜索的影片"/>
+                  <input id="search_input" type="input" v-model="keyword" placeholder="输入要搜索的影片" @keyup.enter="handleSearch(keyword)"/>
                   <span class="glyphicon glyphicon-search"></span>
               </div>
           </b-nav>
@@ -62,12 +62,8 @@
     },
     data () {
       return {
-        electron: process.versions['atom-shell'],
-        name: this.$route.name,
-        node: process.versions.node,
+        routeName: this.$route.name,
         path: this.$route.path,
-        platform: require('os').platform(),
-        vue: require('vue/package.json').version,
         tags: [
           '全部',
           '最新',
@@ -81,7 +77,8 @@
           '动画',
           '纪录片'
         ],
-        active: 0
+        active: 0,
+        keyword: ''
       }
     },
     props: ['video_name'],
@@ -92,6 +89,13 @@
       logout: function () {
         this.$store.dispatch('FedLogOut')
         this.$router.push({ path: '/' })
+      },
+      handleSearch: function (val) {
+        if (this.routeName === 'vr_cinema') {
+          this.$emit('search-movies', val)
+        } else {
+          console.log('Todo')
+        }
       }
     },
     computed: {

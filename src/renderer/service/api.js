@@ -24,8 +24,17 @@ export const getInfo = params => {
   })
 }
 
+export const getMovie = params => {
+  return axios({
+    url: 'movie-by-seat',
+    method: 'post',
+    params
+  })
+}
+
 export default {
   example,
   login,
-  getInfo
+  getInfo,
+  getMovie
 }
