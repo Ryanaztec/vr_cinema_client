@@ -20,9 +20,9 @@
                               </div>
                           </div>
                       </div>
-                      <div class="pagination_body">
-                          <b-pagination-nav size="sm" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="10" hide-goto-end-buttons hide-ellipsis/>
-                          <span><span>共10页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to"/>页 <a href="#" class="jump_btn">跳转</a></span>
+                      <div class="pagination_body" v-show="showPagination">
+                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
+                          <span><span>共{{pageNum}}页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to" v-model="directPage" />页 <a href="#" class="jump_btn" @click="jumpToPage(directPage)">跳转</a></span>
                       </div>
                   </div>
               </div>
@@ -40,7 +40,12 @@
       return {
         appendclass: '',
         active: 0,
-        all_movies: []
+        all_movies: [],
+        showPagination: false,
+        currentPage: 1,
+        pageNum: 1,
+        tag: '',
+        directPage: 1
       }
     },
     methods: {
@@ -60,26 +65,27 @@
       },
       getMovies (keyword, tag, page) {
         this.$refs.header.active = tag ? this.$refs.header.active : 0
-
         API.getMoviesByTag({
           key_word: keyword,
           tag: tag,
           page: page
         }).then((response) => {
           if (response.success) {
-            this.all_movies = response.data
-            this.pageNum = response.page
-            console.log(response)
+            this.all_movies = response.data.data
+            this.pageNum = response.data.page
+            this.showPagination = this.pageNum >= 1
           }
         })
+      },
+      jumpToPage (page) {
+        this.currentPage = parseInt(page)
+        const keyword = this.$refs.header.keyword
+        const tag = this.tag
+        this.getMovies(keyword, tag, page)
       }
     },
     mounted: function () {
-      API.getAllMovies().then((response) => {
-        if (response.success) {
-          this.all_movies = response.data
-        }
-      })
+      this.getMovies()
     }
   }
 </script>

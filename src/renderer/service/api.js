@@ -29,12 +29,6 @@ export const getAllTags = () => {
     method: 'get'
   })
 }
-export const getAllMovies = () => {
-  return axios({
-    url: '/movie/all-movies',
-    method: 'get'
-  })
-}
 export const getMovie = params => {
   return axios({
     url: '/cinema_movie/movie-by-seat',
@@ -55,7 +49,6 @@ export default {
   login,
   getInfo,
   getAllTags,
-  getAllMovies,
   getMovie,
   getMoviesByTag
 }
