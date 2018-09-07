@@ -35,10 +35,19 @@ export const getAllMovies = () => {
     method: 'get'
   })
 }
+export const getMovie = params => {
+  return axios({
+    url: 'movie-by-seat',
+    method: 'post',
+    params
+  })
+}
+
 export default {
   example,
   login,
   getInfo,
   getAllTags,
-  getAllMovies
+  getAllMovies,
+  getMovie
 }

@@ -1,19 +1,19 @@
 <template>
   <div>
-    <header-info></header-info>
+    <header-info @search-movies="getMovies" ref="header"></header-info>
 
       <div class="row container_body">
           <div class="col-md-12">
               <div class="row ">
                   <div class="col-md-9">
                       <div class="row video_list">
-                          <div class="col-md-4 video_box" v-for="(item,$index) in arr" @click="activeVideo($index)">
+                          <div class="col-md-4 video_box" v-for="(item,$index) in movies" @click="activeVideo($index)">
                               <div class="video" :class="{active:$index==active}">
                                   <div class="acttive_bg">
                                       <img class="video_picture" src="../assets/xiongchumo.png"/>
                                       <div class="video_info">
-                                          <span class="video_name">熊出没</span>
-                                          <span class="video_time">12:00</span>
+                                          <span class="video_name">{{item.movie_name}}</span>
+                                          <span class="video_time">{{item.movie_time}}分钟</span>
                                       </div>
                                   </div>
                               </div>
@@ -21,7 +21,7 @@
 
                       </div>
                       <div class="pagination_body">
-                          <b-pagination-nav size="sm" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="10" hide-goto-end-buttons hide-ellipsis/>
+                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="10" hide-goto-end-buttons hide-ellipsis/>
                           <span><span>共10页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to"/>页 <a href="#" class="jump_btn">跳转</a></span>
                       </div>
                   </div>
@@ -79,21 +79,14 @@
 <script type="text/ecmascript-6">
   import HeaderInfo from './header'
   import Sender from '../udp/sender'
+  // import API from '../service/api'
   export default {
     components: { HeaderInfo },
-
     data () {
       return {
         appendclass: '',
         active: 0,
-        arr: [
-          '熊出没',
-          '熊出没',
-          '熊出没',
-          '熊出没',
-          '熊出没',
-          '熊出没'
-        ],
+        movies: [],
         show_seat: true,
         max: 50,
         value: 33.333333333,
@@ -102,7 +95,8 @@
         ],
         animate: true,
         active_seat: false,
-        is_play: true
+        is_play: true,
+        currentPage: 1
       }
     },
 
@@ -111,7 +105,7 @@
         this.$electron.shell.openExternal(link)
       },
       linkGen (pageNum) {
-
+        // console.log(this.currentPage)
       },
       activeVideo: function (index) {
         this.active = index
@@ -141,6 +135,28 @@
       activeSeat: function () {
         this.active_seat = !this.active_seat
         this.is_play = false
+      },
+      getMovies (keyword, page) {
+        const cinemaId = this.$store.state.currentUser.cinemaId
+        this.$store.dispatch('GetMovies', {
+          cinema_id: cinemaId,
+          mac_address: 'mac_address',
+          key_word: keyword,
+          page: page
+        }).then(response => {
+          this.movies = response
+        })
+      }
+    },
+    mounted () {
+      if (this.$store.state.currentUser.isLogin) {
+        this.getMovies()
+      }
+    },
+    watch: {
+      currentPage: function (val) {
+        const keyword = this.$refs.header.keyword
+        this.getMovies(keyword, val)
       }
     }
   }
