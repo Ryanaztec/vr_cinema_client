@@ -31,7 +31,7 @@
         <div class="menubar_body">
 
           <b-nav class="menubar_list" v-if="this.$route.path != '/video_detail'">
-              <b-nav-item :class="{active:$index==active}" v-for="(item,$index) in tags" @click="activeTag($index)">
+              <b-nav-item :class="{active:$index==active}" v-for="(item, $index) in tags" @click="activeTag($index, item)">
                   {{item}}
               </b-nav-item>
 
@@ -83,8 +83,13 @@
     },
     props: ['video_name'],
     methods: {
-      activeTag: function (index) {
+      activeTag: function (index, item) {
         this.active = index
+        if (this.routeName === 'vr_cinema') {
+          this.$emit('search-with-tag', item)
+        } else {
+          console.log('Todo')
+        }
       },
       logout: function () {
         this.$store.dispatch('FedLogOut')
