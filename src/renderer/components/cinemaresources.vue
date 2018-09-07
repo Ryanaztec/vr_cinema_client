@@ -7,29 +7,18 @@
               <div class="row ">
                   <div class="col-md-12">
                       <div class="row video_list">
-                          <div class="col-md-3 video_box">
-                              <div class="video ">
-                                  <div class="acttive_bg">
-                                      <img class="video_picture" src="../assets/guichuideng.png"/>
-                                      <div class="video_info">
-                                          <span class="video_name">熊出没</span>
-                                          <span class="video_status not_download">下载影片</span>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
                           <div class="col-md-3 video_box" v-for="(item,$index) in all_movies" @click="activeVideo($index)">
                               <div class="video" :class="{active:$index==active}">
                                   <div class="acttive_bg">
                                       <router-link class="video_picture_box" to="/video_detail"><img class="video_picture" src="../assets/jueji.png"/></router-link>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
-                                          <span class="video_status downloaded">已下载</span>
+                                          <!--<span class="video_status downloaded">已下载</span>-->
+                                          <span class="video_status not_download">下载影片</span>
                                       </div>
                                   </div>
                               </div>
                           </div>
-
                       </div>
                       <div class="pagination_body">
                           <b-pagination-nav size="sm" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="10" hide-goto-end-buttons hide-ellipsis/>

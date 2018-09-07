@@ -102,6 +102,7 @@ body {
     border-style: solid;
     border-radius: 5px;
     box-shadow: none;
+    display: inline-table;
 }
 .pagination_body .jump_btn {
     padding: 0.2rem 1rem;
