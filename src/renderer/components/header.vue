@@ -37,7 +37,7 @@
 
               <div class="search_box">
                   <input id="search_input" type="input" placeholder="输入要搜索的影片"/>
-                  <!--<icon name="search" class="text-white" />-->
+                  <icon name="search" class="text-white search_icon" />
               </div>
           </b-nav>
           <b-nav class="video_detail_menubar" v-else>
@@ -296,6 +296,13 @@
     }
     .search_box #search_input:focus {
         outline: none;
+    }
+    .search_box .search_icon {
+        position: absolute;
+        right: -20px;
+        margin-top: -30px;
+        color: rgb(25, 234, 234) !important;
+        cursor: pointer;
     }
     .return_resource {
         padding: 20px 0;
