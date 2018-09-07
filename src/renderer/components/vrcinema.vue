@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header-info @search-movies="getMovies" ref="header"></header-info>
+    <header-info ref="header"></header-info>
 
       <div class="row container_body">
           <div class="col-md-12">
@@ -20,9 +20,9 @@
                           </div>
 
                       </div>
-                      <div class="pagination_body">
-                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="10" hide-goto-end-buttons hide-ellipsis/>
-                          <span><span>共10页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to"/>页 <a href="#" class="jump_btn">跳转</a></span>
+                      <div class="pagination_body" v-show="showPagination">
+                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis/>
+                          <span><span>共{{pageNum}}页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to" v-model="directPage" />页 <a href="#" class="jump_btn" @click="jumpToPage">跳转</a></span>
                       </div>
                   </div>
                   <div class="col-md-3 seat">
@@ -96,7 +96,11 @@
         animate: true,
         active_seat: false,
         is_play: true,
-        currentPage: 1
+        currentPage: 1,
+        tag: '',
+        showPagination: false,
+        pageNum: 1,
+        directPage: 1
       }
     },
 
@@ -136,16 +140,31 @@
         this.active_seat = !this.active_seat
         this.is_play = false
       },
-      getMovies (keyword, page) {
+      searchByTag: function (val) {
+        this.tag = val.name
+        this.$refs.header.keyword = ''
+        this.getMovies('', val.name)
+      },
+      getMovies (keyword, tag, page) {
         const cinemaId = this.$store.state.currentUser.cinemaId
+        this.$refs.header.active = tag ? this.$refs.header.active : 0
         this.$store.dispatch('GetMovies', {
           cinema_id: cinemaId,
           mac_address: 'mac_address',
           key_word: keyword,
+          tag: tag,
           page: page
         }).then(response => {
-          this.movies = response
+          this.movies = response.data
+          this.pageNum = response.page
+          console.log(response)
+          this.showPagination = this.pageNum >= 1
         })
+      },
+      jumpToPage () {
+        const keyword = this.$refs.header.keyword
+        const tag = this.tag
+        this.getMovies(keyword, tag, this.directPage)
       }
     },
     mounted () {
@@ -154,9 +173,8 @@
       }
     },
     watch: {
-      currentPage: function (val) {
-        const keyword = this.$refs.header.keyword
-        this.getMovies(keyword, val)
+      '$store.state.currentUser.cinemaId': function () {
+        this.getMovies()
       }
     }
   }
