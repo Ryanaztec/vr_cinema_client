@@ -37,7 +37,7 @@
 
               <div class="search_box">
                   <input id="search_input" type="input" v-model="keyword" placeholder="输入要搜索的影片" @keyup.enter="handleSearch(keyword)"/>
-                  <icon name="search" class="text-white search_icon" />
+                  <span @click="handleSearch(keyword)"><icon name="search" class="text-white search_icon"/></span>
               </div>
           </b-nav>
           <b-nav class="video_detail_menubar" v-else>
@@ -88,7 +88,11 @@
         })
       },
       handleSearch: function (val) {
-        this.$parent.getMovies(val)
+        if (val) {
+          this.$parent.getMovies(val)
+        } else {
+          this.$parent.searchByTag({'name': '全部'})
+        }
       }
     },
     computed: {

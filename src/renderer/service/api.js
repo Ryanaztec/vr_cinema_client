@@ -42,6 +42,13 @@ export const getMovie = params => {
     params
   })
 }
+export const getMoviesByTag = params => {
+  return axios({
+    url: '/movie/get-movies-by-tag',
+    method: 'post',
+    params
+  })
+}
 
 export default {
   example,
@@ -49,5 +56,6 @@ export default {
   getInfo,
   getAllTags,
   getAllMovies,
-  getMovie
+  getMovie,
+  getMoviesByTag
 }

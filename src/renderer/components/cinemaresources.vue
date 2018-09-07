@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header-info></header-info>
+    <header-info ref="header"></header-info>
 
       <div class="row container_body cinema_resource_body">
           <div class="col-md-12">
@@ -52,6 +52,26 @@
       },
       activeVideo: function (index) {
         this.active = index
+      },
+      searchByTag: function (val) {
+        this.tag = val.name
+        this.$refs.header.keyword = ''
+        this.getMovies('', val.name)
+      },
+      getMovies (keyword, tag, page) {
+        this.$refs.header.active = tag ? this.$refs.header.active : 0
+
+        API.getMoviesByTag({
+          key_word: keyword,
+          tag: tag,
+          page: page
+        }).then((response) => {
+          if (response.success) {
+            this.all_movies = response.data
+            this.pageNum = response.page
+            console.log(response)
+          }
+        })
       }
     },
     mounted: function () {
