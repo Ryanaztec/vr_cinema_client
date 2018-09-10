@@ -66,9 +66,22 @@ const actions = {
         if (value.movie.pictures[0]) {
           moviePic = value.movie.pictures.length > 0 ? value.movie.pictures[0].path : ''
         }
+        let buffer = []
+        let handler = function (value) {
+          return value.length === 1 ? ('0' + value) : value
+        }
+        if (parseInt(value.movie.running_time_hour)) {
+          buffer.push(value.movie.running_time_hour)
+        }
+        if (parseInt(value.movie.running_time_minute)) {
+          buffer.push(handler(value.movie.running_time_minute))
+        }
+        if (parseInt(value.movie.running_time_second)) {
+          buffer.push(handler(value.movie.running_time_second))
+        }
         movies.push({
           movie_name: value.movie.name,
-          movie_time: value.movie.running_time,
+          movie_time: buffer.join(':'),
           movie_pic: moviePic
         })
       })

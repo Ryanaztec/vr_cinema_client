@@ -13,7 +13,7 @@
                                       <img class="video_picture" :src="baseUrl + item.movie_pic"/>
                                       <div class="video_info">
                                           <span class="video_name">{{item.movie_name}}</span>
-                                          <span class="video_time">{{item.movie_time}}分钟</span>
+                                          <span class="video_time">{{item.movie_time}}</span>
                                       </div>
                                   </div>
                               </div>
