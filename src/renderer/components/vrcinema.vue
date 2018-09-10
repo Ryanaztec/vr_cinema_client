@@ -277,8 +277,8 @@
   }
 
   .video_list .video_picture {
-    width: 420px;
-    height: 200px;
+    max-width: 420px;
+    max-height: 200px;
   }
 
   .cover {
