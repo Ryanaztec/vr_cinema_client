@@ -13,7 +13,7 @@
                                       <router-link class="video_picture_box" to="/video_detail"><img class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"/></router-link>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
-                                          <span class="video_status downloaded" v-if="item.downloaded">已下载</span>
+                                          <span class="video_status downloaded" v-if="true">已下载</span>
                                           <span class="video_status not_download" v-else>下载影片</span>
                                       </div>
                                   </div>
