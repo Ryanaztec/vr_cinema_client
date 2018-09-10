@@ -10,7 +10,7 @@
                           <div class="col-md-3 video_box" v-for="(item,$index) in all_movies" @click="activeVideo($index)">
                               <div class="video" :class="{active:$index==active}">
                                   <div class="acttive_bg">
-                                      <router-link class="video_picture_box" to="/video_detail"><img class="video_picture" :src="baseUrl + item.pictures[0].path"/></router-link>
+                                      <router-link class="video_picture_box" to="/video_detail"><img class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"/></router-link>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
                                           <span class="video_status downloaded" v-if="item.downloaded">已下载</span>
