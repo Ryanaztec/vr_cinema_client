@@ -13,8 +13,8 @@
                                       <router-link class="video_picture_box" to="/video_detail"><img class="video_picture" :src="baseUrl + item.pictures[0].path"/></router-link>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
-                                          <!--<span class="video_status downloaded">已下载</span>-->
-                                          <span class="video_status not_download">下载影片</span>
+                                          <span class="video_status downloaded" v-if="item.downloaded">已下载</span>
+                                          <span class="video_status not_download" v-else>下载影片</span>
                                       </div>
                                   </div>
                               </div>
@@ -64,8 +64,10 @@
         this.getMovies('', val.name)
       },
       getMovies (keyword, tag, page) {
+        const cinemaId = this.$store.state.currentUser.cinemaId
         this.$refs.header.active = tag ? this.$refs.header.active : 0
         API.getMoviesByTag({
+          cinema_id: cinemaId,
           key_word: keyword,
           tag: tag,
           page: page
