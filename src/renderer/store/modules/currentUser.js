@@ -54,14 +54,18 @@ const actions = {
     localStorage.removeItem('token')
     store.commit('SET_TOKEN', '')
     store.commit('SET_USERNAME', '')
+    store.commit('SET_IS_LOGIN', false)
   },
   GetMovies (store, info) {
+    if (!store.state.isLogin) {
+      return false
+    }
     let moviePic = ''
     return API.getMovie(info).then(response => {
       let movies = []
       response.data.data.forEach((value, key) => {
-        if (value.movie.pictures.is_main === 1) {
-          moviePic = value.pictures.path
+        if (value.movie.pictures[0]) {
+          moviePic = value.movie.pictures.length > 0 ? value.movie.pictures[0].path : ''
         }
         movies.push({
           movie_name: value.movie.name,
