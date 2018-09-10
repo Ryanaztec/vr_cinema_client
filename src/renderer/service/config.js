@@ -1,5 +1,4 @@
 import axios from 'axios'
-import router from '.././router'
 import store from '.././store'
 
 export default function $axios (options) {
@@ -127,8 +126,6 @@ export default function $axios (options) {
             default:
           }
         }
-        router.push({ path: '/' })
-        alert(err)
         // 可在此处添加消息提示
         return Promise.reject(err)
       }

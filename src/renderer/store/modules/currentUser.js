@@ -31,12 +31,11 @@ const getters = {
 const actions = {
   Login (store, userInfo) {
     const username = userInfo.username.trim()
-    return API.login({username: username, password: userInfo.password}).then(response => {
+    return API.login({username: username, password: userInfo.password, isClient: true}).then(response => {
       localStorage.token = response.token
       store.commit('SET_TOKEN', response.token)
       store.dispatch('GetInfo')
     }).catch(error => {
-      console.log(error)
       throw error
     })
   },

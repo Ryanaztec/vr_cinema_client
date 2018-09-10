@@ -40,6 +40,7 @@
 </template>
 
 <script>
+const {dialog} = require('electron').remote
 export default {
   data () {
     return {
@@ -55,7 +56,6 @@ export default {
     },
     handleOk (evt) {
       if (!this.username || !this.password) {
-        alert('请输入用户名或密码')
         // Prevent modal from closing
         evt.preventDefault()
       } else {
@@ -72,8 +72,12 @@ export default {
         this.$router.push({
           path: '/vr_cinema'
         })
-      }).catch(() => {
-        alert('用户名或密码错误！')
+      }).catch((error) => {
+        dialog.showMessageBox({
+          title: '错误',
+          message: error.response.data.error.message,
+          type: 'warning'
+        })
       })
     }
   }
