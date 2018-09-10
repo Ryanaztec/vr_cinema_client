@@ -10,7 +10,7 @@
                           <div class="col-md-3 video_box" v-for="(item,$index) in all_movies" @click="activeVideo($index)">
                               <div class="video" :class="{active:$index==active}">
                                   <div class="acttive_bg">
-                                      <router-link class="video_picture_box" to="/video_detail"><img class="video_picture" src="../assets/jueji.png"/></router-link>
+                                      <router-link class="video_picture_box" to="/video_detail"><img class="video_picture" :src="baseUrl + item.pictures[0].path"/></router-link>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
                                           <!--<span class="video_status downloaded">已下载</span>-->
@@ -86,13 +86,23 @@
     },
     mounted: function () {
       this.getMovies()
+    },
+    computed: {
+      baseUrl: function () {
+        return process.env.NODE_ENV === 'production' ? 'http://vrcinema.osvlabs.com/storage/' : 'http://dev.vrcinema.com/storage/'
+      }
     }
   }
 </script>
 
 <style scoped>
+  .container_body .video_list .video_box {
+      margin: 20px 0;
+  }
 
-    .container_body .video_list .video_box {
-        margin: 20px 0;
-    }
+  .video_list .video_picture {
+    width: 420px;
+    height: 200px;
+  }
+
 </style>

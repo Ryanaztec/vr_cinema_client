@@ -7,10 +7,10 @@
               <div class="row ">
                   <div class="col-md-9">
                       <div class="row video_list">
-                          <div class="col-md-4 video_box" v-for="(item,$index) in movies" @click="activeVideo($index)">
+                          <div class="col-md-4 video_box" v-for="(item,$index) in movies" @click="activeVideo(item, $index)">
                               <div class="video" :class="{active:$index==active}">
                                   <div class="acttive_bg">
-                                      <img class="video_picture" src="../assets/xiongchumo.png"/>
+                                      <img class="video_picture" :src="baseUrl + item.movie_pic"/>
                                       <div class="video_info">
                                           <span class="video_name">{{item.movie_name}}</span>
                                           <span class="video_time">{{item.movie_time}}分钟</span>
@@ -67,7 +67,7 @@
 
                       <div class="play_stop">
                           <div><b-button class="play" @click="start()" :disabled="is_play">播放</b-button></div>
-                          <div><b-button class="stop" @click="stop()">停止</b-button></div>
+                          <div><b-button class="stop" @click="stop()" :disabled="!is_play">停止</b-button></div>
                       </div>
                   </div>
               </div>
@@ -95,12 +95,13 @@
         ],
         animate: true,
         active_seat: false,
-        is_play: true,
+        is_play: false,
         currentPage: 1,
         tag: '',
         showPagination: false,
         pageNum: 1,
-        directPage: 1
+        directPage: 1,
+        selectedMovie: ''
       }
     },
 
@@ -111,7 +112,8 @@
       linkGen (pageNum) {
         // console.log(this.currentPage)
       },
-      activeVideo: function (index) {
+      activeVideo: function (item, index) {
+        this.selectedMovie = item
         this.active = index
       },
       broadcast_pace: function () {
@@ -121,18 +123,20 @@
         this.show_seat = true
       },
       start: function () {
-        Sender.sendMessage('start Movie')
+        const movieName = this.selectedMovie.movie_name
+        Sender.sendMessage('start ' + movieName)
         this.$notify({
           group: 'foo',
-          text: '开始播放《复仇者联盟》'
+          text: '开始播放 《' + movieName + '》'
         })
         this.is_play = true
       },
       stop: function () {
+        const movieName = this.selectedMovie.movie_name
         Sender.stopMovie()
         this.$notify({
           group: 'foo',
-          text: '停止播放《复仇者联盟》'
+          text: '停止播放 《' + movieName + '》'
         })
         this.is_play = false
       },
@@ -175,6 +179,11 @@
     watch: {
       '$store.state.currentUser.cinemaId': function () {
         this.getMovies()
+      }
+    },
+    computed: {
+      baseUrl: function () {
+        return process.env.NODE_ENV === 'production' ? 'http://vrcinema.osvlabs.com/storage/' : 'http://dev.vrcinema.com/storage/'
       }
     }
   }
@@ -259,6 +268,11 @@
   }
   .broadcast_list .seat_num {
       font-size: 22px;
+  }
+
+  .video_list .video_picture {
+    width: 420px;
+    height: 200px;
   }
 
 
