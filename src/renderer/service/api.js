@@ -43,6 +43,13 @@ export const getMoviesByTag = params => {
     params
   })
 }
+export const getSeatByMac = params => {
+  return axios({
+    url: '/cinema_movie/get-seat-by-mac',
+    method: 'post',
+    params
+  })
+}
 
 export default {
   example,
@@ -50,5 +57,6 @@ export default {
   getInfo,
   getAllTags,
   getMovie,
-  getMoviesByTag
+  getMoviesByTag,
+  getSeatByMac
 }

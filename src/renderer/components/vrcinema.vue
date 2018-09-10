@@ -31,6 +31,10 @@
                               <div class="choose_seat_text">选择座椅</div>
                               <div class="row seat_list">
                                   <!--<div class="col-md-4" v-for="(item,$index) in seats">-->
+                                  <div class="col-md-4" v-if="(item,$index) in seats">
+                                      <div class="col-md-4" v-for="(item,$index) in seats">
+                                      </div>
+                                  </div>
                                   <div class="col-md-3" >
 
                                   </div>
@@ -79,7 +83,7 @@
 <script type="text/ecmascript-6">
   import HeaderInfo from './header'
   import Sender from '../udp/sender'
-  // import API from '../service/api'
+  import API from '../service/api'
   export default {
     components: { HeaderInfo },
     data () {
@@ -146,11 +150,14 @@
         this.getMovies('', val.name)
       },
       getMovies (keyword, tag, page) {
+        const mac = require('os').networkInterfaces()
+        console.log(mac)
+
         const cinemaId = this.$store.state.currentUser.cinemaId
         this.$refs.header.active = tag ? this.$refs.header.active : 0
         this.$store.dispatch('GetMovies', {
           cinema_id: cinemaId,
-          mac_address: 'mac_address',
+          mac_address: '58-FB-84-07-1B-0A',
           key_word: keyword,
           tag: tag,
           page: page
@@ -170,6 +177,15 @@
     mounted () {
       if (this.$store.state.currentUser.isLogin) {
         this.getMovies()
+        const cinemaId = this.$store.state.currentUser.cinemaId
+        API.getSeatByMac({
+          cinema_id: cinemaId,
+          mac_address: '58-FB-84-07-1B-0A'
+        }).then((response) => {
+          if (response.success) {
+            this.seats = response.data
+          }
+        })
       }
     },
     watch: {
