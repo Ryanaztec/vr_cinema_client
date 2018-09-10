@@ -28,24 +28,34 @@
                   <div class="col-md-3 seat">
                       <div class="seat_body text-center">
                           <div v-if="show_seat">
-                              <div class="choose_seat_text">选择座椅</div>
-                              <div class="row seat_list">
+                              <div class="choose_seat_text">选择座椅{{seats.length}}</div>
+                              <div class="seat_list">
                                   <!--<div class="col-md-4" v-for="(item,$index) in seats">-->
-                                  <div class="col-md-4" v-if="(item,$index) in seats">
-                                      <div class="col-md-4" v-for="(item,$index) in seats">
+                                  <div v-if="seats.length > 1">
+                                      <div class="row" v-if=" seats.length > 1 && 5 > seats.length">
+                                          <div class="col-md-6" @click="activeSeat" v-for="(item,$index) in seats">
+                                              <img class="seat_img" src="../assets/seat.png" v-show="!active_seat"/>
+                                              <span class="seat_number">{{item.seat_number}}</span>
+                                              <img class="seat_img" src="../assets/active_seat.png" v-show="active_seat"/>
+                                          </div>
+                                      </div>
+                                      <div class="row more_seat" v-else>
+                                          <div class="col-md-3" @click="activeSeat" v-for="(item,$index) in seats">
+                                              <img class="seat_img" src="../assets/seat.png" v-show="!active_seat"/>
+                                              <span class="seat_number">{{item.seat_number}}</span>
+                                              <img class="seat_img" src="../assets/active_seat.png" v-show="active_seat"/>
+                                          </div>
                                       </div>
                                   </div>
-                                  <div class="col-md-3" >
+                                  <div class="row" v-else>
+                                      <div class="col-md-3" >
+                                      </div>
+                                      <div class="col-md-6" @click="activeSeat">
 
+                                      </div>
+                                      <div class="col-md-3" >
+                                      </div>
                                   </div>
-                                  <div class="col-md-6" @click="activeSeat">
-                                      <img class="seat_img" src="../assets/seat.png" v-show="!active_seat"/>
-                                      <img class="seat_img" src="../assets/active_seat.png" v-show="active_seat"/>
-                                  </div>
-                                  <div class="col-md-3" >
-
-                                  </div>
-
                               </div>
                               <div class="broadcast_pace_bg" @click="broadcast_pace()"><a href="#">《 播放进度 》</a></div>
                           </div>
@@ -95,9 +105,7 @@
         show_seat: true,
         max: 50,
         value: 33.333333333,
-        seats: [
-          {seat_num: '1', value: 75}
-        ],
+        seats: [],
         animate: true,
         active_seat: false,
         is_play: false,
@@ -165,7 +173,7 @@
         this.$refs.header.active = tag ? this.$refs.header.active : 0
         this.$store.dispatch('GetMovies', {
           cinema_id: cinemaId,
-          mac_address: '58-FB-84-07-1B-0A',
+          mac_address: '58-FB-84-07-1B-0B',
           key_word: keyword,
           tag: tag,
           page: page
@@ -194,6 +202,7 @@
         }).then((response) => {
           if (response.success) {
             this.seats = response.data
+            console.log(response.data)
           }
         })
       }
@@ -235,6 +244,20 @@
         margin-bottom: 20px;
         margin-top: 15px;
     }
+  .seat .seat_number {
+      position: absolute;
+      font-size: 2rem;
+      bottom: 22%;
+      right: 42%;
+  }
+  .seat .more_seat .col-md-3 {
+      padding-right: 5px;
+      padding-left: 5px;
+  }
+  .seat .more_seat .col-md-3 .seat_number {
+      font-size: 1rem;
+      bottom: 26%;
+  }
   .seat .broadcast_pace_bg {
       padding: 3%;
       background-image: -moz-linear-gradient( 0deg, rgba(153,153,153,0.05098) 0%, rgba(153,153,153,0.4) 49%, rgba(153,153,153,0.05098) 100%);
