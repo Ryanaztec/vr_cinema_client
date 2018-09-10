@@ -62,7 +62,7 @@ const actions = {
       let movies = []
       response.data.data.forEach((value, key) => {
         if (value.movie.pictures[0]) {
-          moviePic = value.movie.pictures[0].path
+          moviePic = value.movie.pictures.length > 0 ? value.movie.pictures[0].path : ''
         }
         movies.push({
           movie_name: value.movie.name,
