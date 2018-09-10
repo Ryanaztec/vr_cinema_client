@@ -73,6 +73,7 @@
               </div>
           </div>
       </div>
+      <div :class="coverClass"></div>
   </div>
 </template>
 
@@ -101,7 +102,8 @@
         showPagination: false,
         pageNum: 1,
         directPage: 1,
-        selectedMovie: ''
+        selectedMovie: '',
+        coverClass: ''
       }
     },
 
@@ -124,6 +126,7 @@
       },
       start: function () {
         const movieName = this.selectedMovie.movie_name
+        this.coverClass = 'cover' // 添加遮罩层
         Sender.sendMessage('start ' + movieName)
         this.$notify({
           group: 'foo',
@@ -133,6 +136,7 @@
       },
       stop: function () {
         const movieName = this.selectedMovie.movie_name
+        this.coverClass = '' // 除去遮罩层
         Sender.stopMovie()
         this.$notify({
           group: 'foo',
@@ -162,6 +166,8 @@
           this.movies = response.data
           this.pageNum = response.page
           this.showPagination = this.pageNum >= 1
+          // 给当前播放按钮一个默认的电影
+          this.selectedMovie = this.movies[0]
         })
       },
       jumpToPage (page) {
@@ -273,6 +279,16 @@
   .video_list .video_picture {
     width: 420px;
     height: 200px;
+  }
+
+  .cover {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    opacity: .5;
+    width: 75%;
+    height: 85%;
+    z-index: 999;
   }
 
 
