@@ -7,10 +7,10 @@
               <div class="row ">
                   <div class="col-md-12">
                       <div class="row video_list">
-                          <div class="col-md-3 video_box" v-for="(item,$index) in all_movies" @click="activeVideo($index)">
-                              <div class="video" :class="{active:$index==active}">
+                          <div class="col-md-3 video_box" v-for="(item,$index) in all_movies" @click="videoDetail(item)">
+                              <div class="video">
                                   <div class="acttive_bg">
-                                      <router-link class="video_picture_box" to="/video_detail"><img class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"/></router-link>
+                                      <img class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"/>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
                                           <span class="video_status downloaded" v-if="true">已下载</span>
@@ -21,7 +21,7 @@
                           </div>
                       </div>
                       <div class="pagination_body" v-show="showPagination">
-                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
+                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
                           <span><span>共{{pageNum}}页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to" v-model="directPage" />页 <a href="#" class="jump_btn" @click="jumpToPage(directPage)">跳转</a></span>
                       </div>
                   </div>
@@ -39,7 +39,6 @@
     data () {
       return {
         appendclass: '',
-        active: 0,
         all_movies: [],
         showPagination: false,
         currentPage: 1,
@@ -52,11 +51,9 @@
       open (link) {
         this.$electron.shell.openExternal(link)
       },
-      linkGen (pageNum) {
-
-      },
-      activeVideo: function (index) {
-        this.active = index
+      videoDetail (item) {
+        console.log(item)
+        this.$router.push({ name: 'video_detail' })
       },
       searchByTag: function (val) {
         this.tag = val.name
