@@ -54,9 +54,12 @@ const actions = {
     localStorage.removeItem('token')
     store.commit('SET_TOKEN', '')
     store.commit('SET_USERNAME', '')
-      store.commit('SET_IS_LOGIN', false)
+    store.commit('SET_IS_LOGIN', false)
   },
   GetMovies (store, info) {
+    if (!store.state.isLogin) {
+      return false
+    }
     let moviePic = ''
     return API.getMovie(info).then(response => {
       let movies = []
