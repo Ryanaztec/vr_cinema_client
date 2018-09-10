@@ -85,27 +85,6 @@
     },
     mounted: function () {
       this.getMovies()
-      const {dialog} = require('electron').remote
-      if (navigator.onLine) {
-        // Execute action if internet available.
-        dialog.showMessageBox({
-          title: '标题',
-          message: '网络连接正常',
-          type: 'warning',
-          buttons: ['进入系统'],
-          defaultId: 0
-        })
-      } else {
-        // Show warning to user
-        // And "retry" to connect
-        dialog.showMessageBox({
-          title: '标题',
-          message: '没有网络连接',
-          type: 'warning',
-          buttons: ['重新连接'],
-          defaultId: 0
-        })
-      }
     },
     computed: {
       baseUrl: function () {

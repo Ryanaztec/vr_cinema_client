@@ -10,7 +10,8 @@ server.on('message', function (msg, rinfo) {
   //   server.unref()
   // }, 10000)
 })
-server.bind(8412, '127.0.0.1', function () {
-  let address = server.address()
-  console.log('服务器开始监听。地址:&j', address)
+server.on('listening', function () {
+  var address = server.address()
+  console.log('server listening ' + address.address + ':' + address.port)
 })
+server.bind(8412)
