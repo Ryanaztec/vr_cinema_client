@@ -31,15 +31,17 @@
                               <div class="choose_seat_text">选择座椅</div>
                               <div class="row seat_list">
                                   <!--<div class="col-md-4" v-for="(item,$index) in seats">-->
-                                  <div class="col-md-3" >
-
+                                  <div class="col-md-6" @click="activeSeat" style="cursor: pointer">
+                                      <img class="seat_img" src="../assets/active_seat.png"/>
                                   </div>
-                                  <div class="col-md-6" @click="activeSeat">
-                                      <img class="seat_img" src="../assets/seat.png" v-show="!active_seat"/>
-                                      <img class="seat_img" src="../assets/active_seat.png" v-show="active_seat"/>
+                                  <div class="col-md-6" >
+                                      <img class="seat_img" src="../assets/seat02.png">
                                   </div>
-                                  <div class="col-md-3" >
-
+                                  <div class="col-md-6" >
+                                      <img class="seat_img" src="../assets/seat03.png">
+                                  </div>
+                                  <div class="col-md-6" >
+                                      <img class="seat_img" src="../assets/seat04.png">
                                   </div>
 
                               </div>
