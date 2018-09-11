@@ -52,8 +52,7 @@
         this.$electron.shell.openExternal(link)
       },
       videoDetail (item) {
-        console.log(item)
-        this.$router.push({ name: 'video_detail' })
+        this.$router.push({ name: 'video_detail', params: { data: item } })
       },
       searchByTag: function (val) {
         this.tag = val.name

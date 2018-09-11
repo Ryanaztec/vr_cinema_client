@@ -9,14 +9,8 @@
                       <div class="row ">
                           <div id="topBanner" class="slide" >
                               <div v-for="(imgUrl, index) in video_picture_list" v-show="index===mark" :key="index" class="slideshow">
-                                  <a href="#" v-if="index == 1">
-                                      <img src="../assets/video.png" style="width:100%;">
-                                  </a>
-                                  <a href="#" v-else-if="index == 0">
-                                      <img src="../assets/video01.png" style="width:100%;">
-                                  </a>
-                                  <a href="#" v-else>
-                                      <img src="../assets/video01.png" style="width:100%;">
+                                  <a href="#">
+                                      <img :src="imgUrl" style="width: 100%;">
                                   </a>
                               </div>
                               <div class="switch">
@@ -51,35 +45,17 @@
     components: { HeaderInfo },
     data () {
       return {
-        video_data:
-          {
-            video_name: '拾梦老人',
-            video_description: '该动画以VR的方式讲述了一个老人带着一个小狗每天都在拾起别人丢弃的梦想，并且通过特殊能力来修复梦想的故事。',
-            video_time: '10分21秒',
-            video_size: '500M',
-            video_proportion: '20%',
-            video_tags: '情感，剧情'
-          },
+        video_data: {},
         mark: 0,
-        video_picture_list: [
-          'http://p3.so.qhimgs1.com/t01f3c2fbbfc190da13.jpg',
-          'http://p1.so.qhimgs1.com/t01fb8af23fa1c93441.jpg',
-          'http://p0.so.qhimgs1.com/t013e7b12d08f155a4c.jpg'
-        ]
+        video_picture_list: []
       }
     },
     methods: {
       open (link) {
         this.$electron.shell.openExternal(link)
       },
-      linkGen (pageNum) {
-
-      },
       activeVideo: function (index) {
         this.active = index
-      },
-      change (i) {
-        this.mark = i
       },
       prev () {
         this.mark--
@@ -89,22 +65,62 @@
       },
       next () {
         this.mark++
-        if (this.mark === 3) {
+        if (this.mark === this.video_picture_list.length) {
           this.mark = 0
         }
       },
       autoPlay () {
         this.mark++
-        if (this.mark === 3) {
+        if (this.mark === this.video_picture_list.length) {
           this.mark = 0
         }
       },
       play () {
         setInterval(this.autoPlay, 2500)
+      },
+      fetchData () {
+        const movieDetail = this.$route.params.data
+        this.video_data.video_name = movieDetail.name
+        this.video_data.video_description = movieDetail.description
+        this.video_data.video_size = movieDetail.size
+        this.video_data.video_proportion = movieDetail.share_rate + '%'
+        let videoTags = []
+        // pictures
+        movieDetail.pictures.forEach((value, key) => {
+          this.video_picture_list.push(this.baseUrl + value.path)
+        })
+        // running time
+        let buffer = []
+        let handler = function (value) {
+          return value.length === 1 ? ('0' + value) : value
+        }
+        if (parseInt(movieDetail.running_time_hour)) {
+          buffer.push(movieDetail.running_time_hour)
+        }
+        if (parseInt(movieDetail.running_time_minute)) {
+          buffer.push(handler(movieDetail.running_time_minute))
+        }
+        if (parseInt(movieDetail.running_time_second)) {
+          buffer.push(handler(movieDetail.running_time_second))
+        }
+        this.video_data.video_time = buffer.join(':')
+        // tags
+        movieDetail.movie_has_tags.forEach((value, key) => {
+          videoTags.push(value.tag.name)
+        })
+        this.video_data.video_tags = videoTags.join(',')
       }
     },
     created () {
       this.play()
+    },
+    mounted () {
+      this.fetchData()
+    },
+    computed: {
+      baseUrl: function () {
+        return process.env.NODE_ENV === 'production' ? 'http://vrcinema.osvlabs.com/storage/' : 'http://dev.vrcinema.com/storage/'
+      }
     }
   }
 </script>
