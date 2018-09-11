@@ -28,7 +28,7 @@
                   <div class="col-md-3 seat" v-if="seats.length>0">
                       <div class="seat_body text-center">
                           <div v-if="show_seat">
-                              <div class="choose_seat_text">选择座椅{{seats.length}}--{{is_main_seat}}</div>
+                              <div class="choose_seat_text">选择座椅</div>
                               <div class="seat_list topnav_box">
                                   <div :class="(7 > seats.length && 4 < seats.length) ? 'middle_seat' : ((6 < seats.length) ? 'small_seat' : '')">
                                       <div class="row" v-if="!is_main_seat">
@@ -172,7 +172,6 @@
       activeSeat: function (seatNumber) {
         this.seats[seatNumber].is_active = !this.seats[seatNumber].is_active
         this.is_play = false
-        console.log(this.seats)
       },
       searchByTag: function (val) {
         this.tag = val.name
@@ -180,7 +179,7 @@
         this.getMovies('', val.name)
       },
       getMovies (keyword, tag, page) {
-        const macAddress = require('os').networkInterfaces().WLAN[0]['mac']
+        const macAddress = this.getMac()
 
         const cinemaId = this.$store.state.currentUser.cinemaId
         this.$refs.header.active = tag ? this.$refs.header.active : 0
@@ -203,13 +202,24 @@
         const keyword = this.$refs.header.keyword
         const tag = this.tag
         this.getMovies(keyword, tag, page)
+      },
+      async getMac () {
+        return new Promise(function (resolve, reject) {
+          require('getmac').getMac(function (err, macAddress) {
+            if (err) {
+              reject(err)
+            } else {
+              resolve(macAddress)
+            }
+          })
+        })
       }
     },
-    mounted () {
+    async mounted () {
       if (this.$store.state.currentUser.isLogin) {
         this.getMovies()
-
-        const macAddress = require('os').networkInterfaces().WLAN[0]['mac']
+        const macAddress = await this.getMac()
+        console.log(macAddress)
         this.current_mac_address = macAddress
         const cinemaId = this.$store.state.currentUser.cinemaId
         API.getSeatByMac({
