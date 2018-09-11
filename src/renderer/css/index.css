@@ -40,7 +40,7 @@ body {
     padding: 0px 15px;
     border-radius: 5px;
 }
-.container_body .video_box .video.active{
+.container_body .video_box .active{
     background: url("../assets/active_mv_bg_top.png") top no-repeat,
     url("../assets/active_mv_bg_bottom.png") bottom no-repeat;
     background-size: contain;

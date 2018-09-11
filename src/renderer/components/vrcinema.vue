@@ -13,7 +13,7 @@
                                       <img class="video_picture" :src="baseUrl + item.movie_pic"/>
                                       <div class="video_info">
                                           <span class="video_name">{{item.movie_name}}</span>
-                                          <span class="video_time">{{item.movie_time}}分钟</span>
+                                          <span class="video_time">{{item.movie_time}}</span>
                                       </div>
                                   </div>
                               </div>
@@ -60,7 +60,6 @@
                                               <img class="seat_img active_seat_img" src="../assets/active_seat.png" v-show="item.is_active"/>
                                           </div>
                                       </div>
-
                                   </div>
                               </div>
                               <div class="broadcast_pace_bg" @click="broadcast_pace()"><a href="#">《 播放进度 》</a></div>
