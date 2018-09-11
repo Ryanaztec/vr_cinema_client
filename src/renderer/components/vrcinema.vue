@@ -25,39 +25,30 @@
                           <span><span>共{{pageNum}}页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to" v-model="directPage" />页 <a href="#" class="jump_btn" @click="jumpToPage(directPage)">跳转</a></span>
                       </div>
                   </div>
-                  <div class="col-md-3 seat">
+                  <div class="col-md-3 seat" v-if="seats.length>0">
                       <div class="seat_body text-center">
                           <div v-if="show_seat">
                               <div class="choose_seat_text">选择座椅{{seats.length}}--{{is_main_seat}}</div>
-                              <div class="seat_list">
-                                  <!--<div class="col-md-4" v-for="(item,$index) in seats">-->
-                                  <div class="row" v-if=" 5 > seats.length">
-                                      <div class="col-md-6" @click="activeSeat" v-for="(item,$index) in seats">
-                                          <img class="seat_img" src="../assets/seat.png" v-show="!active_seat"/>
-                                          <span class="seat_number">{{item.seat_number}}</span>
-                                          <img class="seat_img" src="../assets/active_seat.png" v-show="active_seat"/>
-                                      </div>
-                                  </div>
-                                  <div class="row middle_seat" v-else-if=" 7 > seats.length && 4 < seats.length">
-                                      <div class="col-md-4" @click="activeSeat" v-for="(item,$index) in seats">
-                                          <img class="seat_img" src="../assets/seat.png" v-show="!active_seat"/>
-                                          <span class="seat_number">{{item.seat_number}}</span>
-                                          <img class="seat_img" src="../assets/active_seat.png" v-show="active_seat"/>
-                                      </div>
-                                  </div>
-                                  <div class="small_seat" v-else>
+                              <div class="seat_list topnav_box">
+                                  <div :class="(7 > seats.length && 4 < seats.length) ? 'middle_seat' : ((6 < seats.length) ? 'small_seat' : '')">
                                       <div class="row" v-if="!is_main_seat">
-                                          <div class="col-md-3" v-for="(item,$index) in seats">
-                                              <img class="seat_img" src="../assets/seat.png" v-show="item.mac_address != current_mac_address"/>
-                                              <span class="seat_number" :class="item.mac_address == current_mac_address ? 'active_seat_number':''">{{item.seat_number}}</span>
-                                              <img class="seat_img active_seat_img" src="../assets/active_seat.png" v-show="item.mac_address == current_mac_address"/>
+                                          <div class="seat_box" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" v-for="(item,$index) in seats">
+                                              <img class="seat_img" src="../assets/seat.png"
+                                                   v-show="item.mac_address != current_mac_address"/>
+                                              <img class="seat_img active_seat_img" src="../assets/active_seat.png"
+                                                   v-show="item.mac_address == current_mac_address"/>
+                                              <p class="seat_number"
+                                                 :class="item.mac_address == current_mac_address ? 'active_seat_number':''">{{item.seat_number}}</p>
                                           </div>
                                       </div>
                                       <div class="row" v-else>
-                                          <div class="col-md-3 admin_view_seat" @click="activeSeat($index)" v-for="(item,$index) in seats">
+                                          <div class="seat_box admin_view_seat" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" @click="activeSeat($index)"
+                                               v-for="(item,$index) in seats">
                                               <img class="seat_img" src="../assets/seat.png" v-show="!item.is_active"/>
-                                              <span class="seat_number" :class="item.is_active ? 'active_seat_number':''">{{item.seat_number}}</span>
-                                              <img class="seat_img active_seat_img" src="../assets/active_seat.png" v-show="item.is_active"/>
+                                              <img class="seat_img active_seat_img" src="../assets/active_seat.png"
+                                                   v-show="item.is_active"/>
+                                              <p class="seat_number"
+                                                 :class="item.is_active ? 'active_seat_number':''">{{item.seat_number}}</p>
                                           </div>
                                       </div>
                                   </div>
@@ -66,16 +57,31 @@
                           </div>
                           <div class="broadcast_list" v-else>
                               <div class="choose_seat_text">播放进度</div>
-                              <div class="row seat_list">
-                                  <div v-for="bar in seats" class="col-md-12 row">
-                                      <div class="col-sm-2 seat_num">{{ bar.seat_num }}</div>
-                                      <div class="col-sm-10">
-                                          <b-progress :value="bar.value"
-                                                      :key="bar.variant"
-                                                      class="mb-4"
-                                                      striped :animated="animate"
-                                                      height="12px"
-                                          ></b-progress>
+                              <div class="row seat_list topnav_box">
+                                  <div v-for="bar in seats" class="col-md-12 ">
+                                      <div class="row" v-if="is_main_seat">
+                                          <div class="col-sm-2 seat_num">{{ bar.seat_number }}</div>
+                                          <div class="col-sm-10">
+                                              <b-progress :value="bar.value"
+                                                          :key="bar.variant"
+                                                          class="mb-4"
+                                                          striped :animated="animate"
+                                                          height="12px"
+                                              ></b-progress>
+                                          </div>
+                                      </div>
+                                      <div v-else>
+                                          <div class="row" v-if="bar.mac_address == current_mac_address">
+                                              <div class="col-sm-2 seat_num">{{ bar.seat_number }}</div>
+                                              <div class="col-sm-10">
+                                                  <b-progress :value="bar.value"
+                                                              :key="bar.variant"
+                                                              class="mb-4"
+                                                              striped :animated="animate"
+                                                              height="12px"
+                                                  ></b-progress>
+                                              </div>
+                                          </div>
                                       </div>
                                   </div>
                               </div>
@@ -122,7 +128,7 @@
         directPage: 1,
         selectedMovie: '',
         coverClass: '',
-        current_mac_address: '58-FB-84-07-1B-0A'
+        current_mac_address: ''
       }
     },
 
@@ -174,14 +180,13 @@
         this.getMovies('', val.name)
       },
       getMovies (keyword, tag, page) {
-        const mac = require('os').networkInterfaces()
-        console.log(mac)
+        const macAddress = require('os').networkInterfaces().WLAN[0]['mac']
 
         const cinemaId = this.$store.state.currentUser.cinemaId
         this.$refs.header.active = tag ? this.$refs.header.active : 0
         this.$store.dispatch('GetMovies', {
           cinema_id: cinemaId,
-          mac_address: '58-FB-84-07-1B-0B',
+          mac_address: macAddress,
           key_word: keyword,
           tag: tag,
           page: page
@@ -203,10 +208,13 @@
     mounted () {
       if (this.$store.state.currentUser.isLogin) {
         this.getMovies()
+
+        const macAddress = require('os').networkInterfaces().WLAN[0]['mac']
+        this.current_mac_address = macAddress
         const cinemaId = this.$store.state.currentUser.cinemaId
         API.getSeatByMac({
           cinema_id: cinemaId,
-          mac_address: '58-FB-84-07-1B-0A'
+          mac_address: macAddress
         }).then((response) => {
           if (response.success) {
             this.seats = response.data.data
@@ -256,25 +264,20 @@
       cursor: pointer;
   }
   .seat .seat_number {
-      position: absolute;
+      position: relative;
       font-size: 2rem;
-      bottom: 22%;
-      right: 42%;
+      bottom: 35%;
   }
   .seat .active_seat_number {
       color: black;
   }
-  .seat .small_seat .col-md-3 {
-      padding-right: 5px;
-      padding-left: 5px;
-  }
   .seat .middle_seat .seat_number {
-      font-size: 1.2rem;
-      bottom: 26%;
+      bottom: 35%;
+      font-size: 1.5rem;
   }
   .seat .small_seat .seat_number {
-      font-size: 1rem;
-      bottom: 26%;
+      bottom: 35%;
+      font-size: 1.2rem;
   }
   .seat .broadcast_pace_bg {
       padding: 3%;
@@ -292,6 +295,27 @@
       padding: 0px 8%;
       margin-bottom: 5%;
       min-height: 220px;
+      max-height: 420px;
+      overflow-y: scroll;
+      margin-right: 0px;
+  }
+  .seat .seat_list .seat_box {
+      margin-bottom: -10%;
+  }
+  .seat .seat_list.topnav_box::-webkit-scrollbar {
+      width: 5px;
+      height:10px;
+      background-color:#b5b1b1;
+    }
+  .seat .seat_list.topnav_box::-webkit-scrollbar-track {
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+      border-radius: 10px;
+      background-color:black;
+    }
+  .seat .seat_list.topnav_box::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+      background-color:#b5b1b1;
   }
   .play_stop {
       text-align: center;
@@ -347,6 +371,20 @@
     height: 85%;
     z-index: 999;
   }
-
-
+  @media (max-width:1250px){
+      .seat .middle_seat .seat_number, .seat .small_seat .seat_number {
+          font-size: 0.7rem !important;
+          bottom: 32%;
+      }
+  }
+  @media (max-width:1500px){
+      .seat .middle_seat .seat_number, .seat .small_seat .seat_number {
+          font-size: 1rem !important;
+          bottom: 37%;
+      }
+      .seat .seat_list .seat_box {
+          padding-left: 5px;
+          padding-right: 5px;
+      }
+  }
 </style>
