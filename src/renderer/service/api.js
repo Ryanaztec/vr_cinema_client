@@ -1,5 +1,8 @@
 import axios from './config'
 
+let refreshTimer = null
+const refreshInterval = 1000 * 60 * 10
+
 export const example = params => {
   return axios({
     url: '/example',
@@ -23,12 +26,14 @@ export const getInfo = params => {
     params: { params }
   })
 }
+
 export const getAllTags = () => {
   return axios({
     url: '/tags/all-movie-tags',
     method: 'get'
   })
 }
+
 export const getMovie = params => {
   return axios({
     url: '/cinema_movie/movie-by-seat',
@@ -36,6 +41,7 @@ export const getMovie = params => {
     params
   })
 }
+
 export const getMoviesByTag = params => {
   return axios({
     url: '/movie/get-movies-by-tag',
@@ -43,12 +49,34 @@ export const getMoviesByTag = params => {
     params
   })
 }
+
 export const getSeatByMac = params => {
   return axios({
     url: '/cinema_movie/get-seat-by-mac',
     method: 'post',
     params
   })
+}
+
+export const initTokenRefresher = currentUserStore => {
+  if (!refreshTimer) {
+    refreshTimer = setInterval(() => {
+      currentUserStore.dispatch('RefreshToken')
+    }, refreshInterval)
+  }
+}
+
+export const refreshToken = () => {
+  return axios({
+    url: '/auth/refresh',
+    method: 'post'
+  })
+}
+
+export const removeTokenRefresher = () => {
+  if (refreshTimer) {
+    clearInterval(refreshTimer)
+  }
 }
 
 export default {
@@ -58,5 +86,8 @@ export default {
   getAllTags,
   getMovie,
   getMoviesByTag,
-  getSeatByMac
+  getSeatByMac,
+  initTokenRefresher,
+  refreshToken,
+  removeTokenRefresher
 }

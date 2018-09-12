@@ -23,7 +23,6 @@ const actions = {
     return API.getMovie(info).then(response => {
       let movies = []
       response.data.data.forEach((value, key) => {
-        console.log(value)
         if (value.movie.pictures[0]) {
           moviePic = value.movie.pictures.length > 0 ? value.movie.pictures[0].path : ''
         }

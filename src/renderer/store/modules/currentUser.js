@@ -4,7 +4,9 @@ const state = {
   username: '',
   token: '',
   isLogin: false,
-  cinemaId: ''
+  cinemaId: '',
+  seats: [],
+  isMainSeat: false
 }
 
 const mutations = {
@@ -19,6 +21,12 @@ const mutations = {
   },
   SET_CINEMA_ID: (state, id) => {
     state.cinemaId = id
+  },
+  SET_SEATS: (state, seats) => {
+    state.seats = seats
+  },
+  SET_MAINSEAT: (state, isMain) => {
+    state.isMainSeat = isMain
   }
 }
 
@@ -45,6 +53,7 @@ const actions = {
       store.commit('SET_USERNAME', data.username)
       store.commit('SET_CINEMA_ID', data.cinema.id)
       store.commit('SET_IS_LOGIN', true)
+      API.initTokenRefresher(store)
     }).catch(error => {
       throw error
     })
@@ -54,6 +63,17 @@ const actions = {
     store.commit('SET_TOKEN', '')
     store.commit('SET_USERNAME', '')
     store.commit('SET_IS_LOGIN', false)
+  },
+  // 刷新 Token
+  async RefreshToken ({ commit, store }) {
+    try {
+      const response = await API.refreshToken()
+      localStorage.token = response.token
+      commit('SET_TOKEN', response.token)
+      return response
+    } catch (e) {
+      throw e
+    }
   }
 }
 

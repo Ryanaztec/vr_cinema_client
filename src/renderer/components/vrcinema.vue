@@ -1,102 +1,102 @@
 <template>
   <div>
     <header-info ref="header"></header-info>
-
       <div class="row container_body">
-          <div class="col-md-12">
-              <div class="row ">
-                  <div class="col-md-9">
-                      <div class="row video_list">
-                          <div class="col-md-4 video_box" v-for="(item,$index) in movies" @click="activeVideo(item, $index)">
-                              <div class="video" :class="{active:$index==active}">
-                                  <div class="acttive_bg">
-                                      <img class="video_picture" :src="baseUrl + item.movie_pic"/>
-                                      <div class="video_info">
-                                          <span class="video_name">{{item.movie_name}}</span>
-                                          <span class="video_time">{{item.movie_time}}</span>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
+        <div class="col-md-12">
+          <div class="row ">
+              <div class="col-md-9">
+                <div class="row video_list">
+                    <div class="col-md-4 video_box" v-for="(item,$index) in movies" @click="activeVideo(item, $index)">
+                        <div class="video" :class="{active:$index==active}">
+                            <div class="acttive_bg">
+                                <img class="video_picture" :src="baseUrl + item.movie_pic"/>
+                                <div class="video_info">
+                                    <span class="video_name">{{item.movie_name}}</span>
+                                    <span class="video_time">{{item.movie_time}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-                      </div>
-                      <div class="pagination_body" v-show="showPagination">
-                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
-                          <span><span>共{{pageNum}}页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to" v-model="directPage" />页 <a href="#" class="jump_btn" @click="jumpToPage(directPage)">跳转</a></span>
-                      </div>
-                  </div>
-                  <div class="col-md-3 seat" v-if="seats.length>0">
-                      <div class="seat_body text-center">
-                          <div v-if="show_seat">
-                              <div class="choose_seat_text">选择座椅</div>
-                              <div class="seat_list topnav_box">
-                                  <div :class="(7 > seats.length && 4 < seats.length) ? 'middle_seat' : ((6 < seats.length) ? 'small_seat' : '')">
-                                      <div class="row" v-if="!is_main_seat">
-                                          <div class="seat_box" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" v-for="(item,$index) in seats">
-                                              <img class="seat_img" src="../assets/seat.png"
-                                                   v-show="item.mac_address != current_mac_address"/>
-                                              <img class="seat_img active_seat_img" src="../assets/active_seat.png"
-                                                   v-show="item.mac_address == current_mac_address"/>
-                                              <p class="seat_number"
-                                                 :class="item.mac_address == current_mac_address ? 'active_seat_number':''">{{item.seat_number}}</p>
-                                          </div>
+                </div>
+                <div class="pagination_body" v-show="showPagination">
+                  <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
+                  <span><span>共{{pageNum}}页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to" v-model="directPage" />页 <a href="#" class="jump_btn" @click="jumpToPage(directPage)">跳转</a></span>
+                </div>
+              </div>
+              <div class="col-md-3 seat" v-if="seats.length>0">
+                  <div class="seat_body text-center">
+                      <div v-if="show_seat">
+                          <div class="choose_seat_text">选择座椅</div>
+                          <div class="seat_list topnav_box">
+                              <div :class="(7 > seats.length && 4 < seats.length) ? 'middle_seat' : ((6 < seats.length) ? 'small_seat' : '')">
+                                  <div class="row" v-if="!is_main_seat">
+                                      <div class="seat_box" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" v-for="(item,$index) in seats">
+                                          <img class="seat_img" src="../assets/seat.png"
+                                               v-show="item.mac_address != current_mac_address"/>
+                                          <img class="seat_img active_seat_img" src="../assets/active_seat.png"
+                                               v-show="item.mac_address == current_mac_address"/>
+                                          <p class="seat_number"
+                                             :class="item.mac_address == current_mac_address ? 'active_seat_number':''">{{item.seat_number}}</p>
                                       </div>
-                                      <div class="row" v-else>
-                                          <div class="seat_box admin_view_seat" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" @click="activeSeat($index)"
-                                               v-for="(item,$index) in seats">
-                                              <img class="seat_img" src="../assets/seat.png" v-show="!item.is_active"/>
-                                              <img class="seat_img active_seat_img" src="../assets/active_seat.png"
-                                                   v-show="item.is_active"/>
-                                              <p class="seat_number"
-                                                 :class="item.is_active ? 'active_seat_number':''">{{item.seat_number}}</p>
-                                          </div>
+                                  </div>
+                                  <div class="row" v-else>
+                                      <div class="seat_box admin_view_seat" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" @click="activeSeat($index)"
+                                           v-for="(item,$index) in seats">
+                                          <img class="seat_img" src="../assets/seat.png" v-show="!item.is_active"/>
+                                          <img class="seat_img active_seat_img" src="../assets/active_seat.png"
+                                               v-show="item.is_active"/>
+                                          <p class="seat_number"
+                                             :class="item.is_active ? 'active_seat_number':''">{{item.seat_number}}</p>
                                       </div>
                                   </div>
                               </div>
-                              <div class="broadcast_pace_bg" @click="broadcast_pace()"><a href="#">《 播放进度 》</a></div>
                           </div>
-                          <div class="broadcast_list" v-else>
-                              <div class="choose_seat_text">播放进度</div>
-                              <div class="row seat_list topnav_box">
-                                  <div v-for="bar in seats" class="col-md-12 ">
-                                      <div class="row" v-if="is_main_seat">
+                          <div class="broadcast_pace_bg" @click="broadcast_pace()"><a href="#">《 播放进度 》</a></div>
+                      </div>
+                      <div class="broadcast_list" v-else>
+                          <div class="choose_seat_text">播放进度</div>
+                          <div class="row seat_list topnav_box">
+                              <div v-for="bar in seats" class="col-md-12 ">
+                                  <div class="row" v-if="is_main_seat">
+                                      <div class="col-sm-2 seat_num">{{ bar.seat_number }}</div>
+                                      <div class="col-sm-10">
+                                          <b-progress :value="bar.progressTime"
+                                                      class="mb-4"
+                                                      striped
+                                                      height="12px"
+                                                      show-progress
+                                                      :max="movieTime(bar)"
+                                          ></b-progress>
+                                      </div>
+                                  </div>
+                                  <div v-else>
+                                      <div class="row" v-if="bar.mac_address == current_mac_address">
                                           <div class="col-sm-2 seat_num">{{ bar.seat_number }}</div>
                                           <div class="col-sm-10">
                                               <b-progress :value="bar.value"
-                                                          :key="bar.variant"
                                                           class="mb-4"
-                                                          striped :animated="animate"
+                                                          striped
                                                           height="12px"
+                                                          :max="100"
                                               ></b-progress>
-                                          </div>
-                                      </div>
-                                      <div v-else>
-                                          <div class="row" v-if="bar.mac_address == current_mac_address">
-                                              <div class="col-sm-2 seat_num">{{ bar.seat_number }}</div>
-                                              <div class="col-sm-10">
-                                                  <b-progress :value="bar.value"
-                                                              :key="bar.variant"
-                                                              class="mb-4"
-                                                              striped :animated="animate"
-                                                              height="12px"
-                                                  ></b-progress>
-                                              </div>
                                           </div>
                                       </div>
                                   </div>
                               </div>
-                              <div class="broadcast_pace_bg" @click="choose_seat()"><a href="#">《 选择座椅 》</a></div>
                           </div>
-
+                          <div class="broadcast_pace_bg" @click="choose_seat()"><a href="#">《 选择座椅 》</a></div>
                       </div>
 
-                      <div class="play_stop">
-                          <div><b-button class="play" @click="start()" :disabled="is_play">播放</b-button></div>
-                          <div><b-button class="stop" @click="stop()" :disabled="!is_play">停止</b-button></div>
-                      </div>
+                  </div>
+
+                  <div class="play_stop">
+                      <div><b-button class="play" @click="start()" :disabled="is_play">播放</b-button></div>
+                      <div><b-button class="stop" @click="stop()" :disabled="!is_play">停止</b-button></div>
                   </div>
               </div>
           </div>
+        </div>
       </div>
       <div :class="coverClass"></div>
   </div>
@@ -106,6 +106,7 @@
   import HeaderInfo from './header'
   import Sender from '../udp/sender'
   import API from '../service/api'
+  const {dialog} = require('electron').remote
   export default {
     components: { HeaderInfo },
     data () {
@@ -120,7 +121,7 @@
         is_main_seat: false,
         animate: true,
         active_seat: false,
-        is_play: false,
+        is_play: true,
         currentPage: 1,
         tag: '',
         showPagination: false,
@@ -133,12 +134,6 @@
     },
 
     methods: {
-      open (link) {
-        this.$electron.shell.openExternal(link)
-      },
-      linkGen (pageNum) {
-        // console.log(this.currentPage)
-      },
       activeVideo: function (item, index) {
         this.selectedMovie = item
         this.active = index
@@ -150,8 +145,32 @@
         this.show_seat = true
       },
       start: function () {
+        // 所有选中的座椅
+        let activeSeats = []
+        this.seats.forEach((item, key) => {
+          if (item.is_active) {
+            activeSeats.push(item)
+          }
+        })
+        if (activeSeats.length === 0) {
+          dialog.showMessageBox({
+            title: '错误',
+            message: '请先选择座椅',
+            type: 'warning'
+          })
+          return false
+        }
+
+        // 选中座椅添加影片信息
+        this.seats.forEach((item, key) => {
+          if (item.is_active) {
+            item.movieData = this.selectedMovie
+            item.progressTime = 0
+            this.playProgress(item)
+          }
+        })
         const movieName = this.selectedMovie.movie_name
-        this.coverClass = 'cover' // 添加遮罩层
+        // this.coverClass = 'cover' // 添加遮罩层
         Sender.sendMessage('start ' + movieName)
         this.$notify({
           group: 'foo',
@@ -213,13 +232,24 @@
             }
           })
         })
+      },
+      movieTime: function (item) {
+        if (item.movieData) {
+          const movieTime = item.movieData.movie_time.split(':')
+          const parseToSeconds = movieTime[0] * 3600 + movieTime[1] * 60 + movieTime[2] * 1
+          return parseToSeconds
+        }
+      },
+      playProgress: function (item) {
+        setInterval(() => {
+          item.progressTime += 1000
+        }, 500)
       }
     },
     async mounted () {
       if (this.$store.state.currentUser.isLogin) {
         this.getMovies()
         const macAddress = await this.getMac()
-        console.log(macAddress)
         this.current_mac_address = macAddress
         const cinemaId = this.$store.state.currentUser.cinemaId
         API.getSeatByMac({

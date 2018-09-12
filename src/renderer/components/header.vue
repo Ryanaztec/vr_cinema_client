@@ -18,7 +18,7 @@
                   </template>
                   <template v-else>
                     <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
-                    <b-dropdown-item href="http://vrcinema.osvlabs.com/" class="manage_admin" target="_blank">影院管理后台</b-dropdown-item>
+                    <b-dropdown-item :href="managementUrl" class="manage_admin" target="_blank">影院管理后台</b-dropdown-item>
                     <b-dropdown-item to="/" class="dmz_host">关闭所有主机</b-dropdown-item>
                     <b-dropdown-item to="/" class="log_out" @click="logout">注销登录</b-dropdown-item>
                   </template>
@@ -101,6 +101,9 @@
       },
       username () {
         return this.$store.state.currentUser.username
+      },
+      managementUrl () {
+        return 'http://localhost:9528/#/?token=' + this.$store.state.currentUser.token
       }
     },
     mounted: function () {
