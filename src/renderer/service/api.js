@@ -50,6 +50,13 @@ export const getSeatByMac = params => {
     params
   })
 }
+export const getNewMoviesCount = params => {
+  return axios({
+    url: '/cinema_movie/get-new-movies-count',
+    method: 'post',
+    params
+  })
+}
 
 export default {
   example,
@@ -58,5 +65,6 @@ export default {
   getAllTags,
   getMovie,
   getMoviesByTag,
-  getSeatByMac
+  getSeatByMac,
+  getNewMoviesCount
 }
