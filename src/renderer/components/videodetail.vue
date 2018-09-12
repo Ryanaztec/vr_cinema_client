@@ -10,7 +10,7 @@
                           <div id="topBanner" class="slide" >
                               <div v-for="(imgUrl, index) in video_picture_list" v-show="index===mark" :key="index" class="slideshow">
                                   <a href="#">
-                                      <img :src="imgUrl" style="width: 100%;">
+                                      <img :src="imgUrl" style="width: 100%; min-height: 700px; min-width: 1370px;">
                                   </a>
                               </div>
                               <div class="switch">
