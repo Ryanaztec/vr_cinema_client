@@ -115,6 +115,7 @@
   import HeaderInfo from './header'
   import Sender from '../udp/sender'
   import API from '../service/api'
+  const {dialog} = require('electron').remote
   export default {
     components: { HeaderInfo },
     data () {
@@ -129,7 +130,7 @@
         is_main_seat: false,
         animate: true,
         active_seat: false,
-        is_play: false,
+        is_play: true,
         currentPage: 1,
         tag: '',
         showPagination: false,
@@ -142,12 +143,6 @@
     },
 
     methods: {
-      open (link) {
-        this.$electron.shell.openExternal(link)
-      },
-      linkGen (pageNum) {
-        // console.log(this.currentPage)
-      },
       activeVideo: function (item, index) {
         this.selectedMovie = item
         this.active = index
@@ -159,8 +154,32 @@
         this.show_seat = true
       },
       start: function () {
+        // 所有选中的座椅
+        let activeSeats = []
+        this.seats.forEach((item, key) => {
+          if (item.is_active) {
+            activeSeats.push(item)
+          }
+        })
+        if (activeSeats.length === 0) {
+          dialog.showMessageBox({
+            title: '错误',
+            message: '请先选择座椅',
+            type: 'warning'
+          })
+          return false
+        }
+
+        // 选中座椅添加影片信息
+        this.seats.forEach((item, key) => {
+          if (item.is_active) {
+            item.movieData = this.selectedMovie
+            item.progressTime = 0
+            this.playProgress(item)
+          }
+        })
         const movieName = this.selectedMovie.movie_name
-        this.coverClass = 'cover' // 添加遮罩层
+        // this.coverClass = 'cover' // 添加遮罩层
         Sender.sendMessage('start ' + movieName)
         this.$notify({
           group: 'foo',
@@ -222,6 +241,18 @@
             }
           })
         })
+      },
+      movieTime: function (item) {
+        if (item.movieData) {
+          const movieTime = item.movieData.movie_time.split(':')
+          const parseToSeconds = movieTime[0] * 3600 + movieTime[1] * 60 + movieTime[2] * 1
+          return parseToSeconds
+        }
+      },
+      playProgress: function (item) {
+        setInterval(() => {
+          item.progressTime += 1000
+        }, 500)
       }
     },
     async mounted () {
