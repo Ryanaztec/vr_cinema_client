@@ -26,12 +26,13 @@
                       </div>
                   </div>
                   <div class="col-md-3 seat" v-if="hasLogin">
-                      <div v-if="seats.length>0">
+                      <div>
                           <div class="seat_body text-center">
                               <div v-if="show_seat">
                                   <div class="choose_seat_text">选择座椅</div>
                                   <div class="seat_list topnav_box">
-                                      <div :class="(7 > seats.length && 4 < seats.length) ? 'middle_seat' : ((6 < seats.length) ? 'small_seat' : '')">
+                                      <div v-if="seats.length==0">暂没有配置座椅!</div>
+                                      <div :class="(7 > seats.length && 4 < seats.length) ? 'middle_seat' : ((6 < seats.length) ? 'small_seat' : '')" v-else>
                                           <div class="row" v-if="!is_main_seat">
                                               <div class="seat_box" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" v-for="(item,$index) in seats">
                                                   <img class="seat_img" src="../assets/seat.png"
