@@ -65,7 +65,7 @@
                                                   <b-progress :value="calculateProgress(bar)"
                                                               :key="bar.variant"
                                                               class="mb-4"
-                                                              striped :animated="animate"
+                                                              striped
                                                               height="12px"
                                                   ></b-progress>
                                               </div>
@@ -74,10 +74,10 @@
                                               <div class="row" v-if="bar.mac_address == current_mac_address">
                                                   <div class="col-sm-2 seat_num">{{ bar.seat_number }}</div>
                                                   <div class="col-sm-10">
-                                                      <b-progress :value="bar.value"
+                                                      <b-progress :value= "bar.value"
                                                                   :key="bar.variant"
                                                                   class="mb-4"
-                                                                  striped :animated="animate"
+                                                                  striped
                                                                   height="12px"
                                                       ></b-progress>
                                                   </div>
@@ -110,7 +110,7 @@
   </div>
 </template>
 
-<script type="text/ecmascript-6">
+<script>
   import HeaderInfo from './header'
   import Sender from '../udp/sender'
   import API from '../service/api'
@@ -125,11 +125,8 @@
         active: 0,
         movies: [],
         show_seat: true,
-        max: 50,
-        value: 33.333333333,
         seats: [],
         is_main_seat: false,
-        animate: true,
         active_seat: false,
         is_play: true,
         currentPage: 1,
@@ -141,7 +138,8 @@
         coverClass: '',
         current_mac_address: '',
         intervalIds: [],
-        playingSeats: this.$store.state.seat.playingSeats
+        playingSeats: this.$store.state.seat.playingSeats,
+        activeSeatsIds: []
       }
     },
 
@@ -149,8 +147,8 @@
       activeVideo: function (item, index) {
         this.selectedMovie = item
         this.active = index
-        console.log(this.$store.state.seat.seats)
-        console.log(item)
+        console.log(this.$store.state.seat.playingSeats)
+        console.log(this.currentActiveSeats())
       },
       calculateProgress: function (item) {
         let seat = []
@@ -181,9 +179,11 @@
       currentActiveSeats: function () {
         // 所有选中的座椅
         let activeSeats = []
+        this.activeSeatsIds = []
         this.seats.forEach((item, key) => {
           if (item.is_active) {
             activeSeats.push(item)
+            this.activeSeatsIds.push(item.id)
           }
         })
         return activeSeats
@@ -196,7 +196,6 @@
       },
       start: function () {
         let activeSeats = this.currentActiveSeats()
-        let storeSeats = this.$store.state.seat.seats
         if (activeSeats.length === 0) {
           dialog.showMessageBox({
             title: '错误',
@@ -205,47 +204,60 @@
           })
           return false
         }
-        // 选中座椅添加影片信息
-        activeSeats.forEach((item, key) => {
-          item.is_playing = true
-          storeSeats.forEach((value, index) => {
-            if (item.mac_address === value.mac_address) {
-              this.$store.commit('SET_SEAT_PLAYING_STATUS', {index: index, status: true})
-              this.$store.commit('SET_SEAT_PLAYING_TIME', {index: index, time: Math.round(new Date().getTime() / 1000)})
-              this.$store.commit('SET_SEAT_PLAYING_MOVIE', {index: index, movie: this.selectedMovie})
-            }
+        API.storePlayRecord({
+          cinema_id: this.$store.state.currentUser.cinemaId,
+          movie_id: this.selectedMovie.movie_id,
+          seats: this.activeSeatsIds
+        }).then(response => {
+          response.data.data.forEach((item, key) => {
+            this.$store.commit('SET_PLAYING_SEATS', item)
           })
+          const movieName = this.selectedMovie.movie_name
+          // this.coverClass = 'cover' // 添加遮罩层
+          Sender.sendMessage('start ' + movieName)
+          this.$notify({
+            group: 'foo',
+            text: '开始播放 《' + movieName + '》'
+          })
+          this.is_play = true
         })
-        const movieName = this.selectedMovie.movie_name
-        // this.coverClass = 'cover' // 添加遮罩层
-        Sender.sendMessage('start ' + movieName)
-        this.$notify({
-          group: 'foo',
-          text: '开始播放 《' + movieName + '》'
-        })
-        this.is_play = true
       },
       stop: function () {
-        const movieName = this.selectedMovie.movie_name
-        this.coverClass = '' // 除去遮罩层
-        Sender.stopMovie()
-        this.$notify({
-          group: 'foo',
-          text: '停止播放 《' + movieName + '》'
+        let activeSeats = this.currentActiveSeats()
+        if (activeSeats.length === 0) {
+          dialog.showMessageBox({
+            title: '错误',
+            message: '请先选择座椅',
+            type: 'warning'
+          })
+          return false
+        }
+        API.updatePlayRecord({
+          cinema_id: this.$store.state.currentUser.cinemaId,
+          movie_id: this.selectedMovie.movie_id,
+          seats: this.activeSeatsIds
+        }).then(response => {
+          const movieName = this.selectedMovie.movie_name
+          this.coverClass = '' // 除去遮罩层
+          Sender.stopMovie()
+          this.$notify({
+            group: 'foo',
+            text: '停止播放 《' + movieName + '》'
+          })
+          this.is_play = false
         })
-        this.is_play = false
       },
       activeSeat: function (seatNumber) {
         const activeSeats = this.currentActiveSeats()
         let currentSeatStatus = false
         let otherSeatStatus = false
         if (activeSeats.length !== 0) {
-          this.$store.state.seat.seats.forEach((value, key) => {
-            if (value.mac_address === activeSeats[0].mac_address) {
-              otherSeatStatus = value.status
+          this.$store.state.seat.playingSeats.forEach((value, key) => {
+            if (value.seat_id === activeSeats[0].id) {
+              otherSeatStatus = true
             }
-            if (value.mac_address === this.seats[seatNumber].mac_address) {
-              currentSeatStatus = value.status
+            if (value.seat_id === this.seats[seatNumber].id) {
+              currentSeatStatus = true
             }
           })
         }
@@ -257,9 +269,9 @@
           })
           return false
         }
-        this.$store.state.seat.seats.forEach((value, key) => {
-          if (value.mac_address === this.seats[seatNumber].mac_address) {
-            currentSeatStatus = value.status
+        this.$store.state.seat.playingSeats.forEach((value, key) => {
+          if (value.seat_id === this.seats[seatNumber].id) {
+            currentSeatStatus = true
           }
         })
         this.seats[seatNumber].is_active = !this.seats[seatNumber].is_active
@@ -328,12 +340,10 @@
               this.is_main_seat = response.data.is_main_seat
               const seats = _.cloneDeep(response.data.data)
               this.$store.commit('SET_SEATS', seats)
-              this.$store.commit('SET_MAINSEAT', response.data.is_main_seat)
             }
           })
         } else {
           this.seats = _.cloneDeep(this.$store.state.seat.seats)
-          this.is_main_seat = this.$store.state.seat.isMainSeat
         }
       }
     },

@@ -1,8 +1,7 @@
 import API from '../.././service/api'
 const state = {
   seats: [],
-  playingSeats: [],
-  isMainSeat: false
+  playingSeats: []
 }
 
 const mutations = {
@@ -10,10 +9,7 @@ const mutations = {
     state.seats = seats
   },
   SET_PLAYING_SEATS: (state, seats) => {
-    state.playingSeats = seats
-  },
-  SET_MAINSEAT: (state, isMain) => {
-    state.isMainSeat = isMain
+    state.playingSeats.push(seats)
   },
   SET_SEAT_PLAYING_STATUS: (state, params) => {
     state.seats[params.index].status = params.status
@@ -29,7 +25,11 @@ const mutations = {
 const actions = {
   GetPlayingStatusSeats (store, id) {
     API.getPlayingSeats({cinema_id: id}).then(response => {
-      store.commit('SET_PLAYING_SEATS', response)
+      if (response.data.data.length !== 0) {
+        response.data.data.forEach((value, key) => {
+          store.commit('SET_PLAYING_SEATS', value)
+        })
+      }
     })
   }
 }

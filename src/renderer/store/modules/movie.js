@@ -42,7 +42,8 @@ const actions = {
         movies.push({
           movie_name: value.movie.name,
           movie_time: buffer.join(':'),
-          movie_pic: moviePic
+          movie_pic: moviePic,
+          movie_id: value.movie_id
         })
       })
       store.commit('SET_CINEMA_MOVIES', response.data.data)

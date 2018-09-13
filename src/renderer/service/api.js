@@ -90,6 +90,22 @@ export const getPlayingSeats = params => {
   })
 }
 
+export const storePlayRecord = params => {
+  return axios({
+    url: '/cinema_movie/store-playing-record',
+    method: 'post',
+    params
+  })
+}
+
+export const updatePlayRecord = params => {
+  return axios({
+    url: '/cinema_movie/update-playing-record',
+    method: 'post',
+    params
+  })
+}
+
 export default {
   example,
   login,
@@ -102,5 +118,7 @@ export default {
   refreshToken,
   removeTokenRefresher,
   getNewMoviesCount,
-  getPlayingSeats
+  getPlayingSeats,
+  storePlayRecord,
+  updatePlayRecord
 }
