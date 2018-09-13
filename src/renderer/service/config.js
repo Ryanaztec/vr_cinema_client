@@ -20,7 +20,14 @@ export default function $axios (options) {
       config => {
         // Tip: 1
         // 请求开始的时候可以结合 vuex 开启全屏的 loading 动画
-        store.dispatch('StartLoading')
+
+        const noLoadingList = ['get-new-movies-count', 'get-seat-by-mac', 'refresh-token']
+        var index = config.url.lastIndexOf('/')
+        var route = config.url.substring(index + 1, config.url.length)
+        if (noLoadingList.indexOf(route) < 0) {
+          store.dispatch('StartLoading')
+        }
+
         if (localStorage.token) {
           config.headers.Authorization = 'bearer ' + localStorage.token
         }

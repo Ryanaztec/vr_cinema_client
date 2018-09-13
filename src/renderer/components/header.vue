@@ -5,7 +5,7 @@
       <div class="header_text">
           <router-link class="text vr_cinema_text" to="/vr_cinema"><span>VR影院</span></router-link>
           <router-link class="text cinema_resources_text selected" :class="(path == '/video_detail' || path == '/')?'router-link-exact-active':''" to="/"><span>影片库</span></router-link>
-          <span class="new_mv_count">2</span>
+          <span class="new_mv_count" v-if="hasLogin && newMoviesCount">{{newMoviesCount}}</span>
       </div>
         <img class="navbar_right_bg" src="../assets/header/navbar_right_bg1.png"/>
       <div class="set_body">
@@ -70,10 +70,22 @@
         vue: require('vue/package.json').version,
         tags: null,
         active: 0,
-        keyword: ''
+        keyword: '',
+        newMoviesCount: localStorage.getItem('newMoviesCount'),
+        timer: null
       }
     },
     props: ['video_name'],
+    created: function () {
+      if (this.hasLogin) {
+        this.timer = setInterval(this.getNewCount, 300000)
+      }
+    },
+    beforeDestroy () {
+      if (!this.hasLogin) {
+        clearInterval(this.timer)
+      }
+    },
     methods: {
       activeTag: function (index, item) {
         this.active = index
@@ -93,6 +105,16 @@
         } else {
           this.$parent.searchByTag({'name': '全部'})
         }
+      },
+      getNewCount: function () {
+        const cinemaId = this.$store.state.currentUser.cinemaId
+        API.getNewMoviesCount({
+          cinema_id: cinemaId
+        }).then((response) => {
+          if (response.success) {
+            localStorage.setItem('newMoviesCount', response.data)
+          }
+        })
       }
     },
     computed: {

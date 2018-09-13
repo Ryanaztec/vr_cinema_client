@@ -57,6 +57,13 @@ export const getSeatByMac = params => {
     params
   })
 }
+export const getNewMoviesCount = params => {
+  return axios({
+    url: '/cinema_movie/get-new-movies-count',
+    method: 'post',
+    params
+  })
+}
 
 export const initTokenRefresher = currentUserStore => {
   if (!refreshTimer) {
@@ -89,5 +96,6 @@ export default {
   getSeatByMac,
   initTokenRefresher,
   refreshToken,
-  removeTokenRefresher
+  removeTokenRefresher,
+  getNewMoviesCount
 }
