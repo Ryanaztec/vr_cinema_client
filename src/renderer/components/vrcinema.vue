@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header-info ref="header" :isMainSeat="is_main_seat"></header-info>
+    <header-info ref="header"></header-info>
 
       <div class="row container_body">
           <div class="col-md-12">
@@ -269,6 +269,7 @@
           if (response.success) {
             this.seats = response.data.data
             this.is_main_seat = response.data.is_main_seat
+            localStorage.setItem('is_main_seat', response.data.is_main_seat)
           }
         })
       }

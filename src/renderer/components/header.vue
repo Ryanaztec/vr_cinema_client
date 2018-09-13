@@ -19,7 +19,7 @@
                   <template v-else>
                     <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
                     <b-dropdown-item href="http://vrcinema.osvlabs.com/" class="manage_admin" target="_blank" v-if="isMainSeat">影院管理后台</b-dropdown-item>
-                    <b-dropdown-item to="/" class="dmz_host" v-if="isMainSeat">关闭所有主机</b-dropdown-item>
+                    <b-dropdown-item class="dmz_host" v-if="isMainSeat" @click="closeAllSeat">关闭所有主机</b-dropdown-item>
                     <b-dropdown-item to="/" class="log_out" @click="logout">注销登录</b-dropdown-item>
                   </template>
               </b-dropdown>
@@ -57,7 +57,7 @@
 <script>
   import LoginModal from './login/login.vue'
   import API from '../service/api'
-
+  import Sender from '../udp/sender'
   export default {
     components: {
       LoginModal
@@ -72,10 +72,11 @@
         active: 0,
         keyword: '',
         newMoviesCount: localStorage.getItem('newMoviesCount'),
-        timer: null
+        timer: null,
+        isMainSeat: localStorage.getItem('is_main_seat')
       }
     },
-    props: ['video_name', 'isMainSeat'],
+    props: ['video_name'],
     created: function () {
       if (this.hasLogin) {
         this.timer = setInterval(this.getNewCount, 300000)
@@ -113,6 +114,35 @@
         }).then((response) => {
           if (response.success) {
             localStorage.setItem('newMoviesCount', response.data)
+          }
+        })
+      },
+      closeAllSeat: function () {
+        const swalWithBootstrapButtons = this.swal.mixin({
+          confirmButtonClass: 'btn btn-success',
+          cancelButtonClass: 'btn btn-danger',
+          buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons({
+          title: '确定要关闭所有主机?',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '关闭 !',
+          cancelButtonText: '取消 !',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.value) {
+            swalWithBootstrapButtons(
+              'Deleted!',
+              'Your file has been deleted.',
+              'success'
+            )
+            Sender.closeAllSeat('closeAllSeat')
+          } else if (
+            result.dismiss === this.swal.DismissReason.cancel
+          ) {
+
           }
         })
       }
@@ -348,7 +378,6 @@
         font-size: 20px;
         font-family: "Microsoft YaHei";
         color: rgb(255, 255, 255);
-
     }
 
 </style>

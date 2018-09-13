@@ -17,6 +17,8 @@ import api from './service/index'
 import './permission'
 import Notifications from 'vue-notification'
 import velocity from 'velocity-animate'
+import './udp/receiver'
+import swal from 'sweetalert2'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
@@ -26,6 +28,7 @@ Vue.use(BootstrapVue)
 Vue.use(api)
 Vue.use(Notifications, {velocity})
 Vue.component('icon', Icon)
+Vue.prototype.swal = swal
 
 /* eslint-disable no-new */
 new Vue({

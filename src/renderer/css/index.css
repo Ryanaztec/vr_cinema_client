@@ -229,3 +229,13 @@ body {
 .g-loading > svg{
     color: rgba(97, 255, 255, 0.61);
 }
+.swal2-popup {
+    background: url(../assets/header/setting_bg.png);
+    background-size: cover;
+}
+.swal2-cancel {
+    margin-right: 50%;
+}
+.swal2-popup .swal2-title {
+    color: white;
+}
