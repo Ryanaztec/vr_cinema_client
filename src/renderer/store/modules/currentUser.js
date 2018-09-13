@@ -45,6 +45,8 @@ const actions = {
       store.commit('SET_USERNAME', data.username)
       store.commit('SET_CINEMA_ID', data.cinema.id)
       store.commit('SET_IS_LOGIN', true)
+      API.initTokenRefresher(store)
+      store.dispatch('GetPlayingStatusSeats', data.cinema.id)
     }).catch(error => {
       throw error
     })

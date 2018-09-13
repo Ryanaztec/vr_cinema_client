@@ -1,7 +1,6 @@
 <template>
   <div>
     <header-info ref="header"></header-info>
-
       <div class="row container_body">
           <div class="col-md-12">
               <div class="row ">
@@ -18,7 +17,6 @@
                                   </div>
                               </div>
                           </div>
-
                       </div>
                       <div class="pagination_body" v-show="showPagination">
                           <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
@@ -64,7 +62,7 @@
                                           <div class="row" v-if="is_main_seat">
                                               <div class="col-sm-2 seat_num">{{ bar.seat_number }}</div>
                                               <div class="col-sm-10">
-                                                  <b-progress :value="bar.value"
+                                                  <b-progress :value="calculateProgress(bar)"
                                                               :key="bar.variant"
                                                               class="mb-4"
                                                               striped :animated="animate"
@@ -117,6 +115,8 @@
   import Sender from '../udp/sender'
   import API from '../service/api'
   const {dialog} = require('electron').remote
+  const _ = require('lodash')
+  // const moment = require('moment')
   export default {
     components: { HeaderInfo },
     data () {
@@ -139,7 +139,9 @@
         directPage: 1,
         selectedMovie: '',
         coverClass: '',
-        current_mac_address: ''
+        current_mac_address: '',
+        intervalIds: [],
+        playingSeats: this.$store.state.seat.playingSeats
       }
     },
 
@@ -147,6 +149,44 @@
       activeVideo: function (item, index) {
         this.selectedMovie = item
         this.active = index
+        console.log(this.$store.state.seat.seats)
+        console.log(item)
+      },
+      calculateProgress: function (item) {
+        let seat = []
+        let index = 0
+        this.$store.state.seat.seats.forEach((value, key) => {
+          if (value.mac_address === item.mac_address) {
+            seat = value
+            index = key
+          }
+        })
+        if (seat.status) {
+          let movieTime = this.movieTime(seat.movie)
+          let timeDeviation = Math.round(new Date().getTime() / 1000) - seat.time
+          let progress = (timeDeviation / movieTime) * 100
+          // 判断是否已经播放完毕
+          if (progress < 100) {
+            return progress
+          } else {
+            this.$store.commit('SET_SEAT_PLAYING_STATUS', {index: index, status: false})
+            this.$notify({
+              group: 'foo',
+              text: '座椅编号 ' + item.seat_number + ' 播放已完毕'
+            })
+          }
+        }
+        return 0
+      },
+      currentActiveSeats: function () {
+        // 所有选中的座椅
+        let activeSeats = []
+        this.seats.forEach((item, key) => {
+          if (item.is_active) {
+            activeSeats.push(item)
+          }
+        })
+        return activeSeats
       },
       broadcast_pace: function () {
         this.show_seat = false
@@ -155,13 +195,8 @@
         this.show_seat = true
       },
       start: function () {
-        // 所有选中的座椅
-        let activeSeats = []
-        this.seats.forEach((item, key) => {
-          if (item.is_active) {
-            activeSeats.push(item)
-          }
-        })
+        let activeSeats = this.currentActiveSeats()
+        let storeSeats = this.$store.state.seat.seats
         if (activeSeats.length === 0) {
           dialog.showMessageBox({
             title: '错误',
@@ -170,14 +205,16 @@
           })
           return false
         }
-
         // 选中座椅添加影片信息
-        this.seats.forEach((item, key) => {
-          if (item.is_active) {
-            item.movieData = this.selectedMovie
-            item.progressTime = 0
-            this.playProgress(item)
-          }
+        activeSeats.forEach((item, key) => {
+          item.is_playing = true
+          storeSeats.forEach((value, index) => {
+            if (item.mac_address === value.mac_address) {
+              this.$store.commit('SET_SEAT_PLAYING_STATUS', {index: index, status: true})
+              this.$store.commit('SET_SEAT_PLAYING_TIME', {index: index, time: Math.round(new Date().getTime() / 1000)})
+              this.$store.commit('SET_SEAT_PLAYING_MOVIE', {index: index, movie: this.selectedMovie})
+            }
+          })
         })
         const movieName = this.selectedMovie.movie_name
         // this.coverClass = 'cover' // 添加遮罩层
@@ -199,8 +236,34 @@
         this.is_play = false
       },
       activeSeat: function (seatNumber) {
+        const activeSeats = this.currentActiveSeats()
+        let currentSeatStatus = false
+        let otherSeatStatus = false
+        if (activeSeats.length !== 0) {
+          this.$store.state.seat.seats.forEach((value, key) => {
+            if (value.mac_address === activeSeats[0].mac_address) {
+              otherSeatStatus = value.status
+            }
+            if (value.mac_address === this.seats[seatNumber].mac_address) {
+              currentSeatStatus = value.status
+            }
+          })
+        }
+        if (currentSeatStatus !== otherSeatStatus) {
+          dialog.showMessageBox({
+            title: '错误',
+            message: '所选座椅播放状态必须统一',
+            type: 'warning'
+          })
+          return false
+        }
+        this.$store.state.seat.seats.forEach((value, key) => {
+          if (value.mac_address === this.seats[seatNumber].mac_address) {
+            currentSeatStatus = value.status
+          }
+        })
         this.seats[seatNumber].is_active = !this.seats[seatNumber].is_active
-        this.is_play = false
+        this.is_play = currentSeatStatus
       },
       searchByTag: function (val) {
         this.tag = val.name
@@ -243,17 +306,10 @@
           })
         })
       },
-      movieTime: function (item) {
-        if (item.movieData) {
-          const movieTime = item.movieData.movie_time.split(':')
-          const parseToSeconds = movieTime[0] * 3600 + movieTime[1] * 60 + movieTime[2] * 1
-          return parseToSeconds
-        }
-      },
-      playProgress: function (item) {
-        setInterval(() => {
-          item.progressTime += 1000
-        }, 500)
+      movieTime: function (movie) {
+        const movieTime = movie.movie_time.split(':')
+        const parseToSeconds = movieTime[0] * 3600 + movieTime[1] * 60 + movieTime[2] * 1
+        return parseToSeconds
       }
     },
     async mounted () {
@@ -262,17 +318,30 @@
         const macAddress = await this.getMac()
         this.current_mac_address = macAddress
         const cinemaId = this.$store.state.currentUser.cinemaId
-        API.getSeatByMac({
-          cinema_id: cinemaId,
-          mac_address: macAddress
-        }).then((response) => {
-          if (response.success) {
-            this.seats = response.data.data
-            this.is_main_seat = response.data.is_main_seat
-            localStorage.setItem('is_main_seat', response.data.is_main_seat)
-          }
-        })
+        if (this.$store.state.seat.seats.length === 0) {
+          API.getSeatByMac({
+            cinema_id: cinemaId,
+            mac_address: macAddress
+          }).then((response) => {
+            if (response.success) {
+              this.seats = response.data.data
+              this.is_main_seat = response.data.is_main_seat
+              const seats = _.cloneDeep(response.data.data)
+              this.$store.commit('SET_SEATS', seats)
+              this.$store.commit('SET_MAINSEAT', response.data.is_main_seat)
+            }
+          })
+        } else {
+          this.seats = _.cloneDeep(this.$store.state.seat.seats)
+          this.is_main_seat = this.$store.state.seat.isMainSeat
+        }
       }
+    },
+    beforeRouteLeave (to, from, next) {
+      this.intervalIds.forEach((value, key) => {
+        clearInterval(value)
+      })
+      next()
     },
     watch: {
       '$store.state.currentUser.cinemaId': function () {

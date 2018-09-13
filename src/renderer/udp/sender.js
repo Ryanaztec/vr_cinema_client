@@ -2,7 +2,7 @@ import client from './index'
 
 export const sendMessage = message => {
   console.log(client)
-  client.send(message, 8412, '255.255.255.255', function (err, bytes) {
+  client.send(message, 8413, '255.255.255.255', function (err, bytes) {
     if (err) {
       console.log('发送数据失败')
     } else {

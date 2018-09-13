@@ -1,5 +1,8 @@
 import axios from './config'
 
+let refreshTimer = null
+const refreshInterval = 1000 * 60 * 10
+
 export const example = params => {
   return axios({
     url: '/example',
@@ -58,6 +61,35 @@ export const getNewMoviesCount = params => {
   })
 }
 
+export const initTokenRefresher = currentUserStore => {
+  if (!refreshTimer) {
+    refreshTimer = setInterval(() => {
+      currentUserStore.dispatch('RefreshToken')
+    }, refreshInterval)
+  }
+}
+
+export const refreshToken = () => {
+  return axios({
+    url: '/auth/refresh',
+    method: 'post'
+  })
+}
+
+export const removeTokenRefresher = () => {
+  if (refreshTimer) {
+    clearInterval(refreshTimer)
+  }
+}
+
+export const getPlayingSeats = params => {
+  return axios({
+    url: '/cinema_movie/get-playing-seat',
+    method: 'post',
+    params
+  })
+}
+
 export default {
   example,
   login,
@@ -66,5 +98,9 @@ export default {
   getMovie,
   getMoviesByTag,
   getSeatByMac,
-  getNewMoviesCount
+  initTokenRefresher,
+  refreshToken,
+  removeTokenRefresher,
+  getNewMoviesCount,
+  getPlayingSeats
 }

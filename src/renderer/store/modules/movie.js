@@ -30,10 +30,10 @@ const actions = {
         let handler = function (value) {
           return value.length === 1 ? ('0' + value) : value
         }
-        if (parseInt(value.movie.running_time_hour)) {
-          buffer.push(value.movie.running_time_hour)
+        if (parseInt(value.movie.running_time_hour) || parseInt(value.movie.running_time_hour) === 0) {
+          buffer.push(handler(value.movie.running_time_hour))
         }
-        if (parseInt(value.movie.running_time_minute)) {
+        if (parseInt(value.movie.running_time_minute) || parseInt(value.movie.running_time_hour) === 0) {
           buffer.push(handler(value.movie.running_time_minute))
         }
         if (parseInt(value.movie.running_time_second)) {
