@@ -1,6 +1,6 @@
 <template>
   <div>
-    <header-info ref="header"></header-info>
+    <header-info ref="header" :isMainSeat="is_main_seat"></header-info>
 
       <div class="row container_body">
           <div class="col-md-12">
