@@ -51,6 +51,7 @@
                                                        v-show="item.is_active"/>
                                                   <p class="seat_number"
                                                      :class="item.is_active ? 'active_seat_number':''">{{item.seat_number}}</p>
+                                                  <div class="check_body"><icon name="search" class="text-white check_icon"/></div>
                                               </div>
                                           </div>
                                       </div>
@@ -326,11 +327,11 @@
       color: black;
   }
   .seat .middle_seat .seat_number {
-      bottom: 35%;
+      bottom: 32%;
       font-size: 1.5rem;
   }
   .seat .small_seat .seat_number {
-      bottom: 35%;
+      bottom: 32%;
       font-size: 1.2rem;
   }
   .seat .broadcast_pace_bg {
@@ -434,16 +435,20 @@
       padding-top: 45px;
       padding-bottom: 20px;
   }
+  .seat .check_body {
+      position: relative;
+      bottom: 71%;
+  }
   @media (max-width:1250px){
       .seat .middle_seat .seat_number, .seat .small_seat .seat_number {
           font-size: 0.7rem !important;
-          bottom: 32%;
+          bottom: 30%;
       }
   }
   @media (max-width:1500px){
       .seat .middle_seat .seat_number, .seat .small_seat .seat_number {
           font-size: 1rem !important;
-          bottom: 37%;
+          bottom: 33%;
       }
       .seat .seat_list .seat_box {
           padding-left: 5px;
