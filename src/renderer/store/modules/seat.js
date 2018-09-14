@@ -1,12 +1,16 @@
 import API from '../.././service/api'
 const state = {
   seats: [],
-  playingSeats: []
+  playingSeats: [],
+  isMain: false
 }
 
 const mutations = {
   SET_SEATS: (state, seats) => {
     state.seats = seats
+  },
+  SET_MAIN_SEAT: (state, status) => {
+    state.isMain = status
   },
   SET_PLAYING_SEATS: (state, seats) => {
     state.playingSeats.push(seats)
@@ -14,11 +18,14 @@ const mutations = {
   SET_SEAT_PLAYING_STATUS: (state, params) => {
     state.seats[params.index].status = params.status
   },
-  SET_SEAT_PLAYING_TIME: (state, params) => {
-    state.seats[params.index].time = params.time
-  },
-  SET_SEAT_PLAYING_MOVIE: (state, params) => {
-    state.seats[params.index].movie = params.movie
+  REMOVE_PLAYING_SEATS: (state, seats) => {
+    seats.forEach((value, key) => {
+      state.playingSeats.forEach((item, index) => {
+        if (item.seat_id === value.seat_id) {
+          state.playingSeats.splice(index, 1)
+        }
+      })
+    })
   }
 }
 

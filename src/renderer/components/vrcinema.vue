@@ -58,12 +58,11 @@
                               <div class="broadcast_list" v-else>
                                   <div class="choose_seat_text">播放进度</div>
                                   <div class="row seat_list topnav_box">
-                                      <div v-for="bar in seats" class="col-md-12 ">
+                                      <div v-for="item in playingProgress" class="col-md-12 ">
                                           <div class="row" v-if="is_main_seat">
-                                              <div class="col-sm-2 seat_num">{{ bar.seat_number }}</div>
+                                              <div class="col-sm-2 seat_num">{{ item.seat_number }}</div>
                                               <div class="col-sm-10">
-                                                  <b-progress :value="calculateProgress(bar)"
-                                                              :key="bar.variant"
+                                                  <b-progress :value="item.progress"
                                                               class="mb-4"
                                                               striped
                                                               height="12px"
@@ -72,7 +71,7 @@
                                           </div>
                                           <div v-else>
                                               <div class="row" v-if="bar.mac_address == current_mac_address">
-                                                  <div class="col-sm-2 seat_num">{{ bar.seat_number }}</div>
+                                                  <div class="col-sm-2 seat_num">{{ bar.cinema_seat.seat_number }}</div>
                                                   <div class="col-sm-10">
                                                       <b-progress :value= "bar.value"
                                                                   :key="bar.variant"
@@ -137,9 +136,9 @@
         selectedMovie: '',
         coverClass: '',
         current_mac_address: '',
-        intervalIds: [],
-        playingSeats: this.$store.state.seat.playingSeats,
-        activeSeatsIds: []
+        intervalId: '',
+        activeSeatsIds: [],
+        playingProgress: []
       }
     },
 
@@ -149,32 +148,6 @@
         this.active = index
         console.log(this.$store.state.seat.playingSeats)
         console.log(this.currentActiveSeats())
-      },
-      calculateProgress: function (item) {
-        let seat = []
-        let index = 0
-        this.$store.state.seat.seats.forEach((value, key) => {
-          if (value.mac_address === item.mac_address) {
-            seat = value
-            index = key
-          }
-        })
-        if (seat.status) {
-          let movieTime = this.movieTime(seat.movie)
-          let timeDeviation = Math.round(new Date().getTime() / 1000) - seat.time
-          let progress = (timeDeviation / movieTime) * 100
-          // 判断是否已经播放完毕
-          if (progress < 100) {
-            return progress
-          } else {
-            this.$store.commit('SET_SEAT_PLAYING_STATUS', {index: index, status: false})
-            this.$notify({
-              group: 'foo',
-              text: '座椅编号 ' + item.seat_number + ' 播放已完毕'
-            })
-          }
-        }
-        return 0
       },
       currentActiveSeats: function () {
         // 所有选中的座椅
@@ -212,6 +185,7 @@
           response.data.data.forEach((item, key) => {
             this.$store.commit('SET_PLAYING_SEATS', item)
           })
+          this.playingProgress = this.calculateProgress()
           const movieName = this.selectedMovie.movie_name
           // this.coverClass = 'cover' // 添加遮罩层
           Sender.sendMessage('start ' + movieName)
@@ -237,6 +211,8 @@
           movie_id: this.selectedMovie.movie_id,
           seats: this.activeSeatsIds
         }).then(response => {
+          // store中移除停止播放的座椅
+          this.$store.commit('REMOVE_PLAYING_SEATS', response.data.data)
           const movieName = this.selectedMovie.movie_name
           this.coverClass = '' // 除去遮罩层
           Sender.stopMovie()
@@ -322,6 +298,25 @@
         const movieTime = movie.movie_time.split(':')
         const parseToSeconds = movieTime[0] * 3600 + movieTime[1] * 60 + movieTime[2] * 1
         return parseToSeconds
+      },
+      calculateProgress: function () {
+        const seats = this.$store.state.seat.playingSeats
+        let progressArr = []
+        if (seats.length !== 0) {
+          seats.forEach((value, key) => {
+            const remainingTime = Math.round(new Date().getTime() / 1000) - value.play_start_time
+            let handleMovieTime = function (movie) {
+              return movie.running_time_hour * 3600 + movie.running_time_minute * 60 + movie.running_time_second * 1
+            }
+            let progress = (remainingTime / handleMovieTime(value.movie)) * 100 <= 100 ? (remainingTime / handleMovieTime(value.movie)) * 100 : 100
+            progressArr.push({
+              seat_number: value.cinema_seat.seat_number,
+              progress: progress
+            })
+          })
+        }
+        console.log(progressArr)
+        return progressArr
       }
     },
     async mounted () {
@@ -340,17 +335,20 @@
               this.is_main_seat = response.data.is_main_seat
               const seats = _.cloneDeep(response.data.data)
               this.$store.commit('SET_SEATS', seats)
+              this.$store.commit('SET_MAIN_SEAT', response.data.is_main_seat)
             }
           })
         } else {
           this.seats = _.cloneDeep(this.$store.state.seat.seats)
+          this.is_main_seat = _.cloneDeep(this.$store.state.seat.isMain)
         }
+        this.intervalId = setInterval(() => {
+          this.playingProgress = this.calculateProgress()
+        }, 1000)
       }
     },
     beforeRouteLeave (to, from, next) {
-      this.intervalIds.forEach((value, key) => {
-        clearInterval(value)
-      })
+      clearInterval(this.intervalId)
       next()
     },
     watch: {
