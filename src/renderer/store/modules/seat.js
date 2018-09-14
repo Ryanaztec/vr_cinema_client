@@ -26,6 +26,13 @@ const mutations = {
         }
       })
     })
+  },
+  REMOVE_PLAYING_SEATS_BY_ID: (state, ids) => {
+    state.playingSeats.forEach((item, index) => {
+      if (ids.indexOf(item.seat_id) !== -1) {
+        state.playingSeats.splice(index)
+      }
+    })
   }
 }
 
