@@ -161,6 +161,11 @@
           this.tags = response.data
         }
       })
+    },
+    watch: {
+      '$store.state.currentUser.cinemaId': function () {
+        this.$store.dispatch('GetPlayingStatusSeats', this.$store.state.currentUser.cinemaId)
+      }
     }
   }
 </script>

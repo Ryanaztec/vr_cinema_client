@@ -46,7 +46,6 @@ const actions = {
       store.commit('SET_CINEMA_ID', data.cinema.id)
       store.commit('SET_IS_LOGIN', true)
       API.initTokenRefresher(store)
-      store.dispatch('GetPlayingStatusSeats', data.cinema.id)
     }).catch(error => {
       throw error
     })
@@ -56,6 +55,17 @@ const actions = {
     store.commit('SET_TOKEN', '')
     store.commit('SET_USERNAME', '')
     store.commit('SET_IS_LOGIN', false)
+  },
+  // 刷新 Token
+  async RefreshToken ({ commit, store }) {
+    try {
+      const response = await API.refreshToken()
+      localStorage.token = response.token
+      commit('SET_TOKEN', response.token)
+      return response
+    } catch (e) {
+      throw e
+    }
   }
 }
 

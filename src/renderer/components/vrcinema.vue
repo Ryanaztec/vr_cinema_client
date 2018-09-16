@@ -149,7 +149,7 @@
         this.selectedMovie = item
         this.active = index
         console.log(this.$store.state.seat.playingSeats)
-        console.log(this.seats)
+        console.log(this.currentActiveSeats())
       },
       iconColor: function (item) {
         return item.is_playping ? 'text-black' : 'text-green'
@@ -174,6 +174,9 @@
       },
       start: function () {
         let activeSeats = this.currentActiveSeats()
+        let selectedMovie = this.selectedMovie
+        let playingSeats = this.$store.state.seat.playingSeats
+        let playSeatsIds = []
         if (activeSeats.length === 0) {
           dialog.showMessageBox({
             title: '错误',
@@ -182,27 +185,50 @@
           })
           return false
         }
-        API.storePlayRecord({
-          cinema_id: this.$store.state.currentUser.cinemaId,
-          movie_id: this.selectedMovie.movie_id,
-          seats: this.activeSeatsIds
-        }).then(response => {
-          response.data.data.forEach((item, key) => {
-            this.$store.commit('SET_PLAYING_SEATS', item)
-          })
-          this.playingProgress = this.calculateProgress()
-          const movieName = this.selectedMovie.movie_name
-          // this.coverClass = 'cover' // 添加遮罩层
-          Sender.sendMessage('start ' + movieName)
-          this.$notify({
-            group: 'foo',
-            text: '开始播放 《' + movieName + '》'
-          })
-          this.is_play = true
+        // 过滤已在播放的座椅：
+        playingSeats.map(item => {
+          playSeatsIds.push(item.seat_id)
+        })
+        let seatsToPlay = this.activeSeatsIds.filter(item => {
+          return playSeatsIds.indexOf(item) === -1
+        })
+        this.swal({
+          title: '确定要播放电影 《' + selectedMovie.movie_name + '》',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then((result) => {
+          if (result.value) {
+            API.storePlayRecord({
+              cinema_id: this.$store.state.currentUser.cinemaId,
+              movie_id: selectedMovie.movie_id,
+              seats: seatsToPlay
+            }).then(response => {
+              response.data.data.forEach((item, key) => {
+                this.$store.commit('SET_PLAYING_SEATS', item)
+              })
+              this.playingProgress = this.calculateProgress()
+              // this.coverClass = 'cover' // 添加遮罩层
+              Sender.sendMessage('start ' + selectedMovie.movie_name)
+              this.$notify({
+                group: 'foo',
+                text: '开始播放 《' + selectedMovie.movie_name + '》'
+              })
+              this.is_play = true
+            })
+          }
         })
       },
       stop: function () {
         let activeSeats = this.currentActiveSeats()
+        let activeSeatNum = []
+        activeSeats.map(item => {
+          activeSeatNum.push(item.seat_number)
+        })
+        activeSeatNum = activeSeatNum.join(', ')
         if (activeSeats.length === 0) {
           dialog.showMessageBox({
             title: '错误',
@@ -211,45 +237,37 @@
           })
           return false
         }
-        API.updatePlayRecord({
-          cinema_id: this.$store.state.currentUser.cinemaId,
-          movie_id: this.selectedMovie.movie_id,
-          seats: this.activeSeatsIds
-        }).then(response => {
-          // store中移除停止播放的座椅
-          this.$store.commit('REMOVE_PLAYING_SEATS_BY_ID', this.activeSeatsIds)
-          const movieName = this.selectedMovie.movie_name
-          this.coverClass = '' // 除去遮罩层
-          Sender.stopMovie()
-          this.$notify({
-            group: 'foo',
-            text: '停止播放 《' + movieName + '》'
-          })
-          this.is_play = false
+        this.swal({
+          title: '确定要停止座椅编号为 ' + activeSeatNum + ' 的影片播放?',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then((result) => {
+          if (result.value) {
+            API.updatePlayRecord({
+              cinema_id: this.$store.state.currentUser.cinemaId,
+              movie_id: this.selectedMovie.movie_id,
+              seats: this.activeSeatsIds
+            }).then(response => {
+              // store中移除停止播放的座椅
+              this.$store.commit('REMOVE_PLAYING_SEATS_BY_ID', this.activeSeatsIds)
+              const movieName = this.selectedMovie.movie_name
+              this.coverClass = '' // 除去遮罩层
+              Sender.stopMovie()
+              this.$notify({
+                group: 'foo',
+                text: '停止播放 《' + movieName + '》'
+              })
+              this.is_play = false
+            })
+          }
         })
       },
       activeSeat: function (seatNumber) {
-        const activeSeats = this.currentActiveSeats()
         let currentSeatStatus = false
-        let otherSeatStatus = false
-        if (activeSeats.length !== 0) {
-          this.$store.state.seat.playingSeats.forEach((value, key) => {
-            if (value.seat_id === activeSeats[0].id) {
-              otherSeatStatus = true
-            }
-            if (value.seat_id === this.seats[seatNumber].id) {
-              currentSeatStatus = true
-            }
-          })
-        }
-        if (currentSeatStatus !== otherSeatStatus) {
-          dialog.showMessageBox({
-            title: '错误',
-            message: '所选座椅播放状态必须统一',
-            type: 'warning'
-          })
-          return false
-        }
         this.$store.state.seat.playingSeats.forEach((value, key) => {
           if (value.seat_id === this.seats[seatNumber].id) {
             currentSeatStatus = true
@@ -321,11 +339,21 @@
               mac_address: value.cinema_seat.mac_address
             })
             if (progress >= 100) {
-              removePlayingSeats.push(value)
+              removePlayingSeats.push(value.seat_id)
             }
           })
           if (removePlayingSeats.length !== 0) {
-            this.$store.commit('REMOVE_PLAYING_SEATS', removePlayingSeats)
+            this.$store.commit('REMOVE_PLAYING_SEATS_BY_ID', removePlayingSeats)
+            API.updatePlayRecord({
+              cinema_id: this.$store.state.currentUser.cinemaId,
+              movie_id: this.selectedMovie.movie_id,
+              seats: this.activeSeatsIds
+            }).then(response => {
+              this.$notify({
+                group: 'foo',
+                text: '座椅编号：' + removePlayingSeats.join(',') + ' 播放已结束'
+              })
+            })
           }
         }
         return progressArr
