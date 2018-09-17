@@ -7,6 +7,7 @@ router.beforeEach((to, from, next) => {
     if (store.state.currentUser.username.length === 0) {
       store.dispatch('GetInfo')
         .then(res => { // 拉取用户信息
+          store.dispatch('GetPlayingStatusSeats', store.state.currentUser.cinemaId)
           next()
         })
         .catch(() => {

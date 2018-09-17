@@ -38,7 +38,7 @@
                                                   <img class="seat_img selected_seat_img" src="../assets/selected_seat.png"
                                                        v-show="!item.is_playping && !item.is_active && item.mac_address===current_mac_address"/>
                                                   <img class="seat_img active_seat_img" src="../assets/active_seat.png"
-                                                       v-show="item.is_playping && item.is_active"/>
+                                                       v-show="item.is_playping"/>
                                                   <p class="seat_number"
                                                      :class="{'active_seat_number': item.is_playping, 'selected_seat_number': (!item.is_playping && !item.is_active && item.mac_address===current_mac_address)}">{{item.seat_number}}</p>
                                                      <div class="check_body"><icon v-if="item.mac_address===current_mac_address" name="check" class="text-white check_icon" :class="iconColor(item)"/></div>
@@ -132,7 +132,7 @@
         seats: [],
         is_main_seat: false,
         active_seat: false,
-        is_play: true,
+        is_play: false,
         currentPage: 1,
         tag: '',
         showPagination: false,
@@ -163,7 +163,10 @@
         let activeSeats = []
         this.activeSeatsIds = []
         this.seats.forEach((item, key) => {
-          if (item.is_active) {
+          if (this.$store.state.seat.isMain && item.is_active) {
+            activeSeats.push(item)
+            this.activeSeatsIds.push(item.id)
+          } else if (item.mac_address === this.current_mac_address) {
             activeSeats.push(item)
             this.activeSeatsIds.push(item.id)
           }
@@ -212,7 +215,7 @@
               seats: seatsToPlay
             }).then(response => {
               response.data.data.forEach((item, key) => {
-                this.$store.commit('SET_PLAYING_SEATS', item)
+                this.$store.commit('ADD_PLAYING_SEATS', item)
               })
               this.playingProgress = this.calculateProgress()
               // this.coverClass = 'cover' // 添加遮罩层
@@ -287,7 +290,6 @@
       },
       getMovies (keyword, tag, page) {
         const macAddress = this.getMac()
-
         const cinemaId = this.$store.state.currentUser.cinemaId
         this.$refs.header.active = tag ? this.$refs.header.active : 0
         this.$store.dispatch('GetMovies', {
@@ -337,11 +339,13 @@
               return movie.running_time_hour * 3600 + movie.running_time_minute * 60 + movie.running_time_second * 1
             }
             let progress = (remainingTime / handleMovieTime(value.movie)) * 100 <= 100 ? (remainingTime / handleMovieTime(value.movie)) * 100 : 100
-            progressArr.push({
-              seat_number: value.cinema_seat.seat_number,
-              progress: progress,
-              mac_address: value.cinema_seat.mac_address
-            })
+            if (this.$store.state.seat.isMain || value.cinema_seat.mac_address === this.current_mac_address) {
+              progressArr.push({
+                seat_number: value.cinema_seat.seat_number,
+                progress: progress,
+                mac_address: value.cinema_seat.mac_address
+              })
+            }
             if (progress >= 100) {
               removePlayingSeats.push(value.seat_id)
             }
@@ -351,13 +355,14 @@
             API.updatePlayRecord({
               cinema_id: this.$store.state.currentUser.cinemaId,
               movie_id: this.selectedMovie.movie_id,
-              seats: this.activeSeatsIds
+              seats: removePlayingSeats
             }).then(response => {
               this.$notify({
                 group: 'foo',
                 text: '座椅编号：' + removePlayingSeats.join(',') + ' 播放已结束'
               })
             })
+            this.is_play = false
           }
         }
         return progressArr
