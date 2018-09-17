@@ -257,10 +257,11 @@
             API.updatePlayRecord({
               cinema_id: this.$store.state.currentUser.cinemaId,
               movie_id: this.selectedMovie.movie_id,
-              seats: this.activeSeatsIds
+              seats: this.activeSeatsIds,
+              is_main: this.is_main_seat
             }).then(response => {
               // store中移除停止播放的座椅
-              this.$store.commit('REMOVE_PLAYING_SEATS_BY_ID', this.activeSeatsIds)
+              this.$store.commit('SET_PLAYING_SEATS', response.data.data)
               const movieName = this.selectedMovie.movie_name
               this.coverClass = '' // 除去遮罩层
               Sender.stopMovie()
@@ -289,12 +290,11 @@
         this.getMovies('', val.name)
       },
       getMovies (keyword, tag, page) {
-        const macAddress = this.getMac()
         const cinemaId = this.$store.state.currentUser.cinemaId
         this.$refs.header.active = tag ? this.$refs.header.active : 0
         this.$store.dispatch('GetMovies', {
           cinema_id: cinemaId,
-          mac_address: macAddress,
+          mac_address: this.current_mac_address,
           key_word: keyword,
           tag: tag,
           page: page
@@ -312,51 +312,39 @@
         const tag = this.tag
         this.getMovies(keyword, tag, page)
       },
-      async getMac () {
-        return new Promise(function (resolve, reject) {
-          require('getmac').getMac(function (err, macAddress) {
-            if (err) {
-              reject(err)
-            } else {
-              resolve(macAddress)
-            }
-          })
-        })
-      },
       movieTime: function (movie) {
         const movieTime = movie.movie_time.split(':')
         const parseToSeconds = movieTime[0] * 3600 + movieTime[1] * 60 + movieTime[2] * 1
         return parseToSeconds
       },
       calculateProgress: function () {
-        const seats = this.$store.state.seat.playingSeats
+        const playingSeats = this.$store.state.seat.playingSeats
         let progressArr = []
         let removePlayingSeats = []
-        if (seats.length !== 0) {
-          seats.forEach((value, key) => {
+        if (playingSeats.length !== 0) {
+          playingSeats.forEach((value, key) => {
             const remainingTime = Math.round(new Date().getTime() / 1000) - value.play_start_time
             let handleMovieTime = function (movie) {
               return movie.running_time_hour * 3600 + movie.running_time_minute * 60 + movie.running_time_second * 1
             }
             let progress = (remainingTime / handleMovieTime(value.movie)) * 100 <= 100 ? (remainingTime / handleMovieTime(value.movie)) * 100 : 100
-            if (this.$store.state.seat.isMain || value.cinema_seat.mac_address === this.current_mac_address) {
-              progressArr.push({
-                seat_number: value.cinema_seat.seat_number,
-                progress: progress,
-                mac_address: value.cinema_seat.mac_address
-              })
-            }
+            progressArr.push({
+              seat_number: value.cinema_seat.seat_number,
+              progress: progress,
+              mac_address: value.cinema_seat.mac_address
+            })
             if (progress >= 100) {
               removePlayingSeats.push(value.seat_id)
             }
           })
           if (removePlayingSeats.length !== 0) {
-            this.$store.commit('REMOVE_PLAYING_SEATS_BY_ID', removePlayingSeats)
             API.updatePlayRecord({
               cinema_id: this.$store.state.currentUser.cinemaId,
               movie_id: this.selectedMovie.movie_id,
-              seats: removePlayingSeats
+              seats: removePlayingSeats,
+              is_main: this.is_main_seat
             }).then(response => {
+              this.$store.commit('SET_PLAYING_SEATS', response.data.data)
               this.$notify({
                 group: 'foo',
                 text: '座椅编号：' + removePlayingSeats.join(',') + ' 播放已结束'
@@ -380,14 +368,13 @@
     },
     async mounted () {
       if (this.$store.state.currentUser.isLogin) {
+        this.current_mac_address = await this.$store.dispatch('getMacAddress')
         this.getMovies()
-        const macAddress = await this.getMac()
-        this.current_mac_address = macAddress
         const cinemaId = this.$store.state.currentUser.cinemaId
         if (this.$store.state.seat.seats.length === 0) {
           API.getSeatByMac({
             cinema_id: cinemaId,
-            mac_address: macAddress
+            mac_address: this.current_mac_address
           }).then((response) => {
             if (response.success) {
               this.seats = response.data.data

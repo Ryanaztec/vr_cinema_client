@@ -18,18 +18,6 @@ const mutations = {
   SET_PLAYING_SEATS: (state, seats) => {
     state.playingSeats = seats
   },
-  SET_SEAT_PLAYING_STATUS: (state, params) => {
-    state.seats[params.index].status = params.status
-  },
-  REMOVE_PLAYING_SEATS: (state, seats) => {
-    seats.forEach((value, key) => {
-      state.playingSeats.forEach((item, index) => {
-        if (item.seat_id === value.seat_id) {
-          state.playingSeats.splice(index, 1)
-        }
-      })
-    })
-  },
   REMOVE_PLAYING_SEATS_BY_ID: (state, ids) => {
     state.playingSeats.forEach((item, index) => {
       if (ids.indexOf(item.seat_id) !== -1) {
@@ -43,8 +31,8 @@ const mutations = {
 }
 
 const actions = {
-  GetPlayingStatusSeats (store, id) {
-    API.getPlayingSeats({cinema_id: id}).then(response => {
+  GetPlayingStatusSeats (store, params) {
+    API.getPlayingSeats(params).then(response => {
       if (response.data.data.length !== 0) {
         store.commit('SET_PLAYING_SEATS', response.data.data)
       }

@@ -6,8 +6,13 @@ router.beforeEach((to, from, next) => {
     store.commit('SET_TOKEN', localStorage.token)
     if (store.state.currentUser.username.length === 0) {
       store.dispatch('GetInfo')
-        .then(res => { // 拉取用户信息
-          store.dispatch('GetPlayingStatusSeats', store.state.currentUser.cinemaId)
+        .then(res => {
+          store.dispatch('getMacAddress').then(response => {
+            store.dispatch('GetPlayingStatusSeats', {
+              cinema_id: store.state.currentUser.cinemaId,
+              mac_address: response
+            })
+          })
           next()
         })
         .catch(() => {
