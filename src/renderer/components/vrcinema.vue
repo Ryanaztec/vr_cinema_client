@@ -34,22 +34,26 @@
                                           <div class="row" v-if="!is_main_seat">
                                               <div class="seat_box" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" v-for="(item,$index) in seats">
                                                   <img class="seat_img" src="../assets/seat.png"
-                                                       v-show="!item.is_playping"/>
+                                                       v-show="!item.is_playping && !item.is_active && !(item.mac_address===current_mac_address)"/>
+                                                  <img class="seat_img selected_seat_img" src="../assets/selected_seat.png"
+                                                       v-show="!item.is_playping && !item.is_active && item.mac_address===current_mac_address"/>
                                                   <img class="seat_img active_seat_img" src="../assets/active_seat.png"
-                                                       v-show="item.is_playping"/>
+                                                       v-show="item.is_playping && item.is_active"/>
                                                   <p class="seat_number"
-                                                     :class="item.is_playping ? 'active_seat_number':''">{{item.seat_number}}</p>
-                                                     <div class="check_body"><icon v-if="item.is_active" name="check" class="text-white check_icon" :class="iconColor(item)"/></div>
+                                                     :class="{'active_seat_number': item.is_playping, 'selected_seat_number': (!item.is_playping && !item.is_active && item.mac_address===current_mac_address)}">{{item.seat_number}}</p>
+                                                     <div class="check_body"><icon v-if="item.mac_address===current_mac_address" name="check" class="text-white check_icon" :class="iconColor(item)"/></div>
                                               </div>
                                           </div>
                                           <div class="row" v-else>
                                               <div class="seat_box admin_view_seat" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" @click="activeSeat($index)"
                                                    v-for="(item,$index) in seats">
-                                                  <img class="seat_img" src="../assets/seat.png" v-show="!item.is_playping"/>
+                                                  <img class="seat_img" src="../assets/seat.png" v-show="!item.is_playping && !item.is_active"/>
+                                                  <img class="seat_img selected_seat_img" src="../assets/selected_seat.png"
+                                                       v-show="!item.is_playping && item.is_active"/>
                                                   <img class="seat_img active_seat_img" src="../assets/active_seat.png"
                                                        v-show="item.is_playping"/>
                                                   <p class="seat_number"
-                                                     :class="item.is_playping ? 'active_seat_number':''">{{item.seat_number}}</p>
+                                                     :class="{'active_seat_number': item.is_playping, 'selected_seat_number': (!item.is_playping && item.is_active)}">{{item.seat_number}}</p>
                                                   <div class="check_body"><icon v-if="item.is_active" name="check" class="text-white check_icon" :class="iconColor(item)"/></div>
                                               </div>
                                           </div>
@@ -487,7 +491,7 @@
       margin-right: 0px;
   }
   .seat .seat_list .seat_box {
-      /*margin-bottom: -10%;*/
+      margin-bottom: -20%;
   }
   .seat .seat_list.topnav_box::-webkit-scrollbar {
       width: 5px;
@@ -572,8 +576,11 @@
       bottom: 71%;
       height: 24px;
   }
+  .seat .selected_seat_number {
+      color: rgb(25, 236, 236) !important;
+  }
   .seat .check_body .text-green {
-      color: white !important;
+      color: rgb(25, 236, 236) !important;
   }
   .seat .check_body .text-black {
       color: #343a40 !important;

@@ -18,8 +18,8 @@
                   </template>
                   <template v-else>
                     <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
-                    <b-dropdown-item href="http://vrcinema.osvlabs.com/" class="manage_admin" target="_blank" v-if="isMainSeat">影院管理后台</b-dropdown-item>
-                    <b-dropdown-item class="dmz_host" v-if="isMainSeat" @click="closeAllSeat">关闭所有主机</b-dropdown-item>
+                    <b-dropdown-item href="http://vrcinema.osvlabs.com/" class="manage_admin" target="_blank" v-if="$store.state.seat.isMain">影院管理后台</b-dropdown-item>
+                    <b-dropdown-item class="dmz_host" v-if="$store.state.seat.isMain" @click="closeAllSeat">关闭所有主机</b-dropdown-item>
                     <b-dropdown-item to="/" class="log_out" @click="logout">注销登录</b-dropdown-item>
                   </template>
               </b-dropdown>

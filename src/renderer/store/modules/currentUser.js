@@ -55,6 +55,8 @@ const actions = {
     store.commit('SET_TOKEN', '')
     store.commit('SET_USERNAME', '')
     store.commit('SET_IS_LOGIN', false)
+    store.commit('SET_SEATS', [])
+    store.commit('SET_MAIN_SEAT', false)
   },
   // 刷新 Token
   async RefreshToken ({ commit, store }) {
