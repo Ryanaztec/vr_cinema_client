@@ -1,6 +1,7 @@
 const state = {
   showLoading: true,
-  macAddress: ''
+  macAddress: '',
+  ip_address: ''
 }
 
 const mutations = {
@@ -9,6 +10,9 @@ const mutations = {
   },
   SET_MAC_ADDRESS: (state, macAddress) => {
     state.macAddress = macAddress
+  },
+  SET_IP_ADDRESS: (state, ip) => {
+    state.ip_address = ip
   }
 }
 

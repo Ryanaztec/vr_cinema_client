@@ -17,16 +17,6 @@ const mutations = {
   },
   SET_PLAYING_SEATS: (state, seats) => {
     state.playingSeats = seats
-  },
-  REMOVE_PLAYING_SEATS_BY_ID: (state, ids) => {
-    state.playingSeats.forEach((item, index) => {
-      if (ids.indexOf(item.seat_id) !== -1) {
-        state.playingSeats.splice(index, 1)
-      }
-    })
-  },
-  REMOVE_ALL_PLAYING_SEATS: (state) => {
-    state.playingSeats = []
   }
 }
 

@@ -34,26 +34,26 @@
                                           <div class="row" v-if="!is_main_seat">
                                               <div class="seat_box" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" v-for="(item,$index) in seats">
                                                   <img class="seat_img" src="../assets/seat.png"
-                                                       v-show="!item.is_playping && !item.is_active && !(item.mac_address===current_mac_address)"/>
+                                                       v-show="!item.is_playing && !item.is_active && !(item.mac_address===current_mac_address)"/>
                                                   <img class="seat_img selected_seat_img" src="../assets/selected_seat.png"
-                                                       v-show="!item.is_playping && !item.is_active && item.mac_address===current_mac_address"/>
+                                                       v-show="!item.is_playing && !item.is_active && item.mac_address===current_mac_address"/>
                                                   <img class="seat_img active_seat_img" src="../assets/active_seat.png"
-                                                       v-show="item.is_playping"/>
+                                                       v-show="item.is_playing"/>
                                                   <p class="seat_number"
-                                                     :class="{'active_seat_number': item.is_playping, 'selected_seat_number': (!item.is_playping && !item.is_active && item.mac_address===current_mac_address)}">{{item.seat_number}}</p>
+                                                     :class="{'active_seat_number': item.is_playing, 'selected_seat_number': (!item.is_playing && !item.is_active && item.mac_address===current_mac_address)}">{{item.seat_number}}</p>
                                                      <div class="check_body"><icon v-if="item.mac_address===current_mac_address" name="check" class="text-white check_icon" :class="iconColor(item)"/></div>
                                               </div>
                                           </div>
                                           <div class="row" v-else>
                                               <div class="seat_box admin_view_seat" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" @click="activeSeat($index)"
                                                    v-for="(item,$index) in seats">
-                                                  <img class="seat_img" src="../assets/seat.png" v-show="!item.is_playping && !item.is_active"/>
+                                                  <img class="seat_img" src="../assets/seat.png" v-show="!item.is_playing && !item.is_active"/>
                                                   <img class="seat_img selected_seat_img" src="../assets/selected_seat.png"
-                                                       v-show="!item.is_playping && item.is_active"/>
+                                                       v-show="!item.is_playing && item.is_active"/>
                                                   <img class="seat_img active_seat_img" src="../assets/active_seat.png"
-                                                       v-show="item.is_playping"/>
+                                                       v-show="item.is_playing"/>
                                                   <p class="seat_number"
-                                                     :class="{'active_seat_number': item.is_playping, 'selected_seat_number': (!item.is_playping && item.is_active)}">{{item.seat_number}}</p>
+                                                     :class="{'active_seat_number': item.is_playing, 'selected_seat_number': (!item.is_playing && item.is_active)}">{{item.seat_number}}</p>
                                                   <div class="check_body"><icon v-if="item.is_active" name="check" class="text-white check_icon" :class="iconColor(item)"/></div>
                                               </div>
                                           </div>
@@ -152,11 +152,12 @@
       activeVideo: function (item, index) {
         this.selectedMovie = item
         this.active = index
+        console.log(this.$store.state.public.ip_address)
         console.log(this.$store.state.seat.playingSeats)
         console.log(this.currentActiveSeats())
       },
       iconColor: function (item) {
-        return item.is_playping ? 'text-black' : 'text-green'
+        return item.is_playing ? 'text-black' : 'text-green'
       },
       currentActiveSeats: function () {
         // 所有选中的座椅
@@ -178,6 +179,9 @@
       },
       choose_seat: function () {
         this.show_seat = true
+      },
+      getRealPlayingSeats: function () {
+
       },
       start: function () {
         let activeSeats = this.currentActiveSeats()
@@ -214,12 +218,14 @@
               movie_id: selectedMovie.movie_id,
               seats: seatsToPlay
             }).then(response => {
+              let ipsToSendMsg = []
               response.data.data.forEach((item, key) => {
+                ipsToSendMsg.push(item.cinema_seat.ip_address)
                 this.$store.commit('ADD_PLAYING_SEATS', item)
               })
               this.playingProgress = this.calculateProgress()
               // this.coverClass = 'cover' // 添加遮罩层
-              Sender.sendMessage('start ' + selectedMovie.movie_name)
+              Sender.sendMessage('start ' + selectedMovie.movie_name, ipsToSendMsg, this.is_main_seat)
               this.$notify({
                 group: 'foo',
                 text: '开始播放 《' + selectedMovie.movie_name + '》'
@@ -232,6 +238,7 @@
       stop: function () {
         let activeSeats = this.currentActiveSeats()
         let activeSeatNum = []
+        let realPlayingSeatsIps = []
         activeSeats.map(item => {
           activeSeatNum.push(item.seat_number)
         })
@@ -244,6 +251,11 @@
           })
           return false
         }
+        activeSeats.map(item => {
+          if (item.is_playing) {
+            realPlayingSeatsIps.push(item.ip_address)
+          }
+        })
         this.swal({
           title: '确定要停止座椅编号为 ' + activeSeatNum + ' 的影片播放?',
           type: 'warning',
@@ -264,7 +276,7 @@
               this.$store.commit('SET_PLAYING_SEATS', response.data.data)
               const movieName = this.selectedMovie.movie_name
               this.coverClass = '' // 除去遮罩层
-              Sender.stopMovie()
+              Sender.stopMovie(realPlayingSeatsIps, this.is_main_seat)
               this.$notify({
                 group: 'foo',
                 text: '停止播放 《' + movieName + '》'
@@ -321,6 +333,8 @@
         const playingSeats = this.$store.state.seat.playingSeats
         let progressArr = []
         let removePlayingSeats = []
+        let playingSeatsNumber = []
+        let ips = []
         if (playingSeats.length !== 0) {
           playingSeats.forEach((value, key) => {
             const remainingTime = Math.round(new Date().getTime() / 1000) - value.play_start_time
@@ -335,6 +349,8 @@
             })
             if (progress >= 100) {
               removePlayingSeats.push(value.seat_id)
+              playingSeatsNumber.push(value.cinema_seat.seat_number)
+              ips.push(value.cinema_seat.ip_address)
             }
           })
           if (removePlayingSeats.length !== 0) {
@@ -344,10 +360,11 @@
               seats: removePlayingSeats,
               is_main: this.is_main_seat
             }).then(response => {
+              Sender.stopMovie(ips, this.is_main_seat)
               this.$store.commit('SET_PLAYING_SEATS', response.data.data)
               this.$notify({
                 group: 'foo',
-                text: '座椅编号：' + removePlayingSeats.join(',') + ' 播放已结束'
+                text: '座椅编号：' + playingSeatsNumber.join(',') + ' 播放已结束'
               })
             })
             this.is_play = false
@@ -357,10 +374,10 @@
       },
       initSeatPlayingStatus: function () {
         this.seats.forEach((item, index) => {
-          item.is_playping = false
+          item.is_playing = false
           this.$store.state.seat.playingSeats.forEach((value, key) => {
             if (item.id === value.seat_id) {
-              item.is_playping = true
+              item.is_playing = true
             }
           })
         })
@@ -406,6 +423,13 @@
       },
       '$store.state.seat.playingSeats': function () {
         this.initSeatPlayingStatus()
+      },
+      seats: function () {
+        this.seats.forEach((item, index) => {
+          if (item.mac_address === this.current_mac_address) {
+            this.$store.commit('SET_IP_ADDRESS', item.ip_address)
+          }
+        })
       }
     },
     computed: {

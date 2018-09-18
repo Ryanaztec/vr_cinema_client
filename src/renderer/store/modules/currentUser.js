@@ -58,7 +58,7 @@ const actions = {
     store.commit('SET_SEATS', [])
     store.commit('SET_MAIN_SEAT', false)
     store.commit('SET_CINEMA_ID', '')
-    store.commit('REMOVE_ALL_PLAYING_SEATS')
+    store.commit('SET_PLAYING_SEATS', [])
   },
   // 刷新 Token
   async RefreshToken ({ commit, store }) {
