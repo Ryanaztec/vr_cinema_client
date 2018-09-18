@@ -218,19 +218,26 @@
               movie_id: selectedMovie.movie_id,
               seats: seatsToPlay
             }).then(response => {
-              let ipsToSendMsg = []
-              response.data.data.forEach((item, key) => {
-                ipsToSendMsg.push(item.cinema_seat.ip_address)
-                this.$store.commit('ADD_PLAYING_SEATS', item)
-              })
-              this.playingProgress = this.calculateProgress()
-              // this.coverClass = 'cover' // 添加遮罩层
-              Sender.sendMessage('start ' + selectedMovie.movie_name, ipsToSendMsg, this.is_main_seat)
-              this.$notify({
-                group: 'foo',
-                text: '开始播放 《' + selectedMovie.movie_name + '》'
-              })
-              this.is_play = true
+              if (response.success) {
+                let ipsToSendMsg = []
+                response.data.data.forEach((item, key) => {
+                  ipsToSendMsg.push(item.cinema_seat.ip_address)
+                  this.$store.commit('ADD_PLAYING_SEATS', item)
+                })
+                this.playingProgress = this.calculateProgress()
+                // this.coverClass = 'cover' // 添加遮罩层
+                Sender.sendMessage('start ' + selectedMovie.movie_name, ipsToSendMsg, this.is_main_seat)
+                this.$notify({
+                  group: 'foo',
+                  text: '开始播放 《' + selectedMovie.movie_name + '》'
+                })
+                this.is_play = true
+              } else {
+                this.$notify({
+                  group: 'foo',
+                  text: '网络繁忙，请重试'
+                })
+              }
             })
           }
         })
@@ -272,16 +279,23 @@
               seats: this.activeSeatsIds,
               is_main: this.is_main_seat
             }).then(response => {
-              // store中移除停止播放的座椅
-              this.$store.commit('SET_PLAYING_SEATS', response.data.data)
-              const movieName = this.selectedMovie.movie_name
-              this.coverClass = '' // 除去遮罩层
-              Sender.stopMovie(realPlayingSeatsIps, this.is_main_seat)
-              this.$notify({
-                group: 'foo',
-                text: '停止播放 《' + movieName + '》'
-              })
-              this.is_play = false
+              if (response.success) {
+                // store中移除停止播放的座椅
+                this.$store.commit('SET_PLAYING_SEATS', response.data.data)
+                const movieName = this.selectedMovie.movie_name
+                this.coverClass = '' // 除去遮罩层
+                Sender.stopMovie(realPlayingSeatsIps, this.is_main_seat)
+                this.$notify({
+                  group: 'foo',
+                  text: '停止播放 《' + movieName + '》'
+                })
+                this.is_play = false
+              } else {
+                this.$notify({
+                  group: 'foo',
+                  text: '网络繁忙，请重试'
+                })
+              }
             })
           }
         })
@@ -360,12 +374,19 @@
               seats: removePlayingSeats,
               is_main: this.is_main_seat
             }).then(response => {
-              Sender.stopMovie(ips, this.is_main_seat)
-              this.$store.commit('SET_PLAYING_SEATS', response.data.data)
-              this.$notify({
-                group: 'foo',
-                text: '座椅编号：' + playingSeatsNumber.join(',') + ' 播放已结束'
-              })
+              if (response.success) {
+                Sender.stopMovie(ips, this.is_main_seat)
+                this.$store.commit('SET_PLAYING_SEATS', response.data.data)
+                this.$notify({
+                  group: 'foo',
+                  text: '座椅编号：' + playingSeatsNumber.join(',') + ' 播放已结束'
+                })
+              } else {
+                this.$notify({
+                  group: 'foo',
+                  text: '网络繁忙，请重试'
+                })
+              }
             })
             this.is_play = false
           }

@@ -7,14 +7,14 @@
               <div class="row ">
                   <div class="col-md-12">
                       <div class="row video_list">
-                          <div class="col-md-3 video_box" v-for="(item,$index) in all_movies" @click="videoDetail(item)">
+                          <div class="col-md-3 video_box" v-for="(item,$index) in all_movies">
                               <div class="video">
                                   <div class="acttive_bg">
-                                      <img class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"/>
+                                      <img @click="videoDetail(item)" class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"/>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
-                                          <span class="video_status downloaded" v-if="item.downloaded && $store.state.currentUser.isLogin">已下载</span>
-                                          <span class="video_status not_download" v-else>下载影片</span>
+                                          <span class="video_status downloaded" v-if="!item.downloaded && $store.state.currentUser.isLogin">已下载</span>
+                                          <span @click="downloadMovie(item)" class="video_status not_download" v-else>下载影片</span>
                                       </div>
                                   </div>
                               </div>
@@ -44,12 +44,62 @@
         currentPage: 1,
         pageNum: 1,
         tag: '',
-        directPage: 1
+        directPage: 1,
+        intervalId: ''
       }
     },
     methods: {
-      open (link) {
-        this.$electron.shell.openExternal(link)
+      downloadMovie (item) {
+        // 获取文件名
+        const index = item.path.lastIndexOf('/')
+        const fileName = item.path.substring(index + 1, item.path.length)
+        // 文件路径
+        const movieUrl = this.baseUrl + item.path
+        // 初始化下载器
+        var Downloader = require('mt-files-downloader')
+        var downloader = new Downloader()
+        var dl = downloader.download(movieUrl, './downloaded-movies/' + fileName)
+        dl.setOptions({
+          range: '0-200'
+        })
+        // 开始下载
+        dl.start()
+
+        setInterval(() => {
+          let stats = dl.getStats()
+          console.log('stats', dl.status)
+          switch (dl.status) {
+            case 1:
+              console.log('download_speed_value__111', parseInt(stats.present.speed / 1000) || 0)
+              console.log('set percent', parseInt(stats.total.completed))
+              break
+            case 2:
+              break
+            case -1:
+              console.log('download_speed_value___-1', parseInt(stats.present.speed / 1000) || 0)
+              console.log('set percent', parseInt(stats.total.completed))
+              break
+            default:
+              console.log('1111')
+          }
+        }, 1000)
+
+        dl.on('start', (dl) => {
+          console.log('start', dl)
+        })
+
+        this.intervalId = setInterval(() => {
+        }, 1000)
+
+        dl.on('error', (dl) => {
+          console.log('error', dl)
+          clearInterval(this.intervalId)
+        })
+
+        dl.on('end', (dl) => {
+          console.log('end', dl)
+          clearInterval(this.intervalId)
+        })
       },
       videoDetail (item) {
         this.$router.push({ name: 'video_detail', params: { data: item } })
