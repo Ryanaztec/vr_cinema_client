@@ -14,7 +14,10 @@
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
                                           <span class="video_status downloaded" v-if="!item.downloaded && $store.state.currentUser.isLogin">已下载</span>
-                                          <span @click="downloadMovie(item)" class="video_status not_download" v-else>下载影片</span>
+                                          <span v-else-if="item.isDownloading" class="download_progress" @click="stopMovie(item)">
+                                            <b-progress :value="item.stats.total.completed" show-progress animated show-progress></b-progress>
+                                          </span>
+                                          <span @click="downloadMovie(item, $index)" class="video_status not_download" v-else>下载影片</span>
                                       </div>
                                   </div>
                               </div>
@@ -34,6 +37,9 @@
 <script>
   import HeaderInfo from './header'
   import API from '../service/api'
+  const _ = require('lodash')
+  const Downloader = require('mt-files-downloader')
+
   export default {
     components: { HeaderInfo },
     data () {
@@ -44,65 +50,93 @@
         currentPage: 1,
         pageNum: 1,
         tag: '',
-        directPage: 1,
-        intervalId: ''
+        directPage: 1
       }
     },
     methods: {
-      downloadMovie (item) {
+      downloadMovie (item, index) {
+        // 判断是否登录：
+        if (this.$store.state.currentUser.isLogin) {
+          this.swal({ type: 'error', title: '请先登录' })
+          return false
+        }
+        console.log(this.all_movies)
+        let intervalId = ''
         // 获取文件名
-        const index = item.path.lastIndexOf('/')
-        const fileName = item.path.substring(index + 1, item.path.length)
+        const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
         // 文件路径
         const movieUrl = this.baseUrl + item.path
         // 初始化下载器
-        var Downloader = require('mt-files-downloader')
         var downloader = new Downloader()
         var dl = downloader.download(movieUrl, './downloaded-movies/' + fileName)
-        dl.setOptions({
-          range: '0-200'
-        })
+        dl.setOptions({ range: '0-200' })
         // 开始下载
+        this.$store.dispatch('StartLoading')
         dl.start()
-
-        setInterval(() => {
-          let stats = dl.getStats()
-          console.log('stats', dl.status)
-          switch (dl.status) {
-            case 1:
-              console.log('download_speed_value__111', parseInt(stats.present.speed / 1000) || 0)
-              console.log('set percent', parseInt(stats.total.completed))
-              break
-            case 2:
-              break
-            case -1:
-              console.log('download_speed_value___-1', parseInt(stats.present.speed / 1000) || 0)
-              console.log('set percent', parseInt(stats.total.completed))
-              break
-            default:
-              console.log('1111')
-          }
-        }, 1000)
-
+        // 结果处理
         dl.on('start', (dl) => {
-          console.log('start', dl)
-        })
+          this.$store.dispatch('StopLoading')
+          clearInterval(intervalId)
+          let stats = dl.getStats()
+          this.all_movies[index].isDownloading = true
+          this.all_movies[index].stats = stats
+          this.all_movies = _.cloneDeep(this.all_movies)
+          let downloadingMovie = _.cloneDeep(this.all_movies[index])
+          if (!this.isDownloading(item)) {
+            this.$store.commit('SET_DOWNLOADING_MOVIES', downloadingMovie)
+          }
 
-        this.intervalId = setInterval(() => {
-        }, 1000)
+          intervalId = setInterval(() => {
+            stats = dl.getStats()
+            this.all_movies[index].isDownloading = true
+            this.all_movies[index].stats = stats
+            this.all_movies = _.cloneDeep(this.all_movies)
+            downloadingMovie = _.cloneDeep(this.all_movies[index])
+            this.$store.commit('UPDATE_DOWNLOADING_MOVIES', downloadingMovie)
+            this.calculateDownloading()
+          }, 1000)
+        })
 
         dl.on('error', (dl) => {
+          this.$store.dispatch('StopLoading')
+          clearInterval(intervalId)
+          item.isDownloading = false
           console.log('error', dl)
-          clearInterval(this.intervalId)
         })
 
         dl.on('end', (dl) => {
+          this.$store.dispatch('StopLoading')
+          clearInterval(intervalId)
+          item.isDownloading = false
           console.log('end', dl)
-          clearInterval(this.intervalId)
         })
       },
+      calculateDownloading () {
+        this.$store.state.movie.downloadingMovies.forEach((value, key) => {
+          this.all_movies.forEach((item, index) => {
+            if (item.id === value.id) {
+              item.stats = value.stats
+              item.isDownloading = true
+            }
+          })
+        })
+      },
+      isDownloading (item) {
+        this.$store.state.movie.downloadingMovies.forEach((value, key) => {
+          if (value.id === item.id) {
+            return true
+          }
+        })
+        return false
+      },
+      stopMovie (item) {
+        console.log(item)
+      },
       videoDetail (item) {
-        this.$router.push({ name: 'video_detail', params: { data: item } })
+        console.log(item)
+        console.log(this.$store.state.movie.downloadingMovies)
+        return false
+        // this.$router.push({ name: 'video_detail', params: { data: item } })
       },
       searchByTag: function (val) {
         this.tag = val.name
@@ -122,6 +156,7 @@
             this.all_movies = response.data.data
             this.pageNum = response.data.page
             this.showPagination = this.pageNum >= 1
+            this.calculateDownloading()
           }
         })
       },
@@ -138,6 +173,7 @@
     computed: {
       baseUrl: function () {
         return process.env.NODE_ENV === 'production' ? 'http://vrcinema.osvlabs.com/storage/' : 'http://dev.vrcinema.com/storage/'
+        // return 'http://vrcinema.osvlabs.com/storage/'
       }
     }
   }

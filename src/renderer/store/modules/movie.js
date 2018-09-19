@@ -2,7 +2,8 @@ import API from '../.././service/api'
 
 const state = {
   cinemaMovies: [],
-  allMovies: []
+  allMovies: [],
+  downloadingMovies: []
 }
 
 const mutations = {
@@ -10,7 +11,18 @@ const mutations = {
     state.cinemaMovies = movies
   },
   SET_ALL_MOVIES: (state, movies) => {
-    state.movies = movies
+    state.allMovies = movies
+  },
+  SET_DOWNLOADING_MOVIES: (state, movie) => {
+    state.downloadingMovies.push(movie)
+  },
+  UPDATE_DOWNLOADING_MOVIES: (state, movie) => {
+    state.downloadingMovies.forEach((value, key) => {
+      if (value.id === movie.id) {
+        state.downloadingMovies.splice(key, 1)
+      }
+    })
+    state.downloadingMovies.push(movie)
   }
 }
 

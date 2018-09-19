@@ -120,7 +120,6 @@
   import API from '../service/api'
   const {dialog} = require('electron').remote
   const _ = require('lodash')
-  // const moment = require('moment')
   export default {
     components: { HeaderInfo },
     data () {
