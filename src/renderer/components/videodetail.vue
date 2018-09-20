@@ -24,10 +24,7 @@
                       <div class="video_content topnav_box" >
                           <p class="title">[影片简介]</p>
                           <div class="video_description">
-                              <span :class="showTotal ? 'total_introduce' : 'short_introduce'">{{video_data.video_description}}</span>
-                              <div class="unfold" @click="showTotalIntro" v-if="showExchangeButton">
-                          <p class="exchange_button">{{exchangeButton ? '展开' : '收起'}}</p>
-                      </div>
+                              <span>{{video_data.video_description}}</span>
                           </div>
                           <p class="title">[影片时长] <span>{{video_data.video_time}}</span></p>
                           <p class="title">[文件大小] <span>{{video_data.video_size}}</span></p>
@@ -52,10 +49,7 @@
       return {
         video_data: {},
         mark: 0,
-        video_picture_list: [],
-        showTotal: true,
-        exchangeButton: true,
-        showExchangeButton: false
+        video_picture_list: []
       }
     },
     methods: {
@@ -93,16 +87,6 @@
         this.video_data.video_size = movieDetail.size
         this.video_data.video_proportion = movieDetail.share_rate + '%'
         let videoTags = []
-
-        let descLength = this.video_data.video_description.length
-        if (descLength > 500) {
-          this.showExchangeButton = true
-          this.exchangeButton = true
-          this.showTotal = false
-        } else {
-          this.showExchangeButton = false
-          this.showTotal = true
-        }
 
         // pictures
         movieDetail.pictures.forEach((value, key) => {
@@ -227,19 +211,5 @@
     li {
         position: absolute;
     }
-
-    .short_introduce {
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: -webkit-inline-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 5;
-    }
-    .unfold {
-        color: rgb(25, 236, 236);
-        cursor: pointer;
-        text-align: center;
-    }
-
 
 </style>
