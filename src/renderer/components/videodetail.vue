@@ -32,7 +32,8 @@
                           <p class="title">[标&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;签] <span>{{video_data.video_tags}}</span></p>
                       </div>
                       <div class="download_box">
-                          <b-button class="download_btn">下载影片</b-button>
+                          <!-- <b-button class="download_btn">下载影片</b-button> -->
+                          <b-progress height="20px" :value="progress" show-progress class="mb-2" v-if="is_downloading"></b-progress>
                       </div>
                   </div>
               </div>
@@ -49,16 +50,14 @@
       return {
         video_data: {},
         mark: 0,
-        video_picture_list: []
+        video_picture_list: [],
+        is_downloaded: false,
+        is_downloading: false,
+        progress: 0,
+        intervalId: ''
       }
     },
     methods: {
-      open (link) {
-        this.$electron.shell.openExternal(link)
-      },
-      activeVideo: function (index) {
-        this.active = index
-      },
       prev () {
         this.mark--
         if (this.mark === -1) {
@@ -82,6 +81,11 @@
       },
       fetchData () {
         const movieDetail = this.$route.params.data
+        console.log(movieDetail)
+        this.intervalId = setInterval(() => {
+          this.getProgressBar(movieDetail)
+        }, 1000)
+        this.is_downloaded = movieDetail.downloaded
         this.video_data.video_name = movieDetail.name
         this.video_data.video_description = movieDetail.description
         this.video_data.video_size = movieDetail.size
@@ -113,9 +117,15 @@
         })
         this.video_data.video_tags = videoTags.join(',')
       },
-      showTotalIntro () {
-        this.showTotal = !this.showTotal
-        this.exchangeButton = !this.exchangeButton
+      getProgressBar (movieDetail) {
+        let downloadingMovies = this.$store.state.movie.downloadingMovies
+        this.is_downloading = false
+        downloadingMovies.forEach((item, index) => {
+          if (item.id === movieDetail.id) {
+            this.is_downloading = true
+            this.progress = item.stats.total.completed
+          }
+        })
       }
     },
     created () {
@@ -128,6 +138,10 @@
       baseUrl: function () {
         return process.env.NODE_ENV === 'production' ? 'http://vrcinema.osvlabs.com/storage/' : 'http://dev.vrcinema.com/storage/'
       }
+    },
+    beforeRouteLeave (to, from, next) {
+      clearInterval(this.intervalId)
+      next()
     }
   }
 </script>

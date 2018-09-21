@@ -66,7 +66,7 @@
         const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
         // 文件路径
         // const movieUrl = this.baseUrl + item.path
-        const movieUrl = 'http://api.bensusan.cn/qwerty.zip'
+        const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
         // 初始化下载器
         var downloader = new Downloader()
         var dl = downloader.download(movieUrl, './downloaded-movies/' + fileName)
@@ -90,7 +90,6 @@
           console.log('start downloading...')
           intervalId = setInterval(() => {
             stats = dl.getStats()
-            console.log(stats)
             this.all_movies[index].isDownloading = true
             this.all_movies[index].stats = stats
             this.all_movies = _.cloneDeep(this.all_movies)
