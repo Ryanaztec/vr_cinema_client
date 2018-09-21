@@ -94,8 +94,8 @@ body {
     color: white;
     border-style: solid;
     border-radius: 5px;
-    background: rgb(0, 0, 0);
-    color: white;
+    background: rgb(0, 0, 0) !important;
+    color: white !important;
     box-shadow: none;
 }
 .pagination_body {

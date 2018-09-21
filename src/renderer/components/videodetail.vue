@@ -21,9 +21,11 @@
                       </div>
                   </div>
                   <div class="col-md-3 video_synopsis">
-                      <div style="margin-bottom: 60px;">
+                      <div class="video_content topnav_box" >
                           <p class="title">[影片简介]</p>
-                          <p class="video_description">{{video_data.video_description}}</p>
+                          <div class="video_description">
+                              <span>{{video_data.video_description}}</span>
+                          </div>
                           <p class="title">[影片时长] <span>{{video_data.video_time}}</span></p>
                           <p class="title">[文件大小] <span>{{video_data.video_size}}</span></p>
                           <p class="title">[分成比例] <span>{{video_data.video_proportion}}</span></p>
@@ -60,7 +62,7 @@
       prev () {
         this.mark--
         if (this.mark === -1) {
-          this.mark = 1
+          this.mark = this.video_picture_list.length - 1
         }
       },
       next () {
@@ -85,6 +87,7 @@
         this.video_data.video_size = movieDetail.size
         this.video_data.video_proportion = movieDetail.share_rate + '%'
         let videoTags = []
+
         // pictures
         movieDetail.pictures.forEach((value, key) => {
           this.video_picture_list.push(this.baseUrl + value.path)
@@ -109,6 +112,10 @@
           videoTags.push(value.tag.name)
         })
         this.video_data.video_tags = videoTags.join(',')
+      },
+      showTotalIntro () {
+        this.showTotal = !this.showTotal
+        this.exchangeButton = !this.exchangeButton
       }
     },
     created () {
@@ -149,6 +156,26 @@
         margin-left: 10px;
         color: white;
     }
+    .video_detail_body .video_synopsis .video_content {
+        max-height: 600px;
+        overflow-y: scroll;
+        min-height: 400px;
+    }
+    .video_detail_body .video_synopsis .video_content.topnav_box::-webkit-scrollbar {
+        width: 5px;
+        height:10px;
+        background-color:#b5b1b1;
+    }
+    .video_detail_body .video_synopsis .video_content.topnav_box::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        border-radius: 10px;
+        background-color:black;
+    }
+    .video_detail_body .video_synopsis .video_content.topnav_box::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+        background-color:#b5b1b1;
+    }
     .video_detail_body .video_synopsis .title {
         font-size: 20px;
         color: rgb(204, 204, 204);
@@ -184,4 +211,5 @@
     li {
         position: absolute;
     }
+
 </style>
