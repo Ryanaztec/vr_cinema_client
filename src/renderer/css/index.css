@@ -40,6 +40,12 @@ body {
     float: right;
     padding: inherit;
 }
+.container_body .video_box .video .download_progress .progress {
+    height: 10px;
+}
+.container_body .video_box .video .download_progress .progress .bg-success {
+    background-color: #19ECEC !important;
+}
 .container_body .video_box .video .not_download {
     color: rgb(25, 236, 236);
     border: 1px solid rgb(25, 236, 236);

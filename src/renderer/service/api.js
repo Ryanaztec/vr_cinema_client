@@ -106,6 +106,14 @@ export const updatePlayRecord = params => {
   })
 }
 
+export const storeCinemaMovie = params => {
+  return axios({
+    url: '/cinema_movie',
+    method: 'post',
+    params
+  })
+}
+
 export default {
   example,
   login,
@@ -120,5 +128,6 @@ export default {
   getNewMoviesCount,
   getPlayingSeats,
   storePlayRecord,
-  updatePlayRecord
+  updatePlayRecord,
+  storeCinemaMovie
 }

@@ -23,6 +23,13 @@ const mutations = {
       }
     })
     state.downloadingMovies.push(movie)
+  },
+  REMOVE_DOWNLOADING_MOVIES: (state, movie) => {
+    state.downloadingMovies.forEach((value, key) => {
+      if (value.id === movie.id) {
+        state.downloadingMovies.splice(key, 1)
+      }
+    })
   }
 }
 

@@ -13,9 +13,9 @@
                                       <img @click="videoDetail(item)" class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"/>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
-                                          <span class="video_status downloaded" v-if="!item.downloaded && $store.state.currentUser.isLogin">已下载</span>
+                                          <span class="video_status downloaded" v-if="item.downloaded && $store.state.currentUser.isLogin">已下载</span>
                                           <span v-else-if="item.isDownloading" class="download_progress" @click="stopMovie(item)">
-                                            <b-progress :value="item.stats.total.completed" show-progress animated show-progress></b-progress>
+                                            <b-progress :value="item.stats?item.stats.total.completed:0" animated show-progress variant="success"></b-progress>
                                           </span>
                                           <span @click="downloadMovie(item, $index)" class="video_status not_download" v-else>下载影片</span>
                                       </div>
@@ -56,26 +56,27 @@
     methods: {
       downloadMovie (item, index) {
         // 判断是否登录：
-        if (this.$store.state.currentUser.isLogin) {
+        if (!this.$store.state.currentUser.isLogin) {
           this.swal({ type: 'error', title: '请先登录' })
           return false
         }
-        console.log(this.all_movies)
         let intervalId = ''
         // 获取文件名
         const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
         // 文件路径
-        const movieUrl = this.baseUrl + item.path
+        // const movieUrl = this.baseUrl + item.path
+        const movieUrl = 'http://api.bensusan.cn/qwerty.zip'
         // 初始化下载器
         var downloader = new Downloader()
         var dl = downloader.download(movieUrl, './downloaded-movies/' + fileName)
         dl.setOptions({ range: '0-200' })
+        dl.setRetryOptions({ maxRetries: 10 })
         // 开始下载
-        this.$store.dispatch('StartLoading')
+        this.all_movies[index].isDownloading = true
+        this.all_movies = _.cloneDeep(this.all_movies)
         dl.start()
         // 结果处理
         dl.on('start', (dl) => {
-          this.$store.dispatch('StopLoading')
           clearInterval(intervalId)
           let stats = dl.getStats()
           this.all_movies[index].isDownloading = true
@@ -85,9 +86,10 @@
           if (!this.isDownloading(item)) {
             this.$store.commit('SET_DOWNLOADING_MOVIES', downloadingMovie)
           }
-
+          console.log('start downloading...')
           intervalId = setInterval(() => {
             stats = dl.getStats()
+            console.log(stats)
             this.all_movies[index].isDownloading = true
             this.all_movies[index].stats = stats
             this.all_movies = _.cloneDeep(this.all_movies)
@@ -98,16 +100,26 @@
         })
 
         dl.on('error', (dl) => {
-          this.$store.dispatch('StopLoading')
           clearInterval(intervalId)
-          item.isDownloading = false
+          this.all_movies[index].isDownloading = false
+          this.all_movies = _.cloneDeep(this.all_movies)
+          this.$store.commit('REMOVE_DOWNLOADING_MOVIES', item)
+          this.calculateDownloading()
           console.log('error', dl)
         })
 
         dl.on('end', (dl) => {
-          this.$store.dispatch('StopLoading')
           clearInterval(intervalId)
-          item.isDownloading = false
+          API.storeCinemaMovie({
+            cinema_id: this.$store.state.currentUser.cinemaId,
+            movie_id: item.id
+          }).then(response => {
+            if (response.success) {
+              this.$store.commit('REMOVE_DOWNLOADING_MOVIES', item)
+              this.getMovies()
+            }
+          })
+          this.unZipMovies('./downloaded-movies/' + fileName)
           console.log('end', dl)
         })
       },
@@ -122,21 +134,24 @@
         })
       },
       isDownloading (item) {
+        let isDownloading = false
         this.$store.state.movie.downloadingMovies.forEach((value, key) => {
           if (value.id === item.id) {
-            return true
+            isDownloading = true
           }
         })
-        return false
+        return isDownloading
       },
       stopMovie (item) {
         console.log(item)
       },
       videoDetail (item) {
-        console.log(item)
-        console.log(this.$store.state.movie.downloadingMovies)
-        return false
-        // this.$router.push({ name: 'video_detail', params: { data: item } })
+        this.$router.push({ name: 'video_detail', params: { data: item } })
+      },
+      unZipMovies (path) {
+        var AdmZip = require('adm-zip')
+        var unzip = new AdmZip(path)
+        unzip.extractAllTo('C:\\MOVIE', true)
       },
       searchByTag: function (val) {
         this.tag = val.name
