@@ -244,8 +244,11 @@ body {
     color: rgba(97, 255, 255, 0.61);
 }
 .swal2-popup {
-    background: url(../assets/header/setting_bg.png);
+    background: url(../assets/common_bg.png) !important;
     background-size: cover;
+}
+.swal2-popup .swal2-actions {
+    flex-wrap: inherit !important;
 }
 .swal2-cancel {
     margin-right: 50%;

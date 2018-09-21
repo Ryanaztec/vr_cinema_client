@@ -58,7 +58,12 @@
       downloadMovie (item, index) {
         // 判断是否登录：
         if (!this.$store.state.currentUser.isLogin) {
-          this.swal({ type: 'error', title: '请先登录' })
+          const swalWithBootstrapButtons = this.swal.mixin({
+            confirmButtonClass: 'btn btn-success',
+            cancelButtonClass: 'btn btn-danger',
+            buttonsStyling: false
+          })
+          swalWithBootstrapButtons({ type: 'error', title: '请先登录' })
           return false
         }
         let intervalId = ''

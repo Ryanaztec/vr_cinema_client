@@ -204,14 +204,18 @@
         let seatsToPlay = this.activeSeatsIds.filter(item => {
           return playSeatsIds.indexOf(item) === -1
         })
-        this.swal({
+        const swalWithBootstrapButtons = this.swal.mixin({
+          confirmButtonClass: 'btn btn-success',
+          cancelButtonClass: 'btn btn-danger',
+          buttonsStyling: false
+        })
+        swalWithBootstrapButtons({
           title: '确定要播放电影 《' + selectedMovie.movie_name + '》',
           type: 'warning',
           showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: '确定',
-          cancelButtonText: '取消'
+          confirmButtonText: '确定 !',
+          cancelButtonText: '取消 !',
+          reverseButtons: true
         }).then((result) => {
           if (result.value) {
             API.storePlayRecord({
@@ -264,14 +268,18 @@
             realPlayingSeatsIps.push(item.ip_address)
           }
         })
-        this.swal({
+        const swalWithBootstrapButtons = this.swal.mixin({
+          confirmButtonClass: 'btn btn-success',
+          cancelButtonClass: 'btn btn-danger',
+          buttonsStyling: false
+        })
+        swalWithBootstrapButtons({
           title: '确定要停止座椅编号为 ' + activeSeatNum + ' 的影片播放?',
           type: 'warning',
           showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: '确定',
-          cancelButtonText: '取消'
+          confirmButtonText: '确定 !',
+          cancelButtonText: '取消 !',
+          reverseButtons: true
         }).then((result) => {
           if (result.value) {
             API.updatePlayRecord({

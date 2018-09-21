@@ -20,11 +20,11 @@
                     <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
                     <b-dropdown-item href="http://vrcinema.osvlabs.com/" class="manage_admin" target="_blank" v-if="$store.state.seat.isMain">影院管理后台</b-dropdown-item>
                     <b-dropdown-item class="dmz_host" v-if="$store.state.seat.isMain" @click="closeAllSeat">关闭所有主机</b-dropdown-item>
-                    <b-dropdown-item to="/" class="log_out" @click="logout">注销登录</b-dropdown-item>
+                    <b-dropdown-item to="/" class="log_out" @click="logout" v-if="$store.state.seat.isMain">注销登录</b-dropdown-item>
                   </template>
               </b-dropdown>
-          <img class="navbar_small" src="../assets/header/small.png"/>
-          <img class="navbar_close" src="../assets/header/close.png"/>
+          <img class="navbar_small" src="../assets/header/small.png" @click="minWindow"/>
+          <img class="navbar_close" src="../assets/header/close.png" @click="closeWindow"/>
       </div>
     </div>
     <div class="menubar_bg">
@@ -58,6 +58,7 @@
   import LoginModal from './login/login.vue'
   import API from '../service/api'
   import Sender from '../udp/sender'
+  var ipcRenderer = require('electron').ipcRenderer
   export default {
     components: {
       LoginModal
@@ -133,16 +134,34 @@
           reverseButtons: true
         }).then((result) => {
           if (result.value) {
-            swalWithBootstrapButtons(
-              'Deleted!',
-              'Your file has been deleted.',
-              'success'
-            )
             Sender.closeAllSeat('closeAllSeat')
           } else if (
             result.dismiss === this.swal.DismissReason.cancel
           ) {
 
+          }
+        })
+      },
+      minWindow: function () {
+        ipcRenderer.send('hide-window')
+      },
+      closeWindow: function () {
+        const swalWithBootstrapButtons = this.swal.mixin({
+          confirmButtonClass: 'btn btn-success',
+          cancelButtonClass: 'btn btn-danger',
+          buttonsStyling: false
+        })
+        swalWithBootstrapButtons({
+          title: '确定要关闭页面?',
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonText: '关闭 !',
+          cancelButtonText: '取消 !',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.value) {
+            ipcRenderer.send('window-all-closed')
+            console.log(result)
           }
         })
       }
@@ -210,6 +229,7 @@
         color: white;
         text-align: center;
         margin-left: -10px;
+        padding-top: 2px;
     }
 
     .header .header_text .router-link-exact-active span {
