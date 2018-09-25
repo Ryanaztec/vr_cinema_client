@@ -238,11 +238,25 @@
                 })
                 this.is_play = true
               } else {
-                this.$notify({
-                  group: 'foo',
-                  text: '网络繁忙，请重试'
+                let seatNumbers = []
+                activeSeats.forEach((item, index) => {
+                  if (response.message.indexOf(item.id.toString()) !== -1) {
+                    seatNumbers.push(item.seat_number)
+                  }
                 })
+                seatNumbers = seatNumbers.join(', ')
+                const swalWithBootstrapButtons = this.swal.mixin({
+                  confirmButtonClass: 'btn btn-success',
+                  cancelButtonClass: 'btn btn-danger',
+                  buttonsStyling: false
+                })
+                swalWithBootstrapButtons({ type: 'error', title: '座椅' + seatNumbers + '未下载该电影' })
               }
+            }).catch(() => {
+              this.$notify({
+                group: 'foo',
+                text: '网络繁忙，请重试'
+              })
             })
           }
         })

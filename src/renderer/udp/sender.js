@@ -1,6 +1,7 @@
 import client from './index'
 
 export const sendMessage = (message, ips, isMain) => {
+  console.log(ips)
   if (isMain) {
     ips.forEach((item, index) => {
       client.send(message, 8412, item, function (err, bytes) {
@@ -36,8 +37,18 @@ export const closeAllSeat = message => {
   })
 }
 
+export const downloadMovie = (data, ip) => {
+  data = JSON.stringify(data)
+  client.send(data, 8413, ip, function (err, bytes) {
+    if (err) {
+      console.log('发送数据失败')
+    }
+  })
+}
+
 export default {
   sendMessage,
   stopMovie,
-  closeAllSeat
+  closeAllSeat,
+  downloadMovie
 }

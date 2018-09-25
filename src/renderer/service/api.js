@@ -114,6 +114,14 @@ export const storeCinemaMovie = params => {
   })
 }
 
+export const getNeedDownloadSeats = params => {
+  return axios({
+    url: '/cinema_movie/need-downloading-seats',
+    method: 'post',
+    params
+  })
+}
+
 export default {
   example,
   login,
@@ -129,5 +137,6 @@ export default {
   getPlayingSeats,
   storePlayRecord,
   updatePlayRecord,
-  storeCinemaMovie
+  storeCinemaMovie,
+  getNeedDownloadSeats
 }

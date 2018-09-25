@@ -13,11 +13,22 @@
                                       <img @click="videoDetail(item)" class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"/>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
-                                          <span class="video_status downloaded" v-if="item.downloaded && $store.state.currentUser.isLogin">已下载</span>
-                                          <span v-else-if="item.isDownloading" class="download_progress" @click="stopMovie(item)">
-                                            <b-progress :value="item.stats?item.stats.total.completed:0" animated show-progress variant="success"></b-progress>
-                                          </span>
-                                          <span @click="downloadMovie(item, $index)" class="video_status not_download" v-else>下载影片</span>
+                                          <template v-if="$store.state.seat.isMain">
+                                            <span class="video_status downloaded" v-if="item.downloaded && $store.state.currentUser.isLogin">已下载</span>
+                                            <span :id="'popover'+$index" @click="downloadMovie(item, $index)" class="video_status not_download" v-else>下载影片</span>
+                                          </template>
+                                          <template v-else>
+                                            <span class="video_status downloaded" v-if="item.downloaded && $store.state.currentUser.isLogin">已下载</span>
+                                            <span v-else-if="item.isDownloading" class="download_progress">
+                                              <b-progress :value="item.stats?item.stats.total.completed:0" animated show-progress variant="success"></b-progress>
+                                            </span>
+                                            <span :id="'popover'+$index" @click="downloadMovie(item, $index)" class="video_status not_download" v-else>下载影片</span>
+                                            <b-popover :target="'popover'+$index"
+                                                       placement="bottomright"
+                                                       triggers="hover focus"
+                                                       content="testcontent">
+                                            </b-popover>
+                                          </template>
                                       </div>
                                   </div>
                               </div>
@@ -38,8 +49,7 @@
 <script>
   import HeaderInfo from './header'
   import API from '../service/api'
-  const _ = require('lodash')
-  const Downloader = require('mt-files-downloader')
+  import Sender from '../udp/sender'
 
   export default {
     components: { HeaderInfo },
@@ -55,7 +65,7 @@
       }
     },
     methods: {
-      downloadMovie (item, index) {
+      async downloadMovie (item) {
         // 判断是否登录：
         if (!this.$store.state.currentUser.isLogin) {
           const swalWithBootstrapButtons = this.swal.mixin({
@@ -66,66 +76,20 @@
           swalWithBootstrapButtons({ type: 'error', title: '请先登录' })
           return false
         }
-        let intervalId = ''
         // 获取文件名
         const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
         // 文件路径
-        // const movieUrl = this.baseUrl + item.path
-        const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
-        // 初始化下载器
-        var downloader = new Downloader()
-        var dl = downloader.download(movieUrl, './downloaded-movies/' + fileName)
-        dl.setOptions({ range: '0-200' })
-        dl.setRetryOptions({ maxRetries: 10 })
-        // 开始下载
-        this.all_movies[index].isDownloading = true
-        this.all_movies = _.cloneDeep(this.all_movies)
-        dl.start()
-        // 结果处理
-        dl.on('start', (dl) => {
-          clearInterval(intervalId)
-          let stats = dl.getStats()
-          this.all_movies[index].isDownloading = true
-          this.all_movies[index].stats = stats
-          this.all_movies = _.cloneDeep(this.all_movies)
-          let downloadingMovie = _.cloneDeep(this.all_movies[index])
-          if (!this.isDownloading(item)) {
-            this.$store.commit('SET_DOWNLOADING_MOVIES', downloadingMovie)
-          }
-          console.log('start downloading...')
-          intervalId = setInterval(() => {
-            stats = dl.getStats()
-            this.all_movies[index].isDownloading = true
-            this.all_movies[index].stats = stats
-            this.all_movies = _.cloneDeep(this.all_movies)
-            downloadingMovie = _.cloneDeep(this.all_movies[index])
-            this.$store.commit('UPDATE_DOWNLOADING_MOVIES', downloadingMovie)
-            this.calculateDownloading()
-          }, 1000)
+        const movieUrl = this.baseUrl + item.path
+        // const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
+        // 获取需要下载的座椅
+        const needDownloadSeats = await this.getNeedDownloadSeats(item)
+        needDownloadSeats.forEach((value, key) => {
+          Sender.downloadMovie({ movie_url: movieUrl, file_name: fileName, movie_id: item.id, cinema_id: this.$store.state.currentUser.cinemaId, seat_id: value.id }, value.ip_address)
         })
-
-        dl.on('error', (dl) => {
-          clearInterval(intervalId)
-          this.all_movies[index].isDownloading = false
-          this.all_movies = _.cloneDeep(this.all_movies)
-          this.$store.commit('REMOVE_DOWNLOADING_MOVIES', item)
-          this.calculateDownloading()
-          console.log('error', dl)
-        })
-
-        dl.on('end', (dl) => {
-          clearInterval(intervalId)
-          API.storeCinemaMovie({
-            cinema_id: this.$store.state.currentUser.cinemaId,
-            movie_id: item.id
-          }).then(response => {
-            if (response.success) {
-              this.$store.commit('REMOVE_DOWNLOADING_MOVIES', item)
-              this.getMovies()
-            }
-          })
-          this.unZipMovies('./downloaded-movies/' + fileName)
-          console.log('end', dl)
+      },
+      async getNeedDownloadSeats (item) {
+        return API.getNeedDownloadSeats({ cinema_id: this.$store.state.currentUser.cinemaId, movie_id: item.id }).then(response => {
+          return response.data.data
         })
       },
       calculateDownloading () {
@@ -147,13 +111,11 @@
         })
         return isDownloading
       },
-      stopMovie (item) {
-        console.log(item)
-      },
       linkGen (pageNum) {
       },
       videoDetail (item) {
-        this.$router.push({ name: 'video_detail', params: { data: item } })
+        console.log(item)
+        // this.$router.push({ name: 'video_detail', params: { data: item } })
       },
       unZipMovies (path) {
         var AdmZip = require('adm-zip')

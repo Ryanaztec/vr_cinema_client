@@ -23,3 +23,13 @@ server.on('listening', function () {
 })
 
 server.bind(8412)
+
+// 接收下载影片的指令
+const downloadCommand = dgrm.createSocket('udp4')
+
+downloadCommand.on('message', function (message, rinfo) {
+  message = JSON.parse(message)
+  store.dispatch('downloadMovie', message)
+})
+
+downloadCommand.bind(8413)
