@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="topnav_box">
     <router-view></router-view>
     <notification></notification>
     <div class="g-loading" v-if="showLoading">

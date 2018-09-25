@@ -118,7 +118,6 @@
   import HeaderInfo from './header'
   import Sender from '../udp/sender'
   import API from '../service/api'
-  const {dialog} = require('electron').remote
   const _ = require('lodash')
   export default {
     components: { HeaderInfo },
@@ -189,11 +188,17 @@
         let selectedMovie = this.selectedMovie
         let playingSeats = this.$store.state.seat.playingSeats
         let playSeatsIds = []
+        const swalWithBootstrapButtons = this.swal.mixin({
+          confirmButtonClass: 'btn btn-success',
+          cancelButtonClass: 'btn btn-danger',
+          buttonsStyling: false
+        })
+
         if (activeSeats.length === 0) {
-          dialog.showMessageBox({
-            title: '错误',
-            message: '请先选择座椅',
-            type: 'warning'
+          const swal = require('sweetalert2')
+          swal({
+            type: 'error',
+            title: '请先选择座椅'
           })
           return false
         }
@@ -203,11 +208,6 @@
         })
         let seatsToPlay = this.activeSeatsIds.filter(item => {
           return playSeatsIds.indexOf(item) === -1
-        })
-        const swalWithBootstrapButtons = this.swal.mixin({
-          confirmButtonClass: 'btn btn-success',
-          cancelButtonClass: 'btn btn-danger',
-          buttonsStyling: false
         })
         swalWithBootstrapButtons({
           title: '确定要播放电影 《' + selectedMovie.movie_name + '》',
@@ -251,15 +251,19 @@
         let activeSeats = this.currentActiveSeats()
         let activeSeatNum = []
         let realPlayingSeatsIps = []
+        let swalWithBootstrapButtons = this.swal.mixin({
+          confirmButtonClass: 'btn btn-success',
+          cancelButtonClass: 'btn btn-danger',
+          buttonsStyling: false
+        })
         activeSeats.map(item => {
           activeSeatNum.push(item.seat_number)
         })
         activeSeatNum = activeSeatNum.join(', ')
         if (activeSeats.length === 0) {
-          dialog.showMessageBox({
-            title: '错误',
-            message: '请先选择座椅',
-            type: 'warning'
+          swalWithBootstrapButtons({
+            type: 'error',
+            title: '请先选择座椅'
           })
           return false
         }
@@ -267,11 +271,6 @@
           if (item.is_playing) {
             realPlayingSeatsIps.push(item.ip_address)
           }
-        })
-        const swalWithBootstrapButtons = this.swal.mixin({
-          confirmButtonClass: 'btn btn-success',
-          cancelButtonClass: 'btn btn-danger',
-          buttonsStyling: false
         })
         swalWithBootstrapButtons({
           title: '确定要停止座椅编号为 ' + activeSeatNum + ' 的影片播放?',
@@ -538,21 +537,6 @@
   }
   .seat .seat_list .seat_box {
       margin-bottom: -20%;
-  }
-  .seat .seat_list.topnav_box::-webkit-scrollbar {
-      width: 5px;
-      height:10px;
-      background-color:#b5b1b1;
-    }
-  .seat .seat_list.topnav_box::-webkit-scrollbar-track {
-      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-      border-radius: 10px;
-      background-color:black;
-    }
-  .seat .seat_list.topnav_box::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-      background-color:#b5b1b1;
   }
   .play_stop {
       text-align: center;
