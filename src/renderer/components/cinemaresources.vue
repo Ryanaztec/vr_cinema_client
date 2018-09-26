@@ -10,24 +10,27 @@
                           <div class="col-md-3 video_box" v-for="(item,$index) in all_movies">
                               <div class="video">
                                   <div class="acttive_bg">
-                                      <img @click="videoDetail(item)" class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"/>
+                                      <img @click="videoDetail(item)" class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"  :id="'popover'+$index"/>
+                                      <b-popover :target="'popover'+$index"
+                                                 placement="bottom"
+                                                 triggers="hover focus">
+                                        <template>
+                                          已下载座椅：{{seatHaveDownloaded(item)}} <br />
+                                          未下载座椅：{{seatNeedDownload(item)}}
+                                        </template>
+                                      </b-popover>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
                                           <template v-if="$store.state.seat.isMain">
-                                            <span class="video_status downloaded" v-if="item.downloaded && $store.state.currentUser.isLogin">已下载</span>
-                                            <span :id="'popover'+$index" @click="downloadMovie(item, $index)" class="video_status not_download" v-else>下载影片</span>
+                                            <span class="video_status downloaded" v-if="item.downloaded==='all' && $store.state.currentUser.isLogin">已下载</span>
+                                            <span @click="downloadMovie(item)" class="video_status not_download" v-else-if="item.downloaded==='none'||item.downloaded==='partly'">下载影片</span>
                                           </template>
                                           <template v-else>
-                                            <span class="video_status downloaded" v-if="item.downloaded && $store.state.currentUser.isLogin">已下载</span>
-                                            <span v-else-if="item.isDownloading" class="download_progress">
-                                              <b-progress :value="item.stats?item.stats.total.completed:0" animated show-progress variant="success"></b-progress>
+                                            <span class="video_status downloaded" v-if="checkDownload(item) && $store.state.currentUser.isLogin">已下载</span>
+                                            <span v-else-if="$store.state.movie.downloadingMovies.length!==0&&$store.state.movie.downloadingMovies[0].movie_id===item.id" class="download_progress">
+                                              <b-progress :value="$store.state.movie.downloadingMovies[0].stats.total.completed" animated show-progress variant="success"></b-progress>
                                             </span>
-                                            <span :id="'popover'+$index" @click="downloadMovie(item, $index)" class="video_status not_download" v-else>下载影片</span>
-                                            <b-popover :target="'popover'+$index"
-                                                       placement="bottomright"
-                                                       triggers="hover focus"
-                                                       content="testcontent">
-                                            </b-popover>
+                                            <span class="video_status" v-else>未下载</span>
                                           </template>
                                       </div>
                                   </div>
@@ -149,6 +152,47 @@
         const keyword = this.$refs.header.keyword
         const tag = this.tag
         this.getMovies(keyword, tag, page)
+      },
+      seatNeedDownload: function (item) {
+        let str = ''
+        if (item.downloaded === 'partly' || item.downloaded === 'none') {
+          let seatNumber = []
+          item.seatsNeedDownload.forEach((value, index) => {
+            seatNumber.push(value.seat_number)
+          })
+          seatNumber = seatNumber.join(', ')
+          str = seatNumber
+        } else if (item.downloaded === 'all') {
+          str = '-'
+        }
+        return str
+      },
+      seatHaveDownloaded: function (item) {
+        let str = ''
+        if (item.downloaded === 'partly' || item.downloaded === 'all') {
+          let seatNumber = []
+          item.seatsHaveDownloaded.forEach((value, index) => {
+            seatNumber.push(value.seat_number)
+          })
+          seatNumber = seatNumber.join(', ')
+          str = seatNumber
+        } else if (item.downloaded === 'none') {
+          str = '-'
+        }
+        return str
+      },
+      checkDownload: function (item) {
+        if (item.downloaded === 'partly') {
+          item.seatsHaveDownloaded.forEach((value, key) => {
+            if (value.id === this.$store.state.seat.currentSeat.id) {
+              return true
+            }
+          })
+        } else if (item.downloaded === 'none') {
+          return false
+        } else {
+          return true
+        }
       }
     },
     mounted: function () {

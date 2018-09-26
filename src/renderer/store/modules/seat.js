@@ -2,7 +2,8 @@ import API from '../.././service/api'
 const state = {
   seats: [],
   playingSeats: [],
-  isMain: false
+  isMain: false,
+  currentSeat: ''
 }
 
 const mutations = {
@@ -17,6 +18,9 @@ const mutations = {
   },
   SET_PLAYING_SEATS: (state, seats) => {
     state.playingSeats = seats
+  },
+  SET_CURRENT_SEAT: (state, seat) => {
+    state.currentSeat = seat
   }
 }
 

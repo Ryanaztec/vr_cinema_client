@@ -1,7 +1,6 @@
 import client from './index'
 
 export const sendMessage = (message, ips, isMain) => {
-  console.log(ips)
   if (isMain) {
     ips.forEach((item, index) => {
       client.send(message, 8412, item, function (err, bytes) {

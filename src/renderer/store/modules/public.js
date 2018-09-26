@@ -1,3 +1,5 @@
+import Sender from '../../udp/sender'
+
 const state = {
   showLoading: true,
   macAddress: '',
@@ -33,6 +35,16 @@ const actions = {
         }
       })
     })
+  },
+  subSeatsLogin (store, seats) {
+    const token = 'bearer ' + localStorage.token
+    let ips = []
+    let message = { token: token, type: 'login' }
+    message = JSON.stringify(message)
+    seats.forEach((value, key) => {
+      ips.push(value.ip_address)
+    })
+    Sender.sendMessage(message, ips, true)
   }
 }
 

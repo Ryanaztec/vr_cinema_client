@@ -444,6 +444,9 @@
               this.$store.commit('SET_SEATS', seats)
               this.$store.commit('SET_MAIN_SEAT', response.data.is_main_seat)
               this.initSeatPlayingStatus()
+              if (response.data.is_main_seat) {
+                this.$store.dispatch('subSeatsLogin', response.data.data)
+              }
             }
           })
         } else {
@@ -472,6 +475,7 @@
         this.seats.forEach((item, index) => {
           if (item.mac_address === this.current_mac_address) {
             this.$store.commit('SET_IP_ADDRESS', item.ip_address)
+            this.$store.commit('SET_CURRENT_SEAT', item)
           }
         })
       }
