@@ -38,7 +38,7 @@
                           </div>
                       </div>
                       <div class="pagination_body" v-show="showPagination">
-                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
+                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
 
                           <span><span>共 {{pageNum}} 页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to" v-model="directPage" />页 <a href="#" class="jump_btn" @click="jumpToPage(directPage)">跳转</a></span>
                       </div>
@@ -95,35 +95,9 @@
           return response.data.data
         })
       },
-      calculateDownloading () {
-        this.$store.state.movie.downloadingMovies.forEach((value, key) => {
-          this.all_movies.forEach((item, index) => {
-            if (item.id === value.id) {
-              item.stats = value.stats
-              item.isDownloading = true
-            }
-          })
-        })
-      },
-      isDownloading (item) {
-        let isDownloading = false
-        this.$store.state.movie.downloadingMovies.forEach((value, key) => {
-          if (value.id === item.id) {
-            isDownloading = true
-          }
-        })
-        return isDownloading
-      },
-      linkGen (pageNum) {
-      },
       videoDetail (item) {
-        console.log(item)
-        // this.$router.push({ name: 'video_detail', params: { data: item } })
-      },
-      unZipMovies (path) {
-        var AdmZip = require('adm-zip')
-        var unzip = new AdmZip(path)
-        unzip.extractAllTo('C:\\MOVIE', true)
+        // console.log(item)
+        this.$router.push({ name: 'video_detail', params: { data: item } })
       },
       searchByTag: function (val) {
         this.tag = val.name
@@ -143,7 +117,6 @@
             this.all_movies = response.data.data
             this.pageNum = response.data.page
             this.showPagination = this.pageNum >= 1
-            this.calculateDownloading()
           }
         })
       },
