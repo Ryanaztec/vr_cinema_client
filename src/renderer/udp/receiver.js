@@ -48,3 +48,14 @@ downloadCommand.on('message', function (message, rinfo) {
 })
 
 downloadCommand.bind(8413)
+
+// 接收关闭所有主机的指令
+const closeAllSeatCommand = dgrm.createSocket('udp4')
+closeAllSeatCommand.on('message', function (message, rinfo) {
+  if (!store.state.seat.isMain) {
+    var process = require('child_process')
+    process.exec('shutdown -s -t 10')
+  }
+})
+
+closeAllSeatCommand.bind(8414)

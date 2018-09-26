@@ -175,21 +175,6 @@
         overflow-y: scroll;
         min-height: 400px;
     }
-    .video_detail_body .video_synopsis .video_content.topnav_box::-webkit-scrollbar {
-        width: 5px;
-        height:10px;
-        background-color:#b5b1b1;
-    }
-    .video_detail_body .video_synopsis .video_content.topnav_box::-webkit-scrollbar-track {
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-        border-radius: 10px;
-        background-color:black;
-    }
-    .video_detail_body .video_synopsis .video_content.topnav_box::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
-        background-color:#b5b1b1;
-    }
     .video_detail_body .video_synopsis .title {
         font-size: 20px;
         color: rgb(204, 204, 204);

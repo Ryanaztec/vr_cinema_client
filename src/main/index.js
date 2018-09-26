@@ -1,7 +1,6 @@
 'use strict'
 
-import { app, BrowserWindow } from 'electron'
-
+import { app, BrowserWindow, ipcMain } from 'electron'
 /**
  * Set `__static` path to static files in production
  * https://simulatedgreg.gitbooks.io/electron-vue/content/en/using-static-assets.html
@@ -20,18 +19,23 @@ function createWindow () {
    * Initial window options
    */
   mainWindow = new BrowserWindow({
-    height: 563,
+    height: 1080,
     useContentSize: true,
-    width: 1000
+    width: 1920,
+    backgroundColor: '#000',
+    enableLargerThanScreen: true,
+    minimizable: false,
+    maximizable: false,
+    movable: true,
+    darkTheme: true,
+    frame: false
   })
 
   mainWindow.loadURL(winURL)
-
   mainWindow.on('closed', () => {
     mainWindow = null
   })
 }
-
 app.on('ready', createWindow)
 
 app.on('window-all-closed', () => {
@@ -45,7 +49,21 @@ app.on('activate', () => {
     createWindow()
   }
 })
+ipcMain.on('window-all-closed', () => {
+  app.quit()
+})
 
+ipcMain.on('hide-window', () => {
+  mainWindow.minimize()
+})
+
+ipcMain.on('show-window', () => {
+  mainWindow.maximize()
+})
+
+ipcMain.on('orignal-window', () => {
+  mainWindow.unmaximize()
+})
 /**
  * Auto Updater
  *

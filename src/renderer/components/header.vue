@@ -274,11 +274,13 @@
         position: absolute;
         right: 50px;
         padding: 2rem 0px;
+        cursor: pointer;
     }
     .header .set_body .navbar_close {
         position: absolute;
         right: 10px;
         padding: 1.5rem 0px;
+        cursor: pointer;
     }
     .menubar_bg .menubar_body .video_name {
         width: 100%;
