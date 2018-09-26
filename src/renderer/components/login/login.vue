@@ -13,20 +13,17 @@
       >
       <b-form @submit.stop.prevent="handleOk" class="form">
         <b-form-group class="login-username">
-          <b-form-input type="text"
-                        v-model="username"
+          <input v-model="username"
                         required
                         ref="focusText"
                         placeholder="请输入用户名">
-          </b-form-input>
         </b-form-group>
         <b-form-group class="login-password">
-          <b-form-input type="password"
+          <input type="password"
                         v-model="password"
                         required
                         placeholder="请输入密码"
                         @keyup.enter.native="handleOk()">
-          </b-form-input>
         </b-form-group>
         <b-form-group class="button">
           <b-button type="submit" variant="primary">登录</b-button>
