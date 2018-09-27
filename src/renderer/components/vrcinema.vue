@@ -180,9 +180,6 @@
       choose_seat: function () {
         this.show_seat = true
       },
-      getRealPlayingSeats: function () {
-
-      },
       start: function () {
         let activeSeats = this.currentActiveSeats()
         let selectedMovie = this.selectedMovie

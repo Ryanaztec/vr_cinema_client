@@ -32,8 +32,13 @@
                           <p class="title">[标&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;签] <span>{{video_data.video_tags}}</span></p>
                       </div>
                       <div class="download_box">
-                          <!-- <b-button class="download_btn">下载影片</b-button> -->
-                          <b-progress height="20px" :value="progress" show-progress class="mb-2" v-if="is_downloading"></b-progress>
+                        <template v-if="!$store.state.seat.isMain">
+                          <b-button :disabled="true" class="download_btn" v-if="currentMovie.downloaded==='all' && $store.state.currentUser.isLogin">已下载</b-button>
+                          <b-button @click="downloadMovie(currentMovie)" class="download_btn" v-else-if="currentMovie.downloaded==='none'||currentMovie.downloaded==='partly'">下载影片</b-button>
+                        </template>
+                        <template v-else>
+                          <b-progress height="20px" :value="currentMovieDownloadingProgress(currentMovie)" show-progress class="mb-2"></b-progress>
+                        </template>
                       </div>
                   </div>
               </div>
@@ -44,6 +49,8 @@
 
 <script>
   import HeaderInfo from './header'
+  import API from '../service/api'
+  import Sender from '../udp/sender'
   export default {
     components: { HeaderInfo },
     data () {
@@ -52,12 +59,39 @@
         mark: 0,
         video_picture_list: [],
         is_downloaded: false,
-        is_downloading: false,
         progress: 0,
-        intervalId: ''
+        intervalId: '',
+        currentMovie: ''
       }
     },
     methods: {
+      async downloadMovie (item) {
+        // 判断是否登录：
+        if (!this.$store.state.currentUser.isLogin) {
+          const swalWithBootstrapButtons = this.swal.mixin({
+            confirmButtonClass: 'btn btn-success',
+            cancelButtonClass: 'btn btn-danger',
+            buttonsStyling: false
+          })
+          swalWithBootstrapButtons({ type: 'error', title: '请先登录' })
+          return false
+        }
+        // 获取文件名
+        const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
+        // 文件路径
+        // const movieUrl = this.baseUrl + item.path
+        const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
+        // 获取需要下载的座椅
+        const needDownloadSeats = await this.getNeedDownloadSeats(item)
+        needDownloadSeats.forEach((value, key) => {
+          Sender.downloadMovie({ movie_url: movieUrl, file_name: fileName, movie_id: item.id, cinema_id: this.$store.state.currentUser.cinemaId, seat_id: value.id }, value.ip_address)
+        })
+      },
+      async getNeedDownloadSeats (item) {
+        return API.getNeedDownloadSeats({ cinema_id: this.$store.state.currentUser.cinemaId, movie_id: item.id }).then(response => {
+          return response.data.data
+        })
+      },
       prev () {
         this.mark--
         if (this.mark === -1) {
@@ -81,10 +115,8 @@
       },
       fetchData () {
         const movieDetail = this.$route.params.data
+        this.currentMovie = this.$route.params.data
         console.log(movieDetail)
-        this.intervalId = setInterval(() => {
-          this.getProgressBar(movieDetail)
-        }, 1000)
         this.is_downloaded = movieDetail.downloaded
         this.video_data.video_name = movieDetail.name
         this.video_data.video_description = movieDetail.description
@@ -117,15 +149,14 @@
         })
         this.video_data.video_tags = videoTags.join(',')
       },
-      getProgressBar (movieDetail) {
-        let downloadingMovies = this.$store.state.movie.downloadingMovies
-        this.is_downloading = false
-        downloadingMovies.forEach((item, index) => {
-          if (item.id === movieDetail.id) {
-            this.is_downloading = true
-            this.progress = item.stats.total.completed
+      currentMovieDownloadingProgress (item) {
+        let progress = 0
+        this.$store.state.movie.downloadingMovies.forEach((value, key) => {
+          if (value.movie_id === item.id) {
+            progress = value.stats.total.completed
           }
         })
+        return progress * 2 - 1 < 0 ? 0 : progress * 2 - 1
       }
     },
     created () {

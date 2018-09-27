@@ -295,3 +295,9 @@ body {
     background-color: #218838 !important;
     box-shadow: none !important;
 }
+
+.popover-body {
+    padding: 0.5rem 0.75rem;
+    color: #fff !important;
+    background: #242424 !important;
+}

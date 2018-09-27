@@ -37,9 +37,18 @@ const actions = {
     })
   },
   subSeatsLogin (store, seats) {
-    const token = 'bearer ' + localStorage.token
+    const token = localStorage.token
     let ips = []
     let message = { token: token, type: 'login' }
+    message = JSON.stringify(message)
+    seats.forEach((value, key) => {
+      ips.push(value.ip_address)
+    })
+    Sender.sendMessage(message, ips, true)
+  },
+  subSeatsLogout (store, seats) {
+    let ips = []
+    let message = { type: 'logout' }
     message = JSON.stringify(message)
     seats.forEach((value, key) => {
       ips.push(value.ip_address)

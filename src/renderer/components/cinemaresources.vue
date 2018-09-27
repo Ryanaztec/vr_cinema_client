@@ -27,8 +27,8 @@
                                           </template>
                                           <template v-else>
                                             <span class="video_status downloaded" v-if="checkDownload(item) && $store.state.currentUser.isLogin">已下载</span>
-                                            <span v-else-if="$store.state.movie.downloadingMovies.length!==0&&$store.state.movie.downloadingMovies[0].movie_id===item.id" class="download_progress">
-                                              <b-progress :value="$store.state.movie.downloadingMovies[0].stats.total.completed" animated show-progress variant="success"></b-progress>
+                                            <span v-else-if="movieIsDownloading(item)" class="download_progress">
+                                              <b-progress :value="currentMovieDownloadingProgress(item)" animated show-progress variant="success"></b-progress>
                                             </span>
                                             <span class="video_status" v-else>未下载</span>
                                           </template>
@@ -82,8 +82,8 @@
         // 获取文件名
         const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
         // 文件路径
-        const movieUrl = this.baseUrl + item.path
-        // const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
+        // const movieUrl = this.baseUrl + item.path
+        const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
         // 获取需要下载的座椅
         const needDownloadSeats = await this.getNeedDownloadSeats(item)
         needDownloadSeats.forEach((value, key) => {
@@ -166,6 +166,26 @@
         } else {
           return true
         }
+      },
+      movieIsDownloading (item) {
+        let flag = false
+        if (this.$store.state.movie.downloadingMovies.length !== 0) {
+          this.$store.state.movie.downloadingMovies.forEach((value, key) => {
+            if (value.movie_id === item.id) {
+              flag = true
+            }
+          })
+          return flag
+        }
+      },
+      currentMovieDownloadingProgress (item) {
+        let progress = 0
+        this.$store.state.movie.downloadingMovies.forEach((value, key) => {
+          if (value.movie_id === item.id) {
+            progress = value.stats.total.completed
+          }
+        })
+        return progress * 2 - 1 < 0 ? 0 : progress * 2 - 1
       }
     },
     mounted: function () {
