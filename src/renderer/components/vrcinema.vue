@@ -438,7 +438,8 @@
               this.is_main_seat = response.data.is_main_seat
               const seats = _.cloneDeep(response.data.data)
               this.$store.commit('SET_SEATS', seats)
-              this.$store.commit('SET_MAIN_SEAT', response.data.is_main_seat)
+              this.$store.commit('SET_IS_MAIN', response.data.is_main_seat)
+              this.$store.commit('SET_MAIN_SEAT', response.data.main_seat)
               this.initSeatPlayingStatus()
               if (response.data.is_main_seat) {
                 this.$store.dispatch('subSeatsLogin', response.data.data)

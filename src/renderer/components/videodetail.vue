@@ -32,11 +32,11 @@
                           <p class="title">[标&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;签] <span>{{video_data.video_tags}}</span></p>
                       </div>
                       <div class="download_box">
-                        <template v-if="!$store.state.seat.isMain">
+                        <template v-if="$store.state.seat.isMain">
                           <b-button :disabled="true" class="download_btn" v-if="currentMovie.downloaded==='all' && $store.state.currentUser.isLogin">已下载</b-button>
-                          <b-button @click="downloadMovie(currentMovie)" class="download_btn" v-else-if="currentMovie.downloaded==='none'||currentMovie.downloaded==='partly'">下载影片</b-button>
+                          <b-button @click="downloadMovie(currentMovie)" class="download_btn" v-else-if="currentMovie.downloaded==='none'||currentMovie.downloaded==='partly'">{{showSubSeatProgress(currentMovie) ? '座椅下载中' : '下载影片'}}</b-button>
                         </template>
-                        <template v-else>
+                        <template v-else-if="movieIsDownloading(currentMovie)">
                           <b-progress height="20px" :value="currentMovieDownloadingProgress(currentMovie)" show-progress class="mb-2"></b-progress>
                         </template>
                       </div>
@@ -157,6 +157,26 @@
           }
         })
         return progress * 2 - 1 < 0 ? 0 : progress * 2 - 1
+      },
+      showSubSeatProgress (item) {
+        let flag = false
+        this.$store.state.movie.subSeatDownloadingStatus.forEach((value, key) => {
+          if (value.movie_id === item.id && value.status === 'downloading') {
+            flag = true
+          }
+        })
+        return flag
+      },
+      movieIsDownloading (item) {
+        let flag = false
+        if (this.$store.state.movie.downloadingMovies.length !== 0) {
+          this.$store.state.movie.downloadingMovies.forEach((value, key) => {
+            if (value.movie_id === item.id) {
+              flag = true
+            }
+          })
+          return flag
+        }
       }
     },
     created () {

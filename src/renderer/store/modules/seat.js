@@ -3,14 +3,15 @@ const state = {
   seats: [],
   playingSeats: [],
   isMain: false,
-  currentSeat: ''
+  currentSeat: '',
+  mainSeat: ''
 }
 
 const mutations = {
   SET_SEATS: (state, seats) => {
     state.seats = seats
   },
-  SET_MAIN_SEAT: (state, status) => {
+  SET_IS_MAIN: (state, status) => {
     state.isMain = status
   },
   ADD_PLAYING_SEATS: (state, seats) => {
@@ -21,6 +22,9 @@ const mutations = {
   },
   SET_CURRENT_SEAT: (state, seat) => {
     state.currentSeat = seat
+  },
+  SET_MAIN_SEAT: (state, seat) => {
+    state.mainSeat = seat
   }
 }
 

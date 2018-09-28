@@ -13,17 +13,36 @@
                                       <img @click="videoDetail(item)" class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"  :id="'popover'+$index"/>
                                       <b-popover :target="'popover'+$index"
                                                  placement="bottom"
-                                                 triggers="hover focus">
+                                                 triggers="hover focus"
+                                                 v-if="$store.state.seat.isMain&&!showSubSeatProgress(item)">
                                         <template>
                                           已下载座椅：{{seatHaveDownloaded(item)}} <br />
                                           未下载座椅：{{seatNeedDownload(item)}}
+                                        </template>
+                                      </b-popover>
+                                      <b-popover :target="'popover'+$index"
+                                                 placement="bottom"
+                                                 triggers="hover focus"
+                                                 v-else>
+                                        <template>
+                                          下载中：{{downloadStats(item, 'downloading')}} <br />
+                                          已完成：{{downloadStats(item, 'end')}} <br />
+                                          下载失败：{{downloadStats(item, 'error')}}
                                         </template>
                                       </b-popover>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
                                           <template v-if="$store.state.seat.isMain">
                                             <span class="video_status downloaded" v-if="item.downloaded==='all' && $store.state.currentUser.isLogin">已下载</span>
-                                            <span @click="downloadMovie(item)" class="video_status not_download" v-else-if="item.downloaded==='none'||item.downloaded==='partly'">下载影片</span>
+                                            <span :id="'progress'+$index" @click="downloadMovie(item)" class="video_status not_download" v-else-if="item.downloaded==='none'||item.downloaded==='partly'">{{showSubSeatProgress(item) ? '座椅下载中' : '下载影片'}}</span>
+                                            <b-popover :target="'progress'+$index"
+                                             placement="topleft"
+                                             triggers="hover focus"
+                                             v-if="$store.state.seat.isMain&&showSubSeatProgress(item)">
+                                              <template>
+                                                <downloading-progress :movieInfo="item"></downloading-progress>
+                                              </template>
+                                            </b-popover>
                                           </template>
                                           <template v-else>
                                             <span class="video_status downloaded" v-if="checkDownload(item) && $store.state.currentUser.isLogin">已下载</span>
@@ -53,9 +72,13 @@
   import HeaderInfo from './header'
   import API from '../service/api'
   import Sender from '../udp/sender'
+  import DownloadingProgress from './downloading-progress'
 
   export default {
-    components: { HeaderInfo },
+    components: {
+      HeaderInfo,
+      DownloadingProgress
+    },
     data () {
       return {
         appendclass: '',
@@ -186,6 +209,29 @@
           }
         })
         return progress * 2 - 1 < 0 ? 0 : progress * 2 - 1
+      },
+      showSubSeatProgress (item) {
+        let flag = false
+        this.$store.state.movie.subSeatDownloadingStatus.forEach((value, key) => {
+          if (value.movie_id === item.id && value.status === 'downloading') {
+            flag = true
+          }
+        })
+        return flag
+      },
+      downloadStats (item, type) {
+        // 获取不同下载状态的座椅编号
+        let seatNumber = []
+        this.$store.state.movie.subSeatDownloadingStatus.forEach((value, key) => {
+          if (item.id === value.movie_id && type === value.status) {
+            this.$store.state.seat.seats.forEach((option, index) => {
+              if (option.id === value.seat_id) {
+                seatNumber.push(option.seat_number)
+              }
+            })
+          }
+        })
+        return seatNumber.length === 0 ? '-' : seatNumber.join(', ')
       }
     },
     mounted: function () {
@@ -195,6 +241,21 @@
       baseUrl: function () {
         return process.env.NODE_ENV === 'production' ? 'http://vrcinema.osvlabs.com/storage/' : 'http://dev.vrcinema.com/storage/'
         // return 'http://vrcinema.osvlabs.com/storage/'
+      }
+    },
+    watch: {
+      '$store.state.movie.subSeatDownloadingStatus': function (value) {
+        if (value.length !== 0) {
+          let flag = true
+          value.forEach((item, index) => {
+            if (item.status === 'downloading') {
+              flag = false
+            }
+          })
+          if (flag) {
+            this.getMovies()
+          }
+        }
       }
     }
   }

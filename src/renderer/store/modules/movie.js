@@ -1,11 +1,13 @@
 import API from '../.././service/api'
 import downloader from '../../download-movies/index.js'
+import Sender from '../../udp/sender'
 const _ = require('lodash')
 
 const state = {
   cinemaMovies: [],
   allMovies: [],
-  downloadingMovies: []
+  downloadingMovies: [],
+  subSeatDownloadingStatus: []
 }
 
 const mutations = {
@@ -32,6 +34,14 @@ const mutations = {
         state.downloadingMovies.splice(key, 1)
       }
     })
+  },
+  SET_SUB_SEAT_DOWNLOADING_STATUS: (state, data) => {
+    state.subSeatDownloadingStatus.forEach((value, key) => {
+      if (value.movie_id === data.movie_id && value.seat_id === data.seat_id) {
+        state.subSeatDownloadingStatus.splice(key, 1)
+      }
+    })
+    state.subSeatDownloadingStatus.push(data)
   }
 }
 
@@ -83,17 +93,22 @@ const actions = {
         let movie = data
         movie.stats = stats
         movie = _.cloneDeep(movie)
+        // 当前下载电影的进度更新到store中
         store.commit('UPDATE_DOWNLOADING_MOVIES', movie)
-        console.log(stats.total)
+        // 向中控发送当前下载进度
+        Sender.sendMessage({movie_id: data.movie_id, stats: stats, seat_id: data.seat_id, status: 'downloading', type: 'downloading-progress'}, this.state.seat.mainSeat.ip_address, false)
+        // console.log(stats.total)
       }, 1000)
     })
     dl.on('error', (dl) => {
       clearInterval(intervalId)
       store.commit('REMOVE_DOWNLOADING_MOVIES', data)
+      Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'error', type: 'downloading-progress'}, this.state.seat.mainSeat.ip_address, false)
       console.log('error', dl)
     })
     dl.on('end', (dl) => {
       clearInterval(intervalId)
+      Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'end', type: 'downloading-progress'}, this.state.seat.mainSeat.ip_address, false)
       API.storeCinemaMovie({
         cinema_id: data.cinema_id,
         movie_id: data.movie_id,
