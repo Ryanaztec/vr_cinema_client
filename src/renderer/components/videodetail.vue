@@ -32,7 +32,13 @@
                           <p class="title">[标&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;签] <span>{{video_data.video_tags}}</span></p>
                       </div>
                       <div class="download_box">
-                          <b-button class="download_btn">下载影片</b-button>
+                        <template v-if="!$store.state.seat.isMain">
+                          <b-button :disabled="true" class="download_btn" v-if="currentMovie.downloaded==='all' && $store.state.currentUser.isLogin">已下载</b-button>
+                          <b-button @click="downloadMovie(currentMovie)" class="download_btn" v-else-if="currentMovie.downloaded==='none'||currentMovie.downloaded==='partly'">下载影片</b-button>
+                        </template>
+                        <template v-else>
+                          <b-progress height="20px" :value="currentMovieDownloadingProgress(currentMovie)" show-progress class="mb-2"></b-progress>
+                        </template>
                       </div>
                   </div>
               </div>
@@ -43,21 +49,48 @@
 
 <script>
   import HeaderInfo from './header'
+  import API from '../service/api'
+  import Sender from '../udp/sender'
   export default {
     components: { HeaderInfo },
     data () {
       return {
         video_data: {},
         mark: 0,
-        video_picture_list: []
+        video_picture_list: [],
+        is_downloaded: false,
+        progress: 0,
+        intervalId: '',
+        currentMovie: ''
       }
     },
     methods: {
-      open (link) {
-        this.$electron.shell.openExternal(link)
+      async downloadMovie (item) {
+        // 判断是否登录：
+        if (!this.$store.state.currentUser.isLogin) {
+          const swalWithBootstrapButtons = this.swal.mixin({
+            confirmButtonClass: 'btn btn-success',
+            cancelButtonClass: 'btn btn-danger',
+            buttonsStyling: false
+          })
+          swalWithBootstrapButtons({ type: 'error', title: '请先登录' })
+          return false
+        }
+        // 获取文件名
+        const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
+        // 文件路径
+        // const movieUrl = this.baseUrl + item.path
+        const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
+        // 获取需要下载的座椅
+        const needDownloadSeats = await this.getNeedDownloadSeats(item)
+        needDownloadSeats.forEach((value, key) => {
+          Sender.downloadMovie({ movie_url: movieUrl, file_name: fileName, movie_id: item.id, cinema_id: this.$store.state.currentUser.cinemaId, seat_id: value.id }, value.ip_address)
+        })
       },
-      activeVideo: function (index) {
-        this.active = index
+      async getNeedDownloadSeats (item) {
+        return API.getNeedDownloadSeats({ cinema_id: this.$store.state.currentUser.cinemaId, movie_id: item.id }).then(response => {
+          return response.data.data
+        })
       },
       prev () {
         this.mark--
@@ -82,6 +115,9 @@
       },
       fetchData () {
         const movieDetail = this.$route.params.data
+        this.currentMovie = this.$route.params.data
+        console.log(movieDetail)
+        this.is_downloaded = movieDetail.downloaded
         this.video_data.video_name = movieDetail.name
         this.video_data.video_description = movieDetail.description
         this.video_data.video_size = movieDetail.size
@@ -113,9 +149,14 @@
         })
         this.video_data.video_tags = videoTags.join(',')
       },
-      showTotalIntro () {
-        this.showTotal = !this.showTotal
-        this.exchangeButton = !this.exchangeButton
+      currentMovieDownloadingProgress (item) {
+        let progress = 0
+        this.$store.state.movie.downloadingMovies.forEach((value, key) => {
+          if (value.movie_id === item.id) {
+            progress = value.stats.total.completed
+          }
+        })
+        return progress * 2 - 1 < 0 ? 0 : progress * 2 - 1
       }
     },
     created () {
@@ -128,6 +169,10 @@
       baseUrl: function () {
         return process.env.NODE_ENV === 'production' ? 'http://vrcinema.osvlabs.com/storage/' : 'http://dev.vrcinema.com/storage/'
       }
+    },
+    beforeRouteLeave (to, from, next) {
+      clearInterval(this.intervalId)
+      next()
     }
   }
 </script>

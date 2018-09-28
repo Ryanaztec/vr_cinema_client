@@ -39,12 +39,14 @@ body {
     width: 65%;
     float: right;
     padding: inherit;
+    color: #000;
 }
 .container_body .video_box .video .download_progress .progress {
     height: 10px;
 }
 .container_body .video_box .video .download_progress .progress .bg-success {
     background-color: #19ECEC !important;
+    color: #000;
 }
 .container_body .video_box .video .not_download {
     color: rgb(25, 236, 236);
@@ -268,7 +270,11 @@ body {
     margin-right: 50%;
 }
 .swal2-popup .swal2-title {
-    color: white !important;
+    color: white;
+}
+.video_detail_body .video_synopsis .download_box .progress-bar {
+    background-color: #44F7F7 !important;
+    color: #000 !important;
 }
 .topnav_box::-webkit-scrollbar {
     width: 5px;
@@ -288,4 +294,10 @@ body {
 .swal2-popup .swal2-styled.swal2-confirm {
     background-color: #218838 !important;
     box-shadow: none !important;
+}
+
+.popover-body {
+    padding: 0.5rem 0.75rem;
+    color: #fff !important;
+    background: #242424 !important;
 }

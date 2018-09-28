@@ -95,6 +95,9 @@
         this.$parent.searchByTag(item)
       },
       logout: function () {
+        if (this.$store.state.seat.isMain) {
+          this.$store.dispatch('subSeatsLogout', this.$store.state.seat.seats)
+        }
         this.$store.dispatch('FedLogOut')
         this.$router.push({ path: '/' })
         this.$notify({

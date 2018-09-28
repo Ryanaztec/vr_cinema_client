@@ -10,21 +10,35 @@
                           <div class="col-md-3 video_box" v-for="(item,$index) in all_movies">
                               <div class="video">
                                   <div class="acttive_bg">
-                                      <img @click="videoDetail(item)" class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"/>
+                                      <img @click="videoDetail(item)" class="video_picture" :src="item.pictures.length > 0 ? (baseUrl + item.pictures[0].path) : ''"  :id="'popover'+$index"/>
+                                      <b-popover :target="'popover'+$index"
+                                                 placement="bottom"
+                                                 triggers="hover focus">
+                                        <template>
+                                          已下载座椅：{{seatHaveDownloaded(item)}} <br />
+                                          未下载座椅：{{seatNeedDownload(item)}}
+                                        </template>
+                                      </b-popover>
                                       <div class="video_info">
                                           <span class="video_name">{{item.name}}</span>
-                                          <span class="video_status downloaded" v-if="item.downloaded && $store.state.currentUser.isLogin">已下载</span>
-                                          <span v-else-if="item.isDownloading" class="download_progress" @click="stopMovie(item)">
-                                            <b-progress :value="item.stats?item.stats.total.completed:0" animated show-progress variant="success"></b-progress>
-                                          </span>
-                                          <span @click="downloadMovie(item, $index)" class="video_status not_download" v-else>下载影片</span>
+                                          <template v-if="$store.state.seat.isMain">
+                                            <span class="video_status downloaded" v-if="item.downloaded==='all' && $store.state.currentUser.isLogin">已下载</span>
+                                            <span @click="downloadMovie(item)" class="video_status not_download" v-else-if="item.downloaded==='none'||item.downloaded==='partly'">下载影片</span>
+                                          </template>
+                                          <template v-else>
+                                            <span class="video_status downloaded" v-if="checkDownload(item) && $store.state.currentUser.isLogin">已下载</span>
+                                            <span v-else-if="movieIsDownloading(item)" class="download_progress">
+                                              <b-progress :value="currentMovieDownloadingProgress(item)" animated show-progress variant="success"></b-progress>
+                                            </span>
+                                            <span class="video_status" v-else>未下载</span>
+                                          </template>
                                       </div>
                                   </div>
                               </div>
                           </div>
                       </div>
                       <div class="pagination_body" v-show="showPagination">
-                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :link-gen="linkGen" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
+                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
 
                           <span><span>共 {{pageNum}} 页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to" v-model="directPage" />页 <a href="#" class="jump_btn" @click="jumpToPage(directPage)">跳转</a></span>
                       </div>
@@ -38,8 +52,7 @@
 <script>
   import HeaderInfo from './header'
   import API from '../service/api'
-  const _ = require('lodash')
-  const Downloader = require('mt-files-downloader')
+  import Sender from '../udp/sender'
 
   export default {
     components: { HeaderInfo },
@@ -55,7 +68,7 @@
       }
     },
     methods: {
-      downloadMovie (item, index) {
+      async downloadMovie (item) {
         // 判断是否登录：
         if (!this.$store.state.currentUser.isLogin) {
           const swalWithBootstrapButtons = this.swal.mixin({
@@ -66,100 +79,25 @@
           swalWithBootstrapButtons({ type: 'error', title: '请先登录' })
           return false
         }
-        let intervalId = ''
         // 获取文件名
         const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
         // 文件路径
         // const movieUrl = this.baseUrl + item.path
-        const movieUrl = 'http://api.bensusan.cn/qwerty.zip'
-        // 初始化下载器
-        var downloader = new Downloader()
-        var dl = downloader.download(movieUrl, './downloaded-movies/' + fileName)
-        dl.setOptions({ range: '0-200' })
-        dl.setRetryOptions({ maxRetries: 10 })
-        // 开始下载
-        this.all_movies[index].isDownloading = true
-        this.all_movies = _.cloneDeep(this.all_movies)
-        dl.start()
-        // 结果处理
-        dl.on('start', (dl) => {
-          clearInterval(intervalId)
-          let stats = dl.getStats()
-          this.all_movies[index].isDownloading = true
-          this.all_movies[index].stats = stats
-          this.all_movies = _.cloneDeep(this.all_movies)
-          let downloadingMovie = _.cloneDeep(this.all_movies[index])
-          if (!this.isDownloading(item)) {
-            this.$store.commit('SET_DOWNLOADING_MOVIES', downloadingMovie)
-          }
-          console.log('start downloading...')
-          intervalId = setInterval(() => {
-            stats = dl.getStats()
-            console.log(stats)
-            this.all_movies[index].isDownloading = true
-            this.all_movies[index].stats = stats
-            this.all_movies = _.cloneDeep(this.all_movies)
-            downloadingMovie = _.cloneDeep(this.all_movies[index])
-            this.$store.commit('UPDATE_DOWNLOADING_MOVIES', downloadingMovie)
-            this.calculateDownloading()
-          }, 1000)
-        })
-
-        dl.on('error', (dl) => {
-          clearInterval(intervalId)
-          this.all_movies[index].isDownloading = false
-          this.all_movies = _.cloneDeep(this.all_movies)
-          this.$store.commit('REMOVE_DOWNLOADING_MOVIES', item)
-          this.calculateDownloading()
-          console.log('error', dl)
-        })
-
-        dl.on('end', (dl) => {
-          clearInterval(intervalId)
-          API.storeCinemaMovie({
-            cinema_id: this.$store.state.currentUser.cinemaId,
-            movie_id: item.id
-          }).then(response => {
-            if (response.success) {
-              this.$store.commit('REMOVE_DOWNLOADING_MOVIES', item)
-              this.getMovies()
-            }
-          })
-          this.unZipMovies('./downloaded-movies/' + fileName)
-          console.log('end', dl)
+        const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
+        // 获取需要下载的座椅
+        const needDownloadSeats = await this.getNeedDownloadSeats(item)
+        needDownloadSeats.forEach((value, key) => {
+          Sender.downloadMovie({ movie_url: movieUrl, file_name: fileName, movie_id: item.id, cinema_id: this.$store.state.currentUser.cinemaId, seat_id: value.id }, value.ip_address)
         })
       },
-      calculateDownloading () {
-        this.$store.state.movie.downloadingMovies.forEach((value, key) => {
-          this.all_movies.forEach((item, index) => {
-            if (item.id === value.id) {
-              item.stats = value.stats
-              item.isDownloading = true
-            }
-          })
+      async getNeedDownloadSeats (item) {
+        return API.getNeedDownloadSeats({ cinema_id: this.$store.state.currentUser.cinemaId, movie_id: item.id }).then(response => {
+          return response.data.data
         })
-      },
-      isDownloading (item) {
-        let isDownloading = false
-        this.$store.state.movie.downloadingMovies.forEach((value, key) => {
-          if (value.id === item.id) {
-            isDownloading = true
-          }
-        })
-        return isDownloading
-      },
-      stopMovie (item) {
-        console.log(item)
-      },
-      linkGen (pageNum) {
       },
       videoDetail (item) {
+        // console.log(item)
         this.$router.push({ name: 'video_detail', params: { data: item } })
-      },
-      unZipMovies (path) {
-        var AdmZip = require('adm-zip')
-        var unzip = new AdmZip(path)
-        unzip.extractAllTo('C:\\MOVIE', true)
       },
       searchByTag: function (val) {
         this.tag = val.name
@@ -179,7 +117,6 @@
             this.all_movies = response.data.data
             this.pageNum = response.data.page
             this.showPagination = this.pageNum >= 1
-            this.calculateDownloading()
           }
         })
       },
@@ -188,6 +125,67 @@
         const keyword = this.$refs.header.keyword
         const tag = this.tag
         this.getMovies(keyword, tag, page)
+      },
+      seatNeedDownload: function (item) {
+        let str = ''
+        if (item.downloaded === 'partly' || item.downloaded === 'none') {
+          let seatNumber = []
+          item.seatsNeedDownload.forEach((value, index) => {
+            seatNumber.push(value.seat_number)
+          })
+          seatNumber = seatNumber.join(', ')
+          str = seatNumber
+        } else if (item.downloaded === 'all') {
+          str = '-'
+        }
+        return str
+      },
+      seatHaveDownloaded: function (item) {
+        let str = ''
+        if (item.downloaded === 'partly' || item.downloaded === 'all') {
+          let seatNumber = []
+          item.seatsHaveDownloaded.forEach((value, index) => {
+            seatNumber.push(value.seat_number)
+          })
+          seatNumber = seatNumber.join(', ')
+          str = seatNumber
+        } else if (item.downloaded === 'none') {
+          str = '-'
+        }
+        return str
+      },
+      checkDownload: function (item) {
+        if (item.downloaded === 'partly') {
+          item.seatsHaveDownloaded.forEach((value, key) => {
+            if (value.id === this.$store.state.seat.currentSeat.id) {
+              return true
+            }
+          })
+        } else if (item.downloaded === 'none') {
+          return false
+        } else {
+          return true
+        }
+      },
+      movieIsDownloading (item) {
+        let flag = false
+        if (this.$store.state.movie.downloadingMovies.length !== 0) {
+          this.$store.state.movie.downloadingMovies.forEach((value, key) => {
+            if (value.movie_id === item.id) {
+              flag = true
+            }
+          })
+          return flag
+        }
+      },
+      currentMovieDownloadingProgress (item) {
+        let progress = 0
+        this.$store.state.movie.downloadingMovies.forEach((value, key) => {
+          if (value.movie_id === item.id) {
+            progress = value.stats.total.completed
+          }
+        })
+        return progress * 2 - 1 < 0 ? 0 : progress * 2 - 1
       }
     },
     mounted: function () {

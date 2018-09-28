@@ -36,8 +36,19 @@ export const closeAllSeat = message => {
   })
 }
 
+export const downloadMovie = (data, ip) => {
+  data = JSON.stringify(data)
+  console.log(data)
+  client.send(data, 8413, ip, function (err, bytes) {
+    if (err) {
+      console.log('发送数据失败')
+    }
+  })
+}
+
 export default {
   sendMessage,
   stopMovie,
-  closeAllSeat
+  closeAllSeat,
+  downloadMovie
 }

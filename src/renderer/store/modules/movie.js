@@ -1,4 +1,6 @@
 import API from '../.././service/api'
+import downloader from '../../download-movies/index.js'
+const _ = require('lodash')
 
 const state = {
   cinemaMovies: [],
@@ -18,7 +20,7 @@ const mutations = {
   },
   UPDATE_DOWNLOADING_MOVIES: (state, movie) => {
     state.downloadingMovies.forEach((value, key) => {
-      if (value.id === movie.id) {
+      if (value.movie_id === movie.movie_id) {
         state.downloadingMovies.splice(key, 1)
       }
     })
@@ -26,7 +28,7 @@ const mutations = {
   },
   REMOVE_DOWNLOADING_MOVIES: (state, movie) => {
     state.downloadingMovies.forEach((value, key) => {
-      if (value.id === movie.id) {
+      if (value.movie_id === movie.movie_id) {
         state.downloadingMovies.splice(key, 1)
       }
     })
@@ -67,6 +69,45 @@ const actions = {
       })
       store.commit('SET_CINEMA_MOVIES', response.data.data)
       return {data: movies, page: response.data.page}
+    })
+  },
+  downloadMovie (store, data) {
+    const dl = downloader.initDownloader(data.movie_url, data.file_name)
+    let intervalId = ''
+    dl.start()
+    dl.on('start', (dl) => {
+      clearInterval(intervalId)
+      console.log('start downloading...')
+      intervalId = setInterval(() => {
+        let stats = dl.getStats()
+        let movie = data
+        movie.stats = stats
+        movie = _.cloneDeep(movie)
+        store.commit('UPDATE_DOWNLOADING_MOVIES', movie)
+        console.log(stats.total)
+      }, 1000)
+    })
+    dl.on('error', (dl) => {
+      clearInterval(intervalId)
+      store.commit('REMOVE_DOWNLOADING_MOVIES', data)
+      console.log('error', dl)
+    })
+    dl.on('end', (dl) => {
+      clearInterval(intervalId)
+      API.storeCinemaMovie({
+        cinema_id: data.cinema_id,
+        movie_id: data.movie_id,
+        seat_id: data.seat_id
+      }).then(response => {
+        if (response.success) {
+          store.commit('REMOVE_DOWNLOADING_MOVIES', data)
+        }
+      })
+      // 解压缩
+      const AdmZip = require('adm-zip')
+      var unzip = new AdmZip('./downloaded-movies/' + data.file_name)
+      unzip.extractAllTo('C:\\MOVIE', true)
+      console.log('end', dl)
     })
   }
 }
