@@ -18,7 +18,7 @@
                   </template>
                   <template v-else>
                     <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
-                    <b-dropdown-item href="http://vrcinema.osvlabs.com/" class="manage_admin" target="_blank" v-if="$store.state.seat.isMain">影院管理后台</b-dropdown-item>
+                    <b-dropdown-item class="manage_admin" v-if="$store.state.seat.isMain" @click="open_manege">影院管理后台</b-dropdown-item>
                     <b-dropdown-item class="dmz_host" v-if="$store.state.seat.isMain" @click="closeAllSeat">关闭所有主机</b-dropdown-item>
                     <b-dropdown-item to="/" class="log_out" @click="logout" v-if="$store.state.seat.isMain">注销登录</b-dropdown-item>
                   </template>
@@ -59,6 +59,7 @@
   import API from '../service/api'
   import Sender from '../udp/sender'
   var ipcRenderer = require('electron').ipcRenderer
+  const { shell } = require('electron')
   export default {
     components: {
       LoginModal
@@ -167,6 +168,9 @@
             console.log(result)
           }
         })
+      },
+      open_manege: function () {
+        shell.openExternal('http://vrcinema.osvlabs.com/')
       }
     },
     computed: {
