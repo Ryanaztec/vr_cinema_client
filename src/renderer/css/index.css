@@ -270,7 +270,7 @@ body {
     margin-right: 50%;
 }
 .swal2-popup .swal2-title {
-    color: white;
+    color: white !important;
 }
 .video_detail_body .video_synopsis .download_box .progress-bar {
     background-color: #44F7F7 !important;

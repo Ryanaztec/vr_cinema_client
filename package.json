@@ -27,6 +27,12 @@
     "directories": {
       "output": "build"
     },
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "http://localhost:9528/download/"
+      }
+    ],
     "files": [
       "dist/electron/**/*"
     ],
@@ -59,6 +65,7 @@
     "adm-zip": "^0.4.11",
     "axios": "^0.16.1",
     "bootstrap-vue": "^2.0.0-rc.11",
+    "electron-updater": "^3.1.2",
     "getmac": "^1.4.6",
     "jquery": "^3.3.1",
     "lodash": "^4.17.11",
