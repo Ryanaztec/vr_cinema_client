@@ -30,7 +30,7 @@
     "publish": [
       {
         "provider": "generic",
-        "url": "http://localhost:9528/download/"
+        "url": "http://vrcinema.osvlabs.com/download/"
       }
     ],
     "files": [

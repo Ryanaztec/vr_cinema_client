@@ -74,7 +74,7 @@ function updateHandle () {
     updateAva: '检测到新版本，正在下载……',
     updateNotAva: '现在使用的就是最新版本，不用更新'
   }
-  let uploadUrl = 'http://localhost:9528/download/'
+  let uploadUrl = 'http://vrcinema.osvlabs.com/download/'
   autoUpdater.setFeedURL(uploadUrl)
   autoUpdater.on('error', function (error) {
     sendUpdateMessage(message.error)
