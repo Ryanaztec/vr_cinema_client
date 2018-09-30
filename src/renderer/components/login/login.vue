@@ -37,7 +37,6 @@
 </template>
 
 <script>
-const {dialog} = require('electron').remote
 export default {
   data () {
     return {
@@ -70,10 +69,10 @@ export default {
           path: '/vr_cinema'
         })
       }).catch((error) => {
-        dialog.showMessageBox({
-          title: '错误',
-          message: error.response.data.error.message,
-          type: 'warning'
+        const swal = require('sweetalert2')
+        swal({
+          type: 'error',
+          title: error.response.data.error.message
         })
       })
     }
