@@ -31,6 +31,7 @@ const actions = {
         if (err) {
           reject(err)
         } else {
+          store.commit('SET_MAC_ADDRESS', macAddress)
           resolve(macAddress)
         }
       })

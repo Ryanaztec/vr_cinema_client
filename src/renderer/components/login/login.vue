@@ -65,9 +65,6 @@ export default {
           group: 'foo',
           text: '欢迎' + this.username
         })
-        this.$router.push({
-          path: '/vr_cinema'
-        })
       }).catch((error) => {
         const swal = require('sweetalert2')
         swal({

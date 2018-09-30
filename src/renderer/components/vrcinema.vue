@@ -421,34 +421,21 @@
         })
       }
     },
-    async mounted () {
+    mounted () {
       if (this.$store.state.currentUser.isLogin) {
-        this.current_mac_address = await this.$store.dispatch('getMacAddress')
+        this.current_mac_address = this.$store.state.public.macAddress
+        this.seats = _.cloneDeep(this.$store.state.seat.seats)
+        this.is_main_seat = _.cloneDeep(this.$store.state.seat.isMain)
         this.getMovies()
-        const cinemaId = this.$store.state.currentUser.cinemaId
-        if (this.$store.state.seat.seats.length === 0) {
-          API.getSeatByMac({
-            cinema_id: cinemaId,
-            mac_address: this.current_mac_address
-          }).then((response) => {
-            if (response.success) {
-              this.seats = response.data.data
-              this.is_main_seat = response.data.is_main_seat
-              const seats = _.cloneDeep(response.data.data)
-              this.$store.commit('SET_SEATS', seats)
-              this.$store.commit('SET_IS_MAIN', response.data.is_main_seat)
-              this.$store.commit('SET_MAIN_SEAT', response.data.main_seat)
-              this.initSeatPlayingStatus()
-              if (response.data.is_main_seat) {
-                this.$store.dispatch('subSeatsLogin', response.data.data)
-              }
-            }
+        if (!this.is_main_seat) {
+          // 非中控只显示自己的座椅
+          this.seats = this.seats.filter(item => {
+            return item.mac_address === this.current_mac_address
           })
-        } else {
-          this.seats = _.cloneDeep(this.$store.state.seat.seats)
-          this.is_main_seat = _.cloneDeep(this.$store.state.seat.isMain)
-          this.initSeatPlayingStatus()
         }
+        // 初始化座椅状态
+        this.initSeatPlayingStatus()
+        // 计算当前播放座椅的状态
         this.playingProgress = this.calculateProgress()
         this.intervalId = setInterval(() => {
           this.playingProgress = this.calculateProgress()
@@ -460,9 +447,6 @@
       next()
     },
     watch: {
-      '$store.state.currentUser.cinemaId': function () {
-        this.getMovies()
-      },
       '$store.state.seat.playingSeats': function () {
         this.initSeatPlayingStatus()
       },
