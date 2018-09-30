@@ -30,6 +30,7 @@ function createWindow () {
     movable: true,
     darkTheme: true,
     frame: false
+    fullscreen: true
   })
 
   mainWindow.loadURL(winURL)

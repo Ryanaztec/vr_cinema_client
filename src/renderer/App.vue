@@ -19,31 +19,6 @@
       showLoading () {
         return this.$store.state.public.showLoading
       }
-    },
-    mounted: function () {
-      if (window.require) {
-        var ipcRenderer = window.require('electron').ipcRenderer
-        ipcRenderer.send('checkForUpdate')
-        ipcRenderer.on('isUpdateNow', () => {
-          const swalWithBootstrapButtons = this.swal.mixin({
-            confirmButtonClass: 'btn btn-success',
-            cancelButtonClass: 'btn btn-danger',
-            buttonsStyling: false
-          })
-          swalWithBootstrapButtons({
-            title: '检测到新版本，是否更新？',
-            type: 'warning',
-            showCancelButton: true,
-            confirmButtonText: '更新 !',
-            cancelButtonText: '取消 !',
-            reverseButtons: true
-          }).then((result) => {
-            if (result.value) {
-              ipcRenderer.send('isUpdateNow')
-            }
-          })
-        })
-      }
     }
   }
 </script>
