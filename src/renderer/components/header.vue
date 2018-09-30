@@ -15,12 +15,14 @@
                   </template>
                   <template v-if="!hasLogin">
                     <b-dropdown-item v-b-modal.modalLogin class="user_login">管理员登录</b-dropdown-item>
+                    <b-dropdown-item class="check_update" @click="check_update">检查更新</b-dropdown-item>
                   </template>
                   <template v-else>
                     <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
                     <b-dropdown-item class="manage_admin" v-if="$store.state.seat.isMain" @click="open_manege">影院管理后台</b-dropdown-item>
                     <b-dropdown-item class="dmz_host" v-if="$store.state.seat.isMain" @click="closeAllSeat">关闭所有主机</b-dropdown-item>
                     <b-dropdown-item to="/" class="log_out" @click="logout" v-if="$store.state.seat.isMain">注销登录</b-dropdown-item>
+                    <b-dropdown-item class="check_update" @click="check_update">检查更新</b-dropdown-item>
                   </template>
               </b-dropdown>
           <img class="navbar_small" src="../assets/header/small.png" @click="minWindow"/>
@@ -172,6 +174,50 @@
       open_manege: function () {
         shell.openExternal('http://vrcinema.osvlabs.com/#/?token=' + this.$store.state.currentUser.token)
         // shell.openExternal('http://localhost:9528/#/?token=' + this.$store.state.currentUser.token)
+      },
+      check_update: function () {
+        if (window.require) {
+          var ipcRenderer = window.require('electron').ipcRenderer
+          ipcRenderer.send('checkForUpdate')
+          ipcRenderer.on('message', (event, text) => {
+            console.log(text)
+            if (text === '现在使用的就是最新版本，不用更新') {
+              const swal = require('sweetalert2')
+              swal({
+                type: 'success',
+                title: text
+              })
+              return false
+            }
+            if (text === '正在检查更新……') {
+              const swal = require('sweetalert2')
+              swal({
+                title: text
+              })
+              return false
+            }
+          })
+          ipcRenderer.on('isUpdateNow', () => {
+            const swalWithBootstrapButtons = this.swal.mixin({
+              confirmButtonClass: 'btn btn-success',
+              cancelButtonClass: 'btn btn-danger',
+              buttonsStyling: false
+            })
+            swalWithBootstrapButtons({
+              title: '检测到新版本，是否更新？',
+              type: 'warning',
+              showCancelButton: true,
+              confirmButtonText: '更新 !',
+              cancelButtonText: '取消 !',
+              reverseButtons: true
+            }).then((result) => {
+              console.log(result)
+              if (result.value) {
+                ipcRenderer.send('isUpdateNow')
+              }
+            })
+          })
+        }
       }
     },
     computed: {
