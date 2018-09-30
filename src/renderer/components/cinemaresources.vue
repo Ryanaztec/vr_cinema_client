@@ -23,7 +23,7 @@
                                       <b-popover :target="'popover'+$index"
                                                  placement="bottom"
                                                  triggers="hover focus"
-                                                 v-else>
+                                                 v-else-if="$store.state.seat.isMain">
                                         <template>
                                           下载中：{{downloadStats(item, 'downloading')}} <br />
                                           已完成：{{downloadStats(item, 'end')}} <br />
@@ -57,8 +57,7 @@
                           </div>
                       </div>
                       <div class="pagination_body" v-show="showPagination">
-                          <b-pagination-nav size="sm" v-model="currentPage" prev-text="上一页" next-text="下一页" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
-
+                          <b-pagination-nav size="sm" base-url="#" v-model="currentPage" prev-text="上一页" next-text="下一页" :number-of-pages="pageNum" hide-goto-end-buttons hide-ellipsis @input="jumpToPage(currentPage)"/>
                           <span><span>共 {{pageNum}} 页</span> &nbsp;&nbsp;&nbsp;跳转到<input class="jump_to" v-model="directPage" />页 <a href="#" class="jump_btn" @click="jumpToPage(directPage)">跳转</a></span>
                       </div>
                   </div>
@@ -91,6 +90,9 @@
       }
     },
     methods: {
+      linkGen (pageNum) {
+        this.jumpToPage(2)
+      },
       async downloadMovie (item) {
         // 判断是否登录：
         if (!this.$store.state.currentUser.isLogin) {
