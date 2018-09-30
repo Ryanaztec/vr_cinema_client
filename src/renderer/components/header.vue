@@ -189,6 +189,13 @@
               })
               return false
             }
+            if (text === '正在检查更新……') {
+              const swal = require('sweetalert2')
+              swal({
+                title: text
+              })
+              return false
+            }
           })
           ipcRenderer.on('isUpdateNow', () => {
             const swalWithBootstrapButtons = this.swal.mixin({
