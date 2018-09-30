@@ -29,7 +29,7 @@ function createWindow () {
     maximizable: false,
     movable: true,
     darkTheme: true,
-    frame: false
+    frame: false,
     fullscreen: true
   })
 
