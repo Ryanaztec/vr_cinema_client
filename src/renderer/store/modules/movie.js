@@ -120,7 +120,7 @@ const actions = {
       })
       // 解压缩
       const AdmZip = require('adm-zip')
-      var unzip = new AdmZip('./downloaded-movies/' + data.file_name)
+      var unzip = new AdmZip('./resources/' + data.file_name)
       unzip.extractAllTo('C:\\MOVIE', true)
       console.log('end', dl)
     })
