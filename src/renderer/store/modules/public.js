@@ -39,22 +39,20 @@ const actions = {
   },
   subSeatsLogin (store, seats) {
     const token = localStorage.token
-    let ips = []
     let message = { token: token, type: 'login' }
     message = JSON.stringify(message)
+    // 依此发送消息
     seats.forEach((value, key) => {
-      ips.push(value.ip_address)
+      Sender.sendMessage(message, value.ip_address, true)
     })
-    Sender.sendMessage(message, ips, true)
   },
   subSeatsLogout (store, seats) {
-    let ips = []
     let message = { type: 'logout' }
     message = JSON.stringify(message)
+    // 依此发送消息
     seats.forEach((value, key) => {
-      ips.push(value.ip_address)
+      Sender.sendMessage(message, value.ip_address, true)
     })
-    Sender.sendMessage(message, ips, true)
   }
 }
 

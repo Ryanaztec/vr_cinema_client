@@ -26,6 +26,16 @@ server.on('message', function (message, rinfo) {
   } else if (store.state.seat.isMain && type === 'downloading-progress') {
     // 其他座椅的下载进度
     store.commit('SET_SUB_SEAT_DOWNLOADING_STATUS', sendingMessage)
+  } else if (!store.state.seat.isMain && type === 'playing-movie') {
+    // 子座椅显示播放进度
+    server.send(sendingMessage.message, 8412, '255.255.255.255', (err, bytes) => {
+      if (err) {
+        console.log('发送数据失败')
+      } else {
+        console.log(sendingMessage.message)
+      }
+    })
+    store.commit('ADD_PLAYING_SEATS', sendingMessage.data)
   } else if (!store.state.seat.isMain && store.state.public.ip_address !== rinfo.address) {
     server.send(sendingMessage, 8412, '255.255.255.255', function (err, bytes) {
       if (err) {

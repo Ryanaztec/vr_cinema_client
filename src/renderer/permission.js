@@ -21,7 +21,6 @@ router.beforeEach((to, from, next) => {
               cinema_id: store.state.currentUser.cinemaId,
               mac_address: response
             }).then((response) => {
-              console.log(response)
               if (response.success) {
                 store.commit('SET_SEATS', response.data.data)
                 store.commit('SET_IS_MAIN', response.data.is_main_seat)

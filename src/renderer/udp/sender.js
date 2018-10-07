@@ -1,22 +1,20 @@
 import client from './index'
 
-export const sendMessage = (message, ips, isMain) => {
+export const sendMessage = (message, ip, isMain) => {
   if (isMain) {
     // 8412端口中控给其他座椅发送的指令目前只有播放电影
-    ips.forEach((item, index) => {
-      client.send(message, 8412, item, function (err, bytes) {
-        if (err) {
-          console.log('发送数据失败')
-        } else {
-          console.log(message)
-        }
-      })
+    client.send(message, 8412, ip, function (err, bytes) {
+      if (err) {
+        console.log('发送数据失败')
+      } else {
+        console.log(message)
+      }
     })
   } else {
     // 8412端口非中控座椅发送的指令分情况
     if (message.type === 'downloading-progress') {
       message = JSON.stringify(message)
-      client.send(message, 8412, ips, function (err, bytes) {
+      client.send(message, 8412, ip, function (err, bytes) {
         if (err) {
           console.log('发送数据失败')
         }
@@ -34,8 +32,8 @@ export const sendMessage = (message, ips, isMain) => {
   }
 }
 
-export const stopMovie = (ips, isMain) => {
-  sendMessage('stop', ips, isMain)
+export const stopMovie = (ip, isMain) => {
+  sendMessage('stop', ip, isMain)
 }
 
 export const closeAllSeat = message => {

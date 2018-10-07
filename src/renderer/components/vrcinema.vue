@@ -219,14 +219,13 @@
               seats: seatsToPlay
             }).then(response => {
               if (response.success) {
-                let ipsToSendMsg = []
                 response.data.data.forEach((item, key) => {
-                  ipsToSendMsg.push(item.cinema_seat.ip_address)
                   this.$store.commit('ADD_PLAYING_SEATS', item)
+                  let message = JSON.stringify({ type: 'playing-movie', message: 'start ' + selectedMovie.movie_name, data: item })
+                  Sender.sendMessage(message, item.cinema_seat.ip_address, this.is_main_seat)
                 })
                 this.playingProgress = this.calculateProgress()
                 // this.coverClass = 'cover' // 添加遮罩层
-                Sender.sendMessage('start ' + selectedMovie.movie_name, ipsToSendMsg, this.is_main_seat)
                 this.$notify({
                   group: 'foo',
                   text: '开始播放 《' + selectedMovie.movie_name + '》'
@@ -259,7 +258,6 @@
       stop: function () {
         let activeSeats = this.currentActiveSeats()
         let activeSeatNum = []
-        let realPlayingSeatsIps = []
         let swalWithBootstrapButtons = this.swal.mixin({
           confirmButtonClass: 'btn btn-success',
           cancelButtonClass: 'btn btn-danger',
@@ -276,11 +274,6 @@
           })
           return false
         }
-        activeSeats.map(item => {
-          if (item.is_playing) {
-            realPlayingSeatsIps.push(item.ip_address)
-          }
-        })
         swalWithBootstrapButtons({
           title: '确定要停止座椅编号为 ' + activeSeatNum + ' 的影片播放?',
           type: 'warning',
@@ -301,7 +294,11 @@
                 this.$store.commit('SET_PLAYING_SEATS', response.data.data)
                 const movieName = this.selectedMovie.movie_name
                 this.coverClass = '' // 除去遮罩层
-                Sender.stopMovie(realPlayingSeatsIps, this.is_main_seat)
+                activeSeats.map(item => {
+                  if (item.is_playing) {
+                    Sender.stopMovie(item.ip_address, this.is_main_seat)
+                  }
+                })
                 this.$notify({
                   group: 'foo',
                   text: '停止播放 《' + movieName + '》'
