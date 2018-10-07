@@ -19,6 +19,8 @@ server.on('message', function (message, rinfo) {
     // 下级座椅登录
     localStorage.token = sendingMessage.token
     store.commit('SET_TOKEN', sendingMessage.token)
+    store.commit('SET_MAIN_SEAT', false)
+    store.dispatch('getMacAddress')
     store.dispatch('GetInfo')
   } else if (type === 'logout') {
     // 下级座椅登出

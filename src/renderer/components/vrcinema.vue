@@ -362,7 +362,6 @@
         let progressArr = []
         let removePlayingSeats = []
         let playingSeatsNumber = []
-        let ips = []
         if (playingSeats.length !== 0) {
           playingSeats.forEach((value, key) => {
             const remainingTime = Math.round(new Date().getTime() / 1000) - value.play_start_time
@@ -378,7 +377,7 @@
             if (progress >= 100) {
               removePlayingSeats.push(value.seat_id)
               playingSeatsNumber.push(value.cinema_seat.seat_number)
-              ips.push(value.cinema_seat.ip_address)
+              Sender.stopMovie(value.cinema_seat.ip_address, this.is_main_seat)
             }
           })
           if (removePlayingSeats.length !== 0) {
@@ -389,7 +388,6 @@
               is_main: this.is_main_seat
             }).then(response => {
               if (response.success) {
-                Sender.stopMovie(ips, this.is_main_seat)
                 this.$store.commit('SET_PLAYING_SEATS', response.data.data)
                 this.$notify({
                   group: 'foo',

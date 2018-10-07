@@ -46,6 +46,31 @@ const actions = {
       store.commit('SET_CINEMA_ID', data.cinema.id)
       store.commit('SET_IS_LOGIN', true)
       API.initTokenRefresher(store)
+    }).then(res => {
+      // 获取mac地址
+      store.dispatch('getMacAddress').then(response => {
+        // 获取所有正在播放的座椅
+        store.dispatch('GetPlayingStatusSeats', {
+          cinema_id: this.state.currentUser.cinemaId,
+          mac_address: response
+        })
+        // 获取影院所有的座椅信息
+        API.getSeatByMac({
+          cinema_id: this.state.currentUser.cinemaId,
+          mac_address: response
+        }).then((response) => {
+          if (response.success) {
+            store.commit('SET_SEATS', response.data.data)
+            store.commit('SET_IS_MAIN', response.data.is_main_seat)
+            store.commit('SET_MAIN_SEAT', response.data.main_seat)
+            if (response.data.is_main_seat) {
+              store.dispatch('subSeatsLogin', response.data.data)
+            }
+          }
+        })
+      })
+    }).catch(() => {
+      store.dispatch('FedLogOut')
     }).catch(error => {
       throw error
     })
