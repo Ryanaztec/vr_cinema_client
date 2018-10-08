@@ -116,7 +116,6 @@
       fetchData () {
         const movieDetail = this.$route.params.data
         this.currentMovie = this.$route.params.data
-        console.log(movieDetail)
         this.is_downloaded = movieDetail.downloaded
         this.video_data.video_name = movieDetail.name
         this.video_data.video_description = movieDetail.description

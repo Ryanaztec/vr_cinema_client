@@ -1,4 +1,5 @@
 import store from '../store/index'
+import Vue from 'vue'
 
 const dgrm = require('dgram')
 const server = dgrm.createSocket('udp4')
@@ -22,9 +23,17 @@ server.on('message', function (message, rinfo) {
     store.commit('SET_MAIN_SEAT', false)
     store.dispatch('getMacAddress')
     store.dispatch('GetInfo')
+    Vue.notify({
+      group: 'foo',
+      text: '登录成功'
+    })
   } else if (type === 'logout') {
     // 下级座椅登出
     store.dispatch('FedLogOut')
+    Vue.notify({
+      group: 'foo',
+      text: '已登出'
+    })
   } else if (store.state.seat.isMain && type === 'downloading-progress') {
     // 其他座椅的下载进度
     store.commit('SET_SUB_SEAT_DOWNLOADING_STATUS', sendingMessage)
@@ -38,6 +47,10 @@ server.on('message', function (message, rinfo) {
       }
     })
     store.commit('ADD_PLAYING_SEATS', sendingMessage.data)
+    Vue.notify({
+      group: 'foo',
+      text: sendingMessage.message
+    })
   } else if (!store.state.seat.isMain && store.state.public.ip_address !== rinfo.address) {
     server.send(sendingMessage, 8412, '255.255.255.255', function (err, bytes) {
       if (err) {
