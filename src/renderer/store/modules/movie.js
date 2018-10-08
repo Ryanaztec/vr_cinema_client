@@ -81,7 +81,7 @@ const actions = {
       return {data: movies, page: response.data.page}
     })
   },
-  _downloadMovie (store, data) {
+  pear_downloadMovie (store, data) {
     const PearDownloader = require('PearDownloader')
     const options = {
       scheduler: 'WebRTCFirst', // 节点调度算法，默认IdleFirst，其它内置调度算法有“WebRTCFirst“和”CloudFirst”
@@ -98,14 +98,40 @@ const actions = {
       debug: true, // 是否开启debug模式，开启后可以在console中查看log，默认false
       algorithm: 'push' // 下载算法，有‘push’和‘pull’两种，默认‘push’
     }
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwZWFyIjoicGVhci1yZXN0ZnVsLWFwaS0zMzQ0IiwiZXhwIjo0Nzc4ODIwNzE5LCJqdGkiOiIyOTM3IiwiaWF0Ijo4LCJpc3MiOiJmb2ctbG9naW4tYXBpIiwic3ViIjoiZ2V4eSJ9.o8pOHZpU_sm8BjVzakIPClav57EMYphxogNzxm26MtY'
-    const downloader = new PearDownloader(data.movie_url, token, options)
-    downloader.on('begin', (fileLength, chunks) => {
+    let token = ''
+    var loginXhr = new XMLHttpRequest()
+    loginXhr.timeout = 3000
+    loginXhr.ontimeout = function (event) {
+      alert('登录超时！')
+    }
+    var loginData = {
+      // 使用时替换为正式的账号密码
+      'username': 'gexy',
+      'password': '1602342221'
+    }
+    loginXhr.open('POST', 'https://api.webrtc.win/v1/vdn/login')
+    loginXhr.send(JSON.stringify(loginData))
+    loginXhr.onreadystatechange = function () {
+      if (loginXhr.readyState === 4 && loginXhr.status === 200) {
+        token = JSON.parse(loginXhr.responseText).token
+        if (PearDownloader.isWebRTCSupported()) {
+          console.log('start downloading...')
+          var downloader = new PearDownloader(data.movie_url, token, options)
+          downloader.on('begin', onBegin)
+          downloader.on('progress', onProgress)
+          downloader.on('done', onDone)
+        }
+      }
+    }
+    function onBegin (fileLength, chunks) {
       console.log('start downloading buffer by first aid, file length is:' + fileLength + ' total chunks:' + chunks)
-    })
-    downloader.on('progress', (downloaded) => {
+    }
+    function onProgress (downloaded) {
       console.log('Progress: ' + (downloaded * 100).toFixed(1) + '%')
-    })
+    }
+    function onDone () {
+      console.log('finished downloading buffer by first aid')
+    }
   },
   downloadMovie (store, data) {
     const dl = downloader.initDownloader(data.movie_url, data.file_name)
@@ -145,9 +171,13 @@ const actions = {
         }
       })
       // 解压缩
-      const AdmZip = require('adm-zip')
-      var unzip = new AdmZip('./resources/' + data.file_name)
-      unzip.extractAllTo('C:\\MOVIE', true)
+      try {
+        const AdmZip = require('adm-zip')
+        var unzip = new AdmZip('./resources/' + data.file_name)
+        unzip.extractAllTo('C:\\MOVIE', true)
+      } catch (e) {
+        console.log('解压异常')
+      }
       console.log('end', dl)
     })
   }

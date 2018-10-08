@@ -172,8 +172,7 @@
         })
       },
       open_manege: function () {
-        shell.openExternal('http://vrcinema.osvlabs.com/#/?token=' + this.$store.state.currentUser.token)
-        // shell.openExternal('http://localhost:9528/#/?token=' + this.$store.state.currentUser.token)
+        shell.openExternal(this.global.baseUrl + '/#/?token=' + this.$store.state.currentUser.token)
       },
       check_update: function () {
         if (window.require) {

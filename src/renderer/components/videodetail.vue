@@ -187,7 +187,7 @@
     },
     computed: {
       baseUrl: function () {
-        return process.env.NODE_ENV === 'production' ? 'http://vrcinema.osvlabs.com/storage/' : 'http://dev.vrcinema.com/storage/'
+        return process.env.NODE_ENV === 'production' ? this.global.baseUrl + '/storage/' : 'http://dev.vrcinema.com/storage/'
       }
     },
     beforeRouteLeave (to, from, next) {

@@ -107,8 +107,8 @@
         // 获取文件名
         const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
         // 文件路径
-        // const movieUrl = this.baseUrl + item.path
-        const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
+        const movieUrl = this.baseUrl + item.path
+        // const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
         // 获取需要下载的座椅
         const needDownloadSeats = await this.getNeedDownloadSeats(item)
         needDownloadSeats.forEach((value, key) => {
@@ -241,8 +241,7 @@
     },
     computed: {
       baseUrl: function () {
-        return process.env.NODE_ENV === 'production' ? 'http://vrcinema.osvlabs.com/storage/' : 'http://dev.vrcinema.com/storage/'
-        // return 'http://vrcinema.osvlabs.com/storage/'
+        return process.env.NODE_ENV === 'production' ? this.global.baseUrl + '/storage/' : 'http://dev.vrcinema.com/storage/'
       }
     },
     watch: {
@@ -257,6 +256,11 @@
           if (flag) {
             this.getMovies()
           }
+        }
+      },
+      '$store.state.currentUser.isLogin': function (value) {
+        if (value) {
+          this.getMovies()
         }
       }
     }

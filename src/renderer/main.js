@@ -19,6 +19,7 @@ import Notifications from 'vue-notification'
 import velocity from 'velocity-animate'
 import './udp/receiver'
 import swal from 'sweetalert2'
+import global from './global'
 
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))
 Vue.http = Vue.prototype.$http = axios
@@ -29,6 +30,7 @@ Vue.use(api)
 Vue.use(Notifications, {velocity})
 Vue.component('icon', Icon)
 Vue.prototype.swal = swal
+Vue.prototype.global = global
 
 /* eslint-disable no-new */
 new Vue({
