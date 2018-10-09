@@ -82,7 +82,7 @@ downloadCommand.on('message', function (message, rinfo) {
     }
   })
   if (flag) {
-    store.dispatch('downloadMovie', message)
+    store.dispatch('oss_downloadMovie', message)
   }
 })
 

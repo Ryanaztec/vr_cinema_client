@@ -34,7 +34,15 @@
                       <div class="download_box">
                         <template v-if="$store.state.seat.isMain">
                           <b-button :disabled="true" class="download_btn" v-if="currentMovie.downloaded==='all' && $store.state.currentUser.isLogin">已下载</b-button>
-                          <b-button @click="downloadMovie(currentMovie)" class="download_btn" v-else-if="currentMovie.downloaded==='none'||currentMovie.downloaded==='partly'">{{showSubSeatProgress(currentMovie) ? '座椅下载中' : '下载影片'}}</b-button>
+                          <b-button id="process" @click="downloadMovie(currentMovie)" class="download_btn" v-else-if="currentMovie.downloaded==='none'||currentMovie.downloaded==='partly'">{{showSubSeatProgress(currentMovie) ? '座椅下载中' : '下载影片'}}</b-button>
+                          <b-popover target="process"
+                           placement="topleft"
+                           triggers="hover focus"
+                           v-if="$store.state.seat.isMain&&showSubSeatProgress(currentMovie)">
+                            <template>
+                              <downloading-progress :movieInfo="currentMovie"></downloading-progress>
+                            </template>
+                          </b-popover>
                         </template>
                         <template v-else-if="movieIsDownloading(currentMovie)">
                           <b-progress height="20px" :value="currentMovieDownloadingProgress(currentMovie)" show-progress class="mb-2"></b-progress>
@@ -51,8 +59,9 @@
   import HeaderInfo from './header'
   import API from '../service/api'
   import Sender from '../udp/sender'
+  import DownloadingProgress from './downloading-progress'
   export default {
-    components: { HeaderInfo },
+    components: { HeaderInfo, DownloadingProgress },
     data () {
       return {
         video_data: {},
@@ -76,15 +85,13 @@
           swalWithBootstrapButtons({ type: 'error', title: '请先登录' })
           return false
         }
-        // 获取文件名
-        const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
         // 文件路径
-        // const movieUrl = this.baseUrl + item.path
-        const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
+        const movieUrl = this.baseUrl + item.path
+        // const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
         // 获取需要下载的座椅
         const needDownloadSeats = await this.getNeedDownloadSeats(item)
         needDownloadSeats.forEach((value, key) => {
-          Sender.downloadMovie({ movie_url: movieUrl, file_name: fileName, movie_id: item.id, cinema_id: this.$store.state.currentUser.cinemaId, seat_id: value.id }, value.ip_address)
+          Sender.downloadMovie({ movie_url: movieUrl, file_name: item.file_name, movie_id: item.id, cinema_id: this.$store.state.currentUser.cinemaId, seat_id: value.id, size: item.size }, value.ip_address)
         })
       },
       async getNeedDownloadSeats (item) {
@@ -152,10 +159,10 @@
         let progress = 0
         this.$store.state.movie.downloadingMovies.forEach((value, key) => {
           if (value.movie_id === item.id) {
-            progress = value.stats.total.completed
+            progress = value.percentage
           }
         })
-        return progress * 2 - 1 < 0 ? 0 : progress * 2 - 1
+        return progress
       },
       showSubSeatProgress (item) {
         let flag = false

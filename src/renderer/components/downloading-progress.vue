@@ -5,7 +5,6 @@
       <div class="col-sm-10 pt-1">
         <b-progress :value="bar.value"
                     :variant="bar.variant"
-                    :key="bar.variant"
                     show-progress
         ></b-progress>
       </div>
@@ -32,7 +31,7 @@ export default {
       this.$store.state.movie.subSeatDownloadingStatus.forEach((value, key) => {
         let completed = 0
         if (value.movie_id === this.movieInfo.id) {
-          completed = value.stats.total.completed * 2 - 1 > 0 ? value.stats.total.completed * 2 - 1 : 0
+          completed = value.percentage
           this.$store.state.seat.seats.forEach((item, index) => {
             if (item.id === value.seat_id) {
               seatNumber = item.seat_number.toString()

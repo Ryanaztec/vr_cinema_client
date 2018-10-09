@@ -150,7 +150,7 @@
       activeVideo: function (item, index) {
         this.selectedMovie = item
         this.active = index
-        console.log(this.$store.state.public.ip_address)
+        console.log(this.$store.state.movie.downloadingMovies)
         console.log(this.$store.state.seat.playingSeats)
         console.log(this.currentActiveSeats())
       },
@@ -419,8 +419,19 @@
     mounted () {
       if (this.$store.state.currentUser.isLogin) {
         this.current_mac_address = this.$store.state.public.macAddress
-        this.seats = _.cloneDeep(this.$store.state.seat.seats)
-        this.is_main_seat = _.cloneDeep(this.$store.state.seat.isMain)
+        // 获取影院所有的座椅信息
+        API.getSeatByMac({
+          cinema_id: this.$store.state.currentUser.cinemaId,
+          mac_address: this.current_mac_address
+        }).then((response) => {
+          if (response.success) {
+            this.seats = response.data.data
+            this.is_main_seat = response.data.is_main_seat
+            this.$store.commit('SET_SEATS', _.cloneDeep(response.data.data))
+            this.$store.commit('SET_IS_MAIN', response.data.is_main_seat)
+            this.$store.commit('SET_MAIN_SEAT', response.data.main_seat)
+          }
+        })
         this.getMovies()
         if (!this.is_main_seat) {
           // 非中控只显示自己的座椅

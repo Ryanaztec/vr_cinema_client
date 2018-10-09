@@ -104,15 +104,13 @@
           swalWithBootstrapButtons({ type: 'error', title: '请先登录' })
           return false
         }
-        // 获取文件名
-        const fileName = item.path.substring(item.path.lastIndexOf('/') + 1, item.path.length)
         // 文件路径
         const movieUrl = this.baseUrl + item.path
         // const movieUrl = 'http://vrcinema.osvlabs.com/storage/movies/10/qwerty.zip'
         // 获取需要下载的座椅
         const needDownloadSeats = await this.getNeedDownloadSeats(item)
         needDownloadSeats.forEach((value, key) => {
-          Sender.downloadMovie({ movie_url: movieUrl, file_name: fileName, movie_id: item.id, cinema_id: this.$store.state.currentUser.cinemaId, seat_id: value.id }, value.ip_address)
+          Sender.downloadMovie({ movie_url: movieUrl, file_name: item.file_name, movie_id: item.id, cinema_id: this.$store.state.currentUser.cinemaId, seat_id: value.id, size: item.size }, value.ip_address)
         })
       },
       async getNeedDownloadSeats (item) {
@@ -207,10 +205,10 @@
         let progress = 0
         this.$store.state.movie.downloadingMovies.forEach((value, key) => {
           if (value.movie_id === item.id) {
-            progress = value.stats.total.completed
+            progress = value.percentage
           }
         })
-        return progress * 2 - 1 < 0 ? 0 : progress * 2 - 1
+        return progress
       },
       showSubSeatProgress (item) {
         let flag = false
