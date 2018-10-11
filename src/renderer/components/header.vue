@@ -60,6 +60,7 @@
   import LoginModal from './login/login.vue'
   import API from '../service/api'
   import Sender from '../udp/sender'
+  import unZip from '../download-movies/unzip.js'
   var ipcRenderer = require('electron').ipcRenderer
   const { shell } = require('electron')
   export default {
@@ -94,15 +95,11 @@
     methods: {
       unzip: function () {
         console.log('unzip')
-        const decompress = require('decompress')
-        const decompressUnzip = require('decompress-unzip')
-
-        decompress('./resources/qwerty.zip', './resources/', {
-          plugins: [
-            decompressUnzip()
-          ]
-        }).then(() => {
-          console.log('Files decompressed')
+        const fs = require('fs')
+        fs.mkdir('./resources/中文/', function (err) {
+          if (!err) {
+            unZip.extractSync('./resources/中文.zip', './resources/中文/', 'cp936')
+          }
         })
       },
       activeTag: function (index, item) {
