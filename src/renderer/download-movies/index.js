@@ -16,9 +16,9 @@ export const initDownloader = (movieUrl, fileName) => {
 export const getStream = async (configuration) => {
   let client = new OSS({
     region: 'oss-cn-beijing',
-    accessKeyId: 'LTAIQAcWTGnQlq8C',
-    accessKeySecret: 'oS6Jihoy6BKRAwInllI9MuvB6Gwt67',
-    bucket: 'test-vr'
+    accessKeyId: 'LTAIrCfFEDT1sXQt',
+    accessKeySecret: 'hCNTF9ArQiTaGsOXhA0LUYpYxEXx0Z',
+    bucket: 'vr-test002`'
   })
   let result = await client.getStream(configuration.remoteFile)
   let writeStream = fs.createWriteStream(configuration.localFile)

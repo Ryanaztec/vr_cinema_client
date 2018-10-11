@@ -1,4 +1,5 @@
 import API from '../.././service/api'
+import Vue from 'vue'
 
 const state = {
   username: '',
@@ -50,9 +51,10 @@ const actions = {
       // 获取mac地址
       store.dispatch('getMacAddress').then(response => {
         // 获取所有正在播放的座椅
+        let macAddress = response
         store.dispatch('GetPlayingStatusSeats', {
           cinema_id: this.state.currentUser.cinemaId,
-          mac_address: response
+          mac_address: macAddress
         })
         // 获取影院所有的座椅信息
         API.getSeatByMac({
@@ -67,6 +69,12 @@ const actions = {
               store.dispatch('subSeatsLogin', response.data.data)
             }
           }
+        }).catch(() => {
+          // 处理请求偶尔失败的情况
+          Vue.notify({
+            group: 'foo',
+            text: '获取Mac地址失败，请重新登陆'
+          })
         })
       })
     }).catch(() => {

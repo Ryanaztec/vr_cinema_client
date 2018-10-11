@@ -1,6 +1,7 @@
 import API from '../.././service/api'
 import { downloader, initDownloader } from '../../download-movies/index'
 import Sender from '../../udp/sender'
+import Vue from 'vue'
 const _ = require('lodash')
 
 const state = {
@@ -111,6 +112,14 @@ const actions = {
           Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'end', type: 'downloading-progress'}, mainSeatIp, false)
           store.commit('REMOVE_DOWNLOADING_MOVIES', data)
         }
+      }).catch(() => {
+        Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'error', type: 'downloading-progress'}, mainSeatIp, false)
+        store.commit('REMOVE_DOWNLOADING_MOVIES', data)
+        // 处理请求偶尔失败的情况
+        Vue.notify({
+          group: 'foo',
+          text: '网络连接断开，请重新下载'
+        })
       })
       console.log('success')
     })

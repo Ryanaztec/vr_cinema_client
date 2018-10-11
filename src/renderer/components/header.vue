@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="header">
+    <div class="header"  @click="unzip">
       <img class="cinema_logo" src="../assets/header/logo.png"/>
       <div class="header_text">
           <router-link class="text vr_cinema_text" to="/vr_cinema"><span>VR影院</span></router-link>
@@ -92,6 +92,19 @@
       }
     },
     methods: {
+      unzip: function () {
+        console.log('unzip')
+        const decompress = require('decompress')
+        const decompressUnzip = require('decompress-unzip')
+
+        decompress('./resources/qwerty.zip', './resources/', {
+          plugins: [
+            decompressUnzip()
+          ]
+        }).then(() => {
+          console.log('Files decompressed')
+        })
+      },
       activeTag: function (index, item) {
         this.active = index
         this.$parent.searchByTag(item)
