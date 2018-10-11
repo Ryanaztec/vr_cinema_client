@@ -33,9 +33,20 @@
         <div class="menubar_body">
 
           <b-nav class="menubar_list" v-if="path != '/video_detail'">
-              <b-nav-item :class="{active:$index==active}" v-for="(item, $index) in tags" @click="activeTag($index, item)">
+              <b-nav-item :class="{active:$index==active}" v-if="$index<10" v-for="(item, $index) in tags" @click="activeTag($index, item)">
                   {{item.name}}
               </b-nav-item>
+              <b-dropdown variant="link" size="lg" v-if="tags && tags.length>10">
+                  <template slot="button-content">
+                      <span class="more_btn">更多</span>
+                  </template>
+                  <template>
+                      <b-dropdown-item :class="{active:$index==active}" v-if="$index>9" v-for="(item, $index) in tags" @click="activeTag($index, item)">
+                          {{item.name}}
+                      </b-dropdown-item>
+                  </template>
+              </b-dropdown>
+
 
               <div class="search_box">
                   <input id="search_input" type="input" v-model="keyword" placeholder="输入要搜索的影片" @keyup.enter="handleSearch(keyword)"/>
