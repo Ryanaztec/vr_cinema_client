@@ -1,17 +1,7 @@
 import store from '../store/index'
 import Sender from '../udp/sender'
-const Downloader = require('mt-files-downloader')
 const OSS = require('ali-oss')
 const fs = require('fs')
-
-export const initDownloader = (movieUrl, fileName) => {
-  // 初始化下载器
-  var downloader = new Downloader()
-  var dl = downloader.download(movieUrl, './resources/' + fileName)
-  dl.setOptions({ range: '0-200' })
-  dl.setRetryOptions({ maxRetries: 10 })
-  return dl
-}
 
 export const getStream = async (configuration) => {
   let client = new OSS({
@@ -60,7 +50,6 @@ export const downloader = (configuration) => {
 }
 
 export default {
-  initDownloader,
   getStream,
   downloader
 }

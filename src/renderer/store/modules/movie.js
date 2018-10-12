@@ -1,5 +1,5 @@
 import API from '../.././service/api'
-import { downloader, initDownloader } from '../../download-movies/index'
+import { downloader } from '../../download-movies/index'
 import unZip from '../../download-movies/unzip.js'
 import Sender from '../../udp/sender'
 import Vue from 'vue'
@@ -132,55 +132,6 @@ const actions = {
         })
       })
       console.log('success')
-    })
-  },
-  downloadMovie (store, data) {
-    const dl = initDownloader(data.movie_url, data.file_name)
-    let intervalId = ''
-    dl.start()
-    dl.on('start', (dl) => {
-      clearInterval(intervalId)
-      console.log('start downloading...')
-      intervalId = setInterval(() => {
-        let stats = dl.getStats()
-        let percentage = stats.total.completed * 2 - 1 < 0 ? 0 : stats.total.completed * 2 - 1
-        let movie = data
-        movie.percentage = percentage
-        movie = _.cloneDeep(movie)
-        // 当前下载电影的进度更新到store中
-        store.commit('UPDATE_DOWNLOADING_MOVIES', movie)
-        // 向中控发送当前下载进度
-        Sender.sendMessage({movie_id: data.movie_id, percentage: percentage, seat_id: data.seat_id, status: 'downloading', type: 'downloading-progress'}, this.state.seat.mainSeat.ip_address, false)
-        // console.log(stats.total)
-      }, 1000)
-    })
-    dl.on('error', (dl) => {
-      clearInterval(intervalId)
-      store.commit('REMOVE_DOWNLOADING_MOVIES', data)
-      Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'error', type: 'downloading-progress'}, this.state.seat.mainSeat.ip_address, false)
-      console.log('error', dl)
-    })
-    dl.on('end', (dl) => {
-      clearInterval(intervalId)
-      Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'end', type: 'downloading-progress'}, this.state.seat.mainSeat.ip_address, false)
-      API.storeCinemaMovie({
-        cinema_id: data.cinema_id,
-        movie_id: data.movie_id,
-        seat_id: data.seat_id
-      }).then(response => {
-        if (response.success) {
-          store.commit('REMOVE_DOWNLOADING_MOVIES', data)
-        }
-      })
-      // 解压缩
-      try {
-        const AdmZip = require('adm-zip')
-        var unzip = new AdmZip('./resources/' + data.file_name)
-        unzip.extractAllTo('C:\\MOVIE', true)
-      } catch (e) {
-        console.log('解压异常')
-      }
-      console.log('end', dl)
     })
   }
 }
