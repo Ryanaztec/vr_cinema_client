@@ -1,7 +1,6 @@
 <template>
   <div>
     <header-info ref="header"></header-info>
-
       <div class="row container_body cinema_resource_body">
           <div class="col-md-12">
               <div class="row ">

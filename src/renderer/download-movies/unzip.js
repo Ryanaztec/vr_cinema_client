@@ -57,7 +57,6 @@ function extractSync (zipFilename, targetPath, encoding, filters) {
   } else {
     zipEntries.forEach(function (x) {
       var path = fixZipFilename(x.rawEntryName, encoding)
-      console.log(iconv)
       if (x.isDirectory) {
         fs.mkdirSync((targetPath || '') + path)
       } else {

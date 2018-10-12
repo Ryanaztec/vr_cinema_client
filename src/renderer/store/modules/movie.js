@@ -1,5 +1,6 @@
 import API from '../.././service/api'
 import { downloader, initDownloader } from '../../download-movies/index'
+import unZip from '../../download-movies/unzip.js'
 import Sender from '../../udp/sender'
 import Vue from 'vue'
 const _ = require('lodash')
@@ -84,6 +85,14 @@ const actions = {
   },
   oss_downloadMovie (store, data) {
     let mainSeatIp = this.state.seat.mainSeat.ip_address
+    let unzip = function (fileName) {
+      let arr = fileName.split('.')
+      let folderName = arr[0]
+      const fs = require('fs')
+      fs.mkdir('C:\\MOVIE\\' + folderName + '\\', function () {
+        unZip.extractSync('./resources/' + fileName, 'C:\\MOVIE\\', 'cp936')
+      })
+    }
     downloader({
       // remoteFile: '/test.rar',
       // localFile: './resources/test.rar',
@@ -111,6 +120,7 @@ const actions = {
         if (response.success) {
           Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'end', type: 'downloading-progress'}, mainSeatIp, false)
           store.commit('REMOVE_DOWNLOADING_MOVIES', data)
+          unzip(data.file_name)
         }
       }).catch(() => {
         Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'error', type: 'downloading-progress'}, mainSeatIp, false)

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="header"  @click="unzip">
+    <div class="header" @click="unzip">
       <img class="cinema_logo" src="../assets/header/logo.png"/>
       <div class="header_text">
           <router-link class="text vr_cinema_text" to="/vr_cinema"><span>VR影院</span></router-link>
@@ -71,7 +71,7 @@
   import LoginModal from './login/login.vue'
   import API from '../service/api'
   import Sender from '../udp/sender'
-  import unZip from '../download-movies/unzip.js'
+  // import unZip from '../download-movies/unzip.js'
   var ipcRenderer = require('electron').ipcRenderer
   const { shell } = require('electron')
   export default {
@@ -104,14 +104,16 @@
       }
     },
     methods: {
-      unzip: function () {
-        console.log('unzip')
-        const fs = require('fs')
-        fs.mkdir('./resources/中文/', function (err) {
-          if (!err) {
-            unZip.extractSync('./resources/中文.zip', './resources/中文/', 'cp936')
-          }
-        })
+      unzip () {
+        console.log('unzip...')
+        // const fs = require('fs')
+        // fs.mkdir('C:\\MOVIE\\' + 'ZiYou\\', function (err) {
+        //   if (!err) {
+        //     unZip.extractSync('./resources/ZiYou.zip', 'C:\\MOVIE\\', 'cp936')
+        //   } else {
+        //     console.log(err)
+        //   }
+        // })
       },
       activeTag: function (index, item) {
         this.active = index
