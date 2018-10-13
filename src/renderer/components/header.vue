@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="header">
+    <div class="header" @click='unzip'>
       <img class="cinema_logo" src="../assets/header/logo.png"/>
       <div class="header_text">
           <router-link class="text vr_cinema_text" to="/vr_cinema"><span>VR影院</span></router-link>
@@ -71,6 +71,7 @@
   import LoginModal from './login/login.vue'
   import API from '../service/api'
   import Sender from '../udp/sender'
+  import unZip from '../download-movies/unzip.js'
   var ipcRenderer = require('electron').ipcRenderer
   const { shell } = require('electron')
   export default {
@@ -103,6 +104,14 @@
       }
     },
     methods: {
+      unzip: function () {
+        console.log(123)
+        const fs = require('fs')
+        fs.mkdir('C:\\MOVIE\\迅雷下载', function (err) {
+          console.log(err)
+          unZip.extractSync('./resources/' + '迅雷下载.zip', 'C:\\MOVIE\\', 'cp936')
+        })
+      },
       activeTag: function (index, item) {
         this.active = index
         this.$parent.searchByTag(item)

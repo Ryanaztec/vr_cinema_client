@@ -32,7 +32,7 @@ export const downloader = (configuration) => {
           if (stat && stat.isFile()) {
             receivedBytes = stat.size
             configuration.onProgress(receivedBytes, totalBytes)
-            if (receivedBytes >= totalBytes) {
+            if (receivedBytes >= totalBytes || (receivedBytes * 100) / totalBytes > 99.99) {
               // 下载结束
               clearInterval(timer)
               resolve()
