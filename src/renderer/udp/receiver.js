@@ -41,7 +41,7 @@ server.on('message', function (message, rinfo) {
     // 子座椅显示播放进度
     server.send(sendingMessage.message, 8412, '255.255.255.255', (err, bytes) => {
       if (err) {
-        console.log('发送数据失败')
+        console.log(err)
       } else {
         console.log(sendingMessage.message)
       }
@@ -52,12 +52,18 @@ server.on('message', function (message, rinfo) {
       text: sendingMessage.message
     })
   } else if (!store.state.seat.isMain && store.state.public.ip_address !== rinfo.address) {
+    // 停止播放电影
     server.send(sendingMessage, 8412, '255.255.255.255', function (err, bytes) {
       if (err) {
-        console.log('发送数据失败')
+        console.log(err)
       } else {
         console.log(sendingMessage)
       }
+    })
+    store.commit('SET_PLAYING_SEATS', [])
+    Vue.notify({
+      group: 'foo',
+      text: '播放停止'
     })
   }
 })

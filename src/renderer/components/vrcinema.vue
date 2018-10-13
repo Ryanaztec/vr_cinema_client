@@ -430,17 +430,17 @@
             this.$store.commit('SET_SEATS', _.cloneDeep(response.data.data))
             this.$store.commit('SET_IS_MAIN', response.data.is_main_seat)
             this.$store.commit('SET_MAIN_SEAT', response.data.main_seat)
+            if (!this.is_main_seat) {
+              // 非中控只显示自己的座椅
+              this.seats = this.seats.filter(item => {
+                return item.mac_address === this.current_mac_address
+              })
+            }
+            // 初始化座椅状态
+            this.initSeatPlayingStatus()
           }
         })
         this.getMovies()
-        if (!this.is_main_seat) {
-          // 非中控只显示自己的座椅
-          this.seats = this.seats.filter(item => {
-            return item.mac_address === this.current_mac_address
-          })
-        }
-        // 初始化座椅状态
-        this.initSeatPlayingStatus()
         // 计算当前播放座椅的状态
         this.playingProgress = this.calculateProgress()
         this.intervalId = setInterval(() => {
@@ -467,7 +467,7 @@
     },
     computed: {
       baseUrl: function () {
-        return process.env.NODE_ENV === 'production' ? this.global.baseUrl + '/storage/' : 'http://dev.vrcinema.com/storage/'
+        return this.global.baseUrl + '/storage/'
       },
       hasLogin () {
         return !!this.$store.state.currentUser.token

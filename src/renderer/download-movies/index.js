@@ -7,9 +7,9 @@ const fs = require('fs')
 export const getStream = async (configuration) => {
   let client = new OSS({
     region: 'oss-cn-beijing',
-    accessKeyId: 'LTAIE2322NWU2CzL',
-    accessKeySecret: 'bGFKGFWnMa67QKWoFIKKKOwhVTv9m4',
-    bucket: 'test-vr'
+    accessKeyId: 'LTAIxFZqJqX8dMXs',
+    accessKeySecret: 'm2fAYfDiAvReNNE9fCVytVfm9YxvJk',
+    bucket: 'test-vr03'
   })
   let result = await client.getStream(configuration.remoteFile)
   let writeStream = fs.createWriteStream(configuration.localFile)

@@ -66,10 +66,10 @@ const actions = {
         if (parseInt(value.movie.running_time_hour) || parseInt(value.movie.running_time_hour) === 0) {
           buffer.push(handler(value.movie.running_time_hour))
         }
-        if (parseInt(value.movie.running_time_minute) || parseInt(value.movie.running_time_hour) === 0) {
+        if (parseInt(value.movie.running_time_minute) || parseInt(value.movie.running_time_minute) === 0) {
           buffer.push(handler(value.movie.running_time_minute))
         }
-        if (parseInt(value.movie.running_time_second)) {
+        if (parseInt(value.movie.running_time_second) || parseInt(value.movie.running_time_minute) === 0) {
           buffer.push(handler(value.movie.running_time_second))
         }
         movies.push({
