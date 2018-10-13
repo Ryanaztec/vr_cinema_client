@@ -37,7 +37,9 @@ export default {
               seatNumber = item.seat_number.toString()
             }
           })
-          progress.push({variant: seatNumber, value: completed})
+          if (completed !== 0) {
+            progress.push({ variant: seatNumber, value: completed })
+          }
         }
       })
       return progress

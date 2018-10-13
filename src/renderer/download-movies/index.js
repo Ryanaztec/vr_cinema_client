@@ -1,14 +1,15 @@
 import store from '../store/index'
 import Sender from '../udp/sender'
+// import global from '../global'
 const OSS = require('ali-oss')
 const fs = require('fs')
 
 export const getStream = async (configuration) => {
   let client = new OSS({
     region: 'oss-cn-beijing',
-    accessKeyId: 'LTAIrCfFEDT1sXQt',
-    accessKeySecret: 'hCNTF9ArQiTaGsOXhA0LUYpYxEXx0Z',
-    bucket: 'vr-test002`'
+    accessKeyId: 'LTAIE2322NWU2CzL',
+    accessKeySecret: 'bGFKGFWnMa67QKWoFIKKKOwhVTv9m4',
+    bucket: 'test-vr'
   })
   let result = await client.getStream(configuration.remoteFile)
   let writeStream = fs.createWriteStream(configuration.localFile)
