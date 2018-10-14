@@ -109,7 +109,6 @@ const actions = {
         var percentage = (received * 100) / total
         // 进度
         data.percentage = percentage
-        console.log(percentage)
         let movie = _.cloneDeep(data)
         // 更新本地下载中影片的store
         store.commit('UPDATE_DOWNLOADING_MOVIES', movie)
@@ -126,9 +125,10 @@ const actions = {
         if (response.success) {
           Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'end', type: 'downloading-progress'}, mainSeatIp, false)
           store.commit('REMOVE_DOWNLOADING_MOVIES', data)
+          // 避免计算有细微误差时，压缩包还未下载结束就开始解压
           setTimeout(() => {
             unzip(data.file_name)
-          }, 1000 * 90)
+          }, 1000 * 5)
         }
       }).catch(() => {
         Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'error', type: 'downloading-progress'}, mainSeatIp, false)
