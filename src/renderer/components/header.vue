@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="header" @click='unzip'>
+    <div class="header">
       <img class="cinema_logo" src="../assets/header/logo.png"/>
       <div class="header_text">
           <router-link class="text vr_cinema_text" to="/vr_cinema"><span>VR影院</span></router-link>
@@ -33,7 +33,7 @@
         <div class="menubar_body">
 
           <b-nav class="menubar_list" v-if="path != '/video_detail'">
-              <b-nav-item :class="{active:$index==active}" v-if="$index<10" v-for="(item, $index) in tags" @click="activeTag($index, item)">
+              <b-nav-item :class="{active:$index==active}" v-if="$index<10" v-for="(item, $index) in tags" :key="$index" @click="activeTag($index, item)">
                   {{item.name}}
               </b-nav-item>
               <b-dropdown variant="link" size="lg" v-if="tags && tags.length>10">
@@ -41,12 +41,11 @@
                       <span class="more_btn">更多</span>
                   </template>
                   <template>
-                      <b-dropdown-item :class="{active:$index==active}" v-if="$index>9" v-for="(item, $index) in tags" @click="activeTag($index, item)">
+                      <b-dropdown-item :class="{active:$index==active}" v-if="$index>9" v-for="(item, $index) in tags" :key="$index" @click="activeTag($index, item)">
                           {{item.name}}
                       </b-dropdown-item>
                   </template>
               </b-dropdown>
-
 
               <div class="search_box">
                   <input id="search_input" type="input" v-model="keyword" placeholder="输入要搜索的影片" @keyup.enter="handleSearch(keyword)"/>
@@ -71,7 +70,7 @@
   import LoginModal from './login/login.vue'
   import API from '../service/api'
   import Sender from '../udp/sender'
-  import unZip from '../download-movies/unzip.js'
+  // import unZip from '../download-movies/unzip.js'
   var ipcRenderer = require('electron').ipcRenderer
   const { shell } = require('electron')
   export default {
@@ -104,14 +103,16 @@
       }
     },
     methods: {
-      unzip: function () {
-        console.log(123)
-        const fs = require('fs')
-        fs.mkdir('C:\\MOVIE\\迅雷下载', function (err) {
-          console.log(err)
-          unZip.extractSync('./resources/' + '迅雷下载.zip', 'C:\\MOVIE\\', 'cp936')
-        })
-      },
+      // unzip: function () {
+      //   console.log(123)
+      //   const fs = require('fs')
+      //   // fs.mkdir('C:\\MOVIE\\低碳所1', function () {
+      //   //   unZip.extractSync('./resources/' + '低碳所1.zip', 'C:\\MOVIE\\', 'cp936')
+      //   // })
+      //   fs.mkdir('C:\\MOVIE\\', function () {
+      //     unZip.extractSync('./resources/' + 'ZiYou.zip', 'C:\\MOVIE\\', 'cp936')
+      //   })
+      // },
       activeTag: function (index, item) {
         this.active = index
         this.$parent.searchByTag(item)

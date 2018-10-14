@@ -92,6 +92,10 @@ const actions = {
       fs.mkdir('C:\\MOVIE\\' + folderName + '\\', function () {
         unZip.extractSync('./resources/' + fileName, 'C:\\MOVIE\\', 'cp936')
       })
+      // // 小文件
+      // fs.mkdir('C:\\MOVIE\\', function () {
+      //   unZip.extractSync('./resources/' + fileName, 'C:\\MOVIE\\', 'cp936')
+      // })
     }
     downloader({
       // remoteFile: '/test.rar',

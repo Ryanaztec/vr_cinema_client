@@ -384,10 +384,6 @@ async-limiter@~1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.0.tgz#78faed8c3d074ab81f22b4e985d79e8738f720f8"
 
-async@0.2.x, async@~0.2.6:
-  version "0.2.10"
-  resolved "http://registry.npmjs.org/async/-/async-0.2.10.tgz#b6bbe0b0674b9d719708ca38de8c237cb526c3d1"
-
 async@1.x, async@^1.4.0, async@^1.5.2:
   version "1.5.2"
   resolved "http://registry.npm.taobao.org/async/download/async-1.5.2.tgz#ec6a61ae56480c0c3cb241c95618e20892f9672a"
@@ -397,6 +393,10 @@ async@^2.0.0, async@^2.1.2, async@^2.4.1:
   resolved "http://registry.npm.taobao.org/async/download/async-2.6.1.tgz#b245a23ca71930044ec53fa46aa00a3e87c6a610"
   dependencies:
     lodash "^4.17.10"
+
+async@~0.2.6:
+  version "0.2.10"
+  resolved "http://registry.npmjs.org/async/-/async-0.2.10.tgz#b6bbe0b0674b9d719708ca38de8c237cb526c3d1"
 
 asynckit@^0.4.0:
   version "0.4.0"
@@ -6176,7 +6176,7 @@ mocha@^3.0.2:
     mkdirp "0.5.1"
     supports-color "3.1.2"
 
-moment@^2.22.2, moment@^2.9.0:
+moment@^2.22.2:
   version "2.22.2"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.22.2.tgz#3c257f9839fc0e93ff53149632239eb90783ff66"
 
@@ -6228,20 +6228,6 @@ ms@2.0.0:
 ms@^2.0.0:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.1.tgz#30a5864eb3ebb0a66f2ebe6d727af06a09d86e0a"
-
-mt-downloader@^0.2.10:
-  version "0.2.11"
-  resolved "https://registry.yarnpkg.com/mt-downloader/-/mt-downloader-0.2.11.tgz#95a4d02e5d8f7201eea64dc862ab9ef855213426"
-  dependencies:
-    async "0.2.x"
-    underscore "1.5.x"
-
-mt-files-downloader@^0.2.5:
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/mt-files-downloader/-/mt-files-downloader-0.2.5.tgz#a93cae8e597e3b107a88d401e76876007ece524b"
-  dependencies:
-    moment "^2.9.0"
-    mt-downloader "^0.2.10"
 
 multicast-dns-service-types@^1.1.0:
   version "1.1.0"
@@ -9036,10 +9022,6 @@ uint64be@^2.0.2:
 ultron@1.0.x:
   version "1.0.2"
   resolved "http://registry.npm.taobao.org/ultron/download/ultron-1.0.2.tgz#ace116ab557cd197386a4e88f4685378c8b2e4fa"
-
-underscore@1.5.x:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/underscore/-/underscore-1.5.2.tgz#1335c5e4f5e6d33bbb4b006ba8c86a00f556de08"
 
 unescape@^1.0.1:
   version "1.0.1"
