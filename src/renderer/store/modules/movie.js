@@ -43,7 +43,9 @@ const mutations = {
         state.subSeatDownloadingStatus.splice(key, 1)
       }
     })
-    state.subSeatDownloadingStatus.push(data)
+    if (data.status === 'downloading') {
+      state.subSeatDownloadingStatus.push(data)
+    }
   }
 }
 
