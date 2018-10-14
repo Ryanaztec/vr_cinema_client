@@ -88,16 +88,16 @@ const actions = {
   oss_downloadMovie (store, data) {
     let mainSeatIp = this.state.seat.mainSeat.ip_address
     let unzip = function (fileName) {
-      let arr = fileName.split('.')
-      let folderName = arr[0]
+      // let arr = fileName.split('.')
+      // let folderName = arr[0]
       const fs = require('fs')
-      fs.mkdir('C:\\MOVIE\\' + folderName + '\\', function () {
-        unZip.extractSync('./resources/' + fileName, 'C:\\MOVIE\\', 'cp936')
-      })
-      // // 小文件
-      // fs.mkdir('C:\\MOVIE\\', function () {
+      // fs.mkdir('C:\\MOVIE\\' + folderName + '\\', function () {
       //   unZip.extractSync('./resources/' + fileName, 'C:\\MOVIE\\', 'cp936')
       // })
+      // 小文件
+      fs.mkdir('C:\\MOVIE\\', function () {
+        unZip.extractSync('./resources/' + fileName, 'C:\\MOVIE\\', 'cp936')
+      })
     }
     downloader({
       // remoteFile: '/test.rar',
@@ -126,7 +126,9 @@ const actions = {
         if (response.success) {
           Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'end', type: 'downloading-progress'}, mainSeatIp, false)
           store.commit('REMOVE_DOWNLOADING_MOVIES', data)
-          unzip(data.file_name)
+          setTimeout(() => {
+            unzip(data.file_name)
+          }, 1000 * 90)
         }
       }).catch(() => {
         Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'error', type: 'downloading-progress'}, mainSeatIp, false)

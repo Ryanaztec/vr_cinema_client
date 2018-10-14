@@ -243,16 +243,13 @@
     },
     watch: {
       '$store.state.movie.subSeatDownloadingStatus': function (value) {
-        if (value.length !== 0) {
-          let flag = true
-          value.forEach((item, index) => {
-            if (item.status === 'downloading') {
-              flag = false
-            }
-          })
-          if (flag) {
-            this.getMovies()
-          }
+        if (value.length === 0) {
+          this.getMovies()
+        }
+      },
+      '$store.state.movie.downloadingMovies': function (value) {
+        if (value.length === 0) {
+          this.getMovies()
         }
       },
       '$store.state.currentUser.isLogin': function (value) {
