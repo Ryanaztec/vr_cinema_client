@@ -161,7 +161,8 @@
           reverseButtons: true
         }).then((result) => {
           if (result.value) {
-            Sender.closeAllSeat('closeAllSeat')
+            // TODO 关闭指定IP的主机
+            Sender.sendMessage(JSON.stringify({type: 'shutdown', message: 'shutdown'}))
           } else if (
             result.dismiss === this.swal.DismissReason.cancel
           ) {

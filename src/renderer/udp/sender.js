@@ -1,9 +1,10 @@
 import client from './index'
+import playMovie from './playmovie'
 
 export const sendMessage = (message, ip, isMain) => {
   if (isMain) {
     // 8412端口中控给其他座椅发送的指令目前只有播放电影
-    client.send(message, 8412, ip, function (err, bytes) {
+    client.send(message, 8413, ip, function (err, bytes) {
       if (err) {
         console.log('发送数据失败')
       } else {
@@ -14,20 +15,14 @@ export const sendMessage = (message, ip, isMain) => {
     // 8412端口非中控座椅发送的指令分情况
     if (message.type === 'downloading-progress') {
       message = JSON.stringify(message)
-      client.send(message, 8412, ip, function (err, bytes) {
+      client.send(message, 8413, ip, function (err, bytes) {
         if (err) {
           console.log('发送数据失败')
         }
       })
     } else {
-      // 发送给自己
-      client.send(message, 8412, '255.255.255.255', function (err, bytes) {
-        if (err) {
-          console.log('发送数据失败')
-        } else {
-          console.log(message)
-        }
-      })
+      // 调用设备UDP开始播放影片
+      playMovie.startMovie(message.message)
     }
   }
 }
@@ -37,7 +32,7 @@ export const stopMovie = (ip, isMain) => {
 }
 
 export const closeAllSeat = message => {
-  client.send(message, 8412, '192.168.0.255', function (err, bytes) {
+  client.send(message, 8413, '192.168.0.255', function (err, bytes) {
     if (err) {
       console.log('发送数据失败')
     } else {

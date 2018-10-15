@@ -161,6 +161,7 @@
         // 所有选中的座椅
         let activeSeats = []
         this.activeSeatsIds = []
+
         this.seats.forEach((item, key) => {
           if (this.$store.state.seat.isMain && item.is_active) {
             activeSeats.push(item)
@@ -296,7 +297,7 @@
                 this.coverClass = '' // 除去遮罩层
                 activeSeats.map(item => {
                   if (item.is_playing) {
-                    Sender.stopMovie(item.ip_address, this.is_main_seat)
+                    Sender.stopMovie(JSON.stringify({type: 'stop', message: 'stop'}), item.ip_address, this.is_main_seat)
                   }
                 })
                 this.$notify({

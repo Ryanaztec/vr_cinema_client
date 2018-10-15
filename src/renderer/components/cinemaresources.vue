@@ -109,7 +109,17 @@
         // 获取需要下载的座椅
         const needDownloadSeats = await this.getNeedDownloadSeats(item)
         needDownloadSeats.forEach((value, key) => {
-          Sender.downloadMovie({ movie_url: movieUrl, file_name: item.file_name, movie_id: item.id, cinema_id: this.$store.state.currentUser.cinemaId, seat_id: value.id, size: item.size }, value.ip_address)
+          let data = {
+            movie_url: movieUrl,
+            file_name: item.file_name,
+            movie_id: item.id,
+            cinema_id: this.$store.state.currentUser.cinemaId,
+            seat_id: value.id,
+            size: item.size,
+            type: 'download-movie',
+            message: 'download-movie'
+          }
+          Sender.sendMessage(JSON.stringify(data), value.ip_address)
         })
       },
       async getNeedDownloadSeats (item) {
