@@ -46,7 +46,7 @@ const actions = {
       store.commit('SET_USERNAME', data.username)
       store.commit('SET_CINEMA_ID', data.cinema.id)
       store.commit('SET_IS_LOGIN', true)
-      API.initTokenRefresher(store)
+      // API.initTokenRefresher(store)
     }).then(res => {
       // 获取mac地址
       store.dispatch('getMacAddress').then(response => {

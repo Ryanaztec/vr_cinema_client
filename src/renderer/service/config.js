@@ -62,6 +62,12 @@ export default function $axios (options) {
     instance.interceptors.response.use(
       response => {
         store.dispatch('StopLoading')
+        var token = response.headers.authorization || ''
+        token = token ? token.replace('Bearer ', '') : ''
+        if (token) {
+          localStorage.token = token
+          store.commit('SET_TOKEN', token)
+        }
         let data
         // IE9时response.data是undefined，因此需要使用response.request.responseText(Stringify后的字符串)
         if (response.data === 'undefined') {

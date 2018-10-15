@@ -30,8 +30,11 @@ export const stopMovie = () => {
 }
 
 export const startMovie = message => {
-  let msg = Buffer.from(message)
-  client.send(msg, 0, msg.length, 8412, '255.255.255.255')
+  client.send(message, 8412, '255.255.255.255', (err, bytes) => {
+    if (err) {
+      console.log('发送数据失败')
+    }
+  })
 }
 
 export default {
