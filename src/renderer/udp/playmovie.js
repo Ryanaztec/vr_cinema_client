@@ -1,6 +1,20 @@
-import client from './index'
 import store from '../store/index'
 import Vue from 'vue'
+
+const dgram = require('dgram')
+const client = dgram.createSocket('udp4')
+
+client.bind(function () {
+  client.setBroadcast(true)
+})
+
+client.on('close', () => {
+  console.log('socket已关闭')
+})
+
+client.on('error', (err) => {
+  console.log(err)
+})
 
 export const stopMovie = () => {
   client.send('stop', 8412, '255.255.255.255', function (err, bytes) {
@@ -16,13 +30,8 @@ export const stopMovie = () => {
 }
 
 export const startMovie = message => {
-  client.send(message, 8412, '255.255.255.255', (err, bytes) => {
-    if (err) {
-      console.log(err)
-    } else {
-      console.log(message)
-    }
-  })
+  let msg = Buffer.from(message)
+  client.send(msg, 0, msg.length, 8412, '255.255.255.255')
 }
 
 export default {

@@ -13,8 +13,8 @@ export const sendMessage = (message, ip, isMain) => {
     })
   } else {
     // 8412端口非中控座椅发送的指令分情况
+    message = JSON.parse(message)
     if (message.type === 'downloading-progress') {
-      message = JSON.stringify(message)
       client.send(message, 8413, ip, function (err, bytes) {
         if (err) {
           console.log('发送数据失败')
@@ -22,6 +22,7 @@ export const sendMessage = (message, ip, isMain) => {
       })
     } else {
       // 调用设备UDP开始播放影片
+      console.log(message.message)
       playMovie.startMovie(message.message)
     }
   }
