@@ -15,7 +15,7 @@ export const sendMessage = (message, ip, isMain) => {
     // 8412端口非中控座椅发送的指令分情况
     message = JSON.parse(message)
     if (message.type === 'downloading-progress') {
-      client.send(message, 8413, ip, function (err, bytes) {
+      client.send(JSON.stringify(message), 8413, ip, function (err, bytes) {
         if (err) {
           console.log('发送数据失败')
         }

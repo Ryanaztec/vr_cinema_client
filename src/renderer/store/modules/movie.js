@@ -131,7 +131,14 @@ const actions = {
         seat_id: data.seat_id
       }).then(response => {
         if (response.success) {
-          Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'end', type: 'downloading-progress'}, mainSeatIp, false)
+          let msg = {
+            movie_id: data.movie_id,
+            seat_id: data.seat_id,
+            status: 'end',
+            type: 'downloading-progress',
+            message: 'downloading-end'
+          }
+          Sender.sendMessage(JSON.stringify(msg), mainSeatIp, false)
           store.commit('REMOVE_DOWNLOADING_MOVIES', data)
           // 避免计算有细微误差时，压缩包还未下载结束就开始解压
           setTimeout(() => {
@@ -139,7 +146,14 @@ const actions = {
           }, 1000 * 5)
         }
       }).catch(() => {
-        Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'error', type: 'downloading-progress'}, mainSeatIp, false)
+        let msg = {
+          movie_id: data.movie_id,
+          seat_id: data.seat_id,
+          status: 'error',
+          type: 'downloading-progress',
+          message: 'downloading-error'
+        }
+        Sender.sendMessage(JSON.stringify(msg), mainSeatIp, false)
         store.commit('REMOVE_DOWNLOADING_MOVIES', data)
         // 处理请求偶尔失败的情况
         Vue.notify({
