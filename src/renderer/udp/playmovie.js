@@ -17,7 +17,7 @@ client.on('error', (err) => {
 })
 
 export const stopMovie = () => {
-  client.send('stop', 8412, '255.255.255.255', function (err, bytes) {
+  client.send('stop', 52427, '255.255.255.255', function (err, bytes) {
     if (err) {
       console.log(err)
     }
@@ -31,7 +31,7 @@ export const stopMovie = () => {
 
 export const startMovie = message => {
   let msg = Buffer.from(message)
-  client.send(msg, 0, msg.length, 8412, '255.255.255.255')
+  client.send(msg, 0, msg.length, 52427, '255.255.255.255')
 }
 
 export default {

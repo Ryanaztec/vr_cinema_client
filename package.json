@@ -1,6 +1,6 @@
 {
   "name": "vr_cinema_client",
-  "version": "0.0.6",
+  "version": "0.0.8",
   "author": "Leo Liu <liulong@shinetechchina.com>",
   "description": "VR影院客户端",
   "license": null,
@@ -22,7 +22,7 @@
     "postinstall": "npm run lint:fix"
   },
   "build": {
-    "productName": "VR影院客户端 v0.0.6",
+    "productName": "VR影院客户端 v0.0.8",
     "appId": "org.simulatedgreg.electron-vue",
     "directories": {
       "output": "build"
