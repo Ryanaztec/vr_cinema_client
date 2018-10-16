@@ -119,7 +119,7 @@
             type: 'download-movie',
             message: 'download-movie'
           }
-          Sender.sendMessage(JSON.stringify(data), value.ip_address)
+          Sender.sendMessage(JSON.stringify(data), value.ip_address, true)
         })
       },
       async getNeedDownloadSeats (item) {
