@@ -56,6 +56,7 @@ const actions = {
           cinema_id: this.state.currentUser.cinemaId,
           mac_address: macAddress
         })
+        alert(response)
         // 获取影院所有的座椅信息
         API.getSeatByMac({
           cinema_id: this.state.currentUser.cinemaId,
