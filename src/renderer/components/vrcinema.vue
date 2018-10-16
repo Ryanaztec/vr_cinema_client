@@ -297,7 +297,7 @@
                 this.coverClass = '' // 除去遮罩层
                 activeSeats.map(item => {
                   if (item.is_playing) {
-                    Sender.stopMovie(JSON.stringify({type: 'stop', message: 'stop'}), item.ip_address, this.is_main_seat)
+                    Sender.sendMessage(JSON.stringify({type: 'stop', message: 'stop'}), item.ip_address, this.is_main_seat)
                   }
                 })
                 this.$notify({
