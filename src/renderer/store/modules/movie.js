@@ -113,7 +113,15 @@ const actions = {
         // 更新本地下载中影片的store
         store.commit('UPDATE_DOWNLOADING_MOVIES', movie)
         // 向中控发送当前下载进度
-        Sender.sendMessage({movie_id: data.movie_id, percentage: percentage, seat_id: data.seat_id, status: 'downloading', type: 'downloading-progress'}, mainSeatIp, false)
+        let msg = {
+          movie_id: data.movie_id,
+          percentage: percentage,
+          seat_id: data.seat_id,
+          status: 'downloading',
+          type: 'downloading-progress',
+          message: 'downloading'
+        }
+        Sender.sendMessage(JSON.stringify(msg), mainSeatIp, false)
       }
     }).then(() => {
       // 存储数据
