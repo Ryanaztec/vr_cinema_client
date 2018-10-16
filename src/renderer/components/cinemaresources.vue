@@ -188,11 +188,13 @@
       },
       checkDownload: function (item) {
         if (item.downloaded === 'partly') {
+          let flag = false
           item.seatsHaveDownloaded.forEach((value, key) => {
             if (value.id === this.$store.state.seat.currentSeat.id) {
-              return true
+              flag = true
             }
           })
+          return flag
         } else if (item.downloaded === 'none') {
           return false
         } else {

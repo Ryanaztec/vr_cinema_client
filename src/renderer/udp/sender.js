@@ -28,32 +28,6 @@ export const sendMessage = (message, ip, isMain) => {
   }
 }
 
-export const stopMovie = (ip, isMain) => {
-  sendMessage('stop', ip, isMain)
-}
-
-export const closeAllSeat = message => {
-  client.send(message, 8413, '192.168.0.255', function (err, bytes) {
-    if (err) {
-      console.log('发送数据失败')
-    } else {
-      console.log(message)
-    }
-  })
-}
-
-export const downloadMovie = (data, ip) => {
-  data = JSON.stringify(data)
-  client.send(data, 8413, ip, function (err, bytes) {
-    if (err) {
-      console.log('发送数据失败')
-    }
-  })
-}
-
 export default {
-  sendMessage,
-  stopMovie,
-  closeAllSeat,
-  downloadMovie
+  sendMessage
 }
