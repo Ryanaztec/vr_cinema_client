@@ -378,7 +378,7 @@
             if (progress >= 100) {
               removePlayingSeats.push(value.seat_id)
               playingSeatsNumber.push(value.cinema_seat.seat_number)
-              Sender.stopMovie(value.cinema_seat.ip_address, this.is_main_seat)
+              Sender.sendMessage(JSON.stringify({type: 'stop', message: 'stop'}), value.cinema_seat.ip_address, this.is_main_seat)
             }
           })
           if (removePlayingSeats.length !== 0) {
@@ -415,10 +415,8 @@
             }
           })
         })
-      }
-    },
-    mounted () {
-      if (this.$store.state.currentUser.isLogin) {
+      },
+      initCurrentPage: function () {
         this.current_mac_address = this.$store.state.public.macAddress
         // 获取影院所有的座椅信息
         API.getSeatByMac({
@@ -447,6 +445,11 @@
         this.intervalId = setInterval(() => {
           this.playingProgress = this.calculateProgress()
         }, 1000)
+      }
+    },
+    mounted () {
+      if (this.$store.state.currentUser.isLogin) {
+        this.initCurrentPage()
       }
     },
     beforeRouteLeave (to, from, next) {

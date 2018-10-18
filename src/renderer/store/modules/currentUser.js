@@ -59,12 +59,19 @@ const actions = {
         // 获取影院所有的座椅信息
         API.getSeatByMac({
           cinema_id: this.state.currentUser.cinemaId,
-          mac_address: response
+          mac_address: macAddress
         }).then((response) => {
           if (response.success) {
             store.commit('SET_SEATS', response.data.data)
             store.commit('SET_IS_MAIN', response.data.is_main_seat)
             store.commit('SET_MAIN_SEAT', response.data.main_seat)
+            // 获取当前座椅的ip地址等信息
+            response.data.data.forEach((item, index) => {
+              if (item.mac_address === macAddress) {
+                store.commit('SET_IP_ADDRESS', item.ip_address)
+                store.commit('SET_CURRENT_SEAT', item)
+              }
+            })
             if (response.data.is_main_seat) {
               store.dispatch('subSeatsLogin', response.data.data)
             }

@@ -70,7 +70,6 @@
   import LoginModal from './login/login.vue'
   import API from '../service/api'
   import Sender from '../udp/sender'
-  // import unZip from '../download-movies/unzip.js'
   var ipcRenderer = require('electron').ipcRenderer
   const { shell } = require('electron')
   export default {
@@ -105,13 +104,18 @@
     methods: {
       // unzip: function () {
       //   console.log(123)
-      //   const fs = require('fs')
-      //   // fs.mkdir('C:\\MOVIE\\低碳所1', function () {
-      //   //   unZip.extractSync('./resources/' + '低碳所1.zip', 'C:\\MOVIE\\', 'cp936')
-      //   // })
-      //   fs.mkdir('C:\\MOVIE\\', function () {
-      //     unZip.extractSync('./resources/' + 'ZiYou.zip', 'C:\\MOVIE\\', 'cp936')
-      //   })
+      //   var Zip = require('node-7z') // Name the class as you want!
+      //   var myTask = new Zip()
+      //   myTask.extractFull('./resources/resources.7z', 'C:\\MOVIE', { p: '123456' })
+      //     .progress(function (files) {
+      //       console.log('Some files are extracted: %s', files)
+      //     })
+      //     .then(function () {
+      //       console.log('Extracting done!')
+      //     })
+      //     .catch(function (err) {
+      //       console.error(err)
+      //     })
       // },
       activeTag: function (index, item) {
         this.active = index

@@ -1,6 +1,5 @@
 import API from '../.././service/api'
 import { downloader } from '../../download-movies/index'
-import unZip from '../../download-movies/unzip.js'
 import Sender from '../../udp/sender'
 import Vue from 'vue'
 const _ = require('lodash')
@@ -88,16 +87,18 @@ const actions = {
   oss_downloadMovie (store, data) {
     let mainSeatIp = this.state.seat.mainSeat.ip_address
     let unzip = function (fileName) {
-      let arr = fileName.split('.')
-      let folderName = arr[0]
-      const fs = require('fs')
-      fs.mkdir('C:\\MOVIE\\' + folderName + '\\', function () {
-        unZip.extractSync('./resources/' + fileName, 'C:\\MOVIE\\', 'cp936')
-      })
-      // 小文件
-      // fs.mkdir('C:\\MOVIE\\', function () {
-      //   unZip.extractSync('./resources/' + fileName, 'C:\\MOVIE\\', 'cp936')
-      // })
+      var Zip = require('node-7z') // Name the class as you want!
+      var myTask = new Zip()
+      myTask.extractFull('./resources/' + fileName, 'C:\\MOVIE', { p: '123456' })
+        .progress(function (files) {
+          console.log('Some files are extracting', files)
+        })
+        .then(function () {
+          console.log('Extracting done!')
+        })
+        .catch(function (err) {
+          console.error(err)
+        })
     }
     downloader({
       // remoteFile: '/test.rar',
