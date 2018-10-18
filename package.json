@@ -71,6 +71,7 @@
     "iconv-lite": "^0.4.24",
     "jquery": "^3.3.1",
     "lodash": "^4.17.11",
+    "node-7z": "^0.4.0",
     "peardownloader": "^1.2.11",
     "sweetalert2": "^7.26.28",
     "velocity-animate": "^1.5.2",

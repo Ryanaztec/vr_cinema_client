@@ -3,7 +3,8 @@ import Sender from '../../udp/sender'
 const state = {
   showLoading: true,
   macAddress: '',
-  ip_address: ''
+  ip_address: '',
+  ali_oss_signature: ''
 }
 
 const mutations = {
@@ -15,6 +16,9 @@ const mutations = {
   },
   SET_IP_ADDRESS: (state, ip) => {
     state.ip_address = ip
+  },
+  SET_ALI_OSS_SIGNATURE: (state, data) => {
+    state.ali_oss_signature = data
   }
 }
 

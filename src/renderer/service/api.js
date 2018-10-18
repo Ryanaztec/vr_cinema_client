@@ -122,6 +122,13 @@ export const getNeedDownloadSeats = params => {
   })
 }
 
+export const getOssSignature = () => {
+  return axios({
+    url: '/movie/oss-access-key',
+    method: 'post'
+  })
+}
+
 export default {
   example,
   login,
@@ -138,5 +145,6 @@ export default {
   storePlayRecord,
   updatePlayRecord,
   storeCinemaMovie,
-  getNeedDownloadSeats
+  getNeedDownloadSeats,
+  getOssSignature
 }
