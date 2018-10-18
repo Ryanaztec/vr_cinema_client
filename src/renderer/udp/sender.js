@@ -7,8 +7,6 @@ export const sendMessage = (message, ip, isMain) => {
     client.send(message, 8413, ip, function (err, bytes) {
       if (err) {
         console.log('发送数据失败')
-      } else {
-        console.log(message)
       }
     })
   } else {

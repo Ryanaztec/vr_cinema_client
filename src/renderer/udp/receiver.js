@@ -8,11 +8,6 @@ const server = dgrm.createSocket('udp4')
 server.on('message', function (message, rinfo) {
   let sendingMessage = ''
   let type = ''
-  // 判断指令类型
-  Vue.notify({
-    group: 'foo',
-    text: '收到指令'
-  })
   try {
     sendingMessage = JSON.parse(message)
     type = sendingMessage.type
@@ -50,6 +45,8 @@ server.on('message', function (message, rinfo) {
       if (!store.state.seat.isMain) {
         // 调用设备UDP开始播放影片
         playMovie.startMovie(sendingMessage.message)
+        // 插入播放电影的store
+        store.commit('ADD_PLAYING_SEATS', sendingMessage.data)
       }
       break
     case 'stop':
