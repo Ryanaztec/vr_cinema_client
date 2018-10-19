@@ -98,7 +98,8 @@
           const swalWithBootstrapButtons = this.swal.mixin({
             confirmButtonClass: 'btn btn-success',
             cancelButtonClass: 'btn btn-danger',
-            buttonsStyling: false
+            buttonsStyling: false,
+            allowOutsideClick: false
           })
           swalWithBootstrapButtons({ type: 'error', title: '请先登录' })
           return false

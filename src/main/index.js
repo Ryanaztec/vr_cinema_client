@@ -73,9 +73,9 @@ function updateHandle () {
     error: '检查更新出错',
     checking: '正在检查更新……',
     updateAva: '检测到新版本，正在下载……',
-    updateNotAva: '现在使用的就是最新版本，不用更新'
+    updateNotAva: '已是最新版本'
   }
-  let uploadUrl = 'http://39.106.50.61/download/'
+  let uploadUrl = 'http://39.106.50.61/storage/update/'
   autoUpdater.setFeedURL(uploadUrl)
   autoUpdater.on('error', function (error) {
     sendUpdateMessage(message.error)

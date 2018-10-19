@@ -153,7 +153,8 @@
         const swalWithBootstrapButtons = this.swal.mixin({
           confirmButtonClass: 'btn btn-success',
           cancelButtonClass: 'btn btn-danger',
-          buttonsStyling: false
+          buttonsStyling: false,
+          allowOutsideClick: false
         })
 
         swalWithBootstrapButtons({
@@ -181,7 +182,8 @@
         const swalWithBootstrapButtons = this.swal.mixin({
           confirmButtonClass: 'btn btn-success',
           cancelButtonClass: 'btn btn-danger',
-          buttonsStyling: false
+          buttonsStyling: false,
+          allowOutsideClick: false
         })
         swalWithBootstrapButtons({
           title: '确定要关闭页面?',
@@ -206,18 +208,28 @@
           ipcRenderer.send('checkForUpdate')
           ipcRenderer.on('message', (event, text) => {
             console.log(text)
-            if (text === '现在使用的就是最新版本，不用更新') {
+            if (text === '已是最新版本') {
               const swal = require('sweetalert2')
               swal({
                 type: 'success',
-                title: text
+                title: text,
+                allowOutsideClick: false
               })
               return false
             }
             if (text === '正在检查更新……') {
               const swal = require('sweetalert2')
               swal({
-                title: text
+                title: text,
+                allowOutsideClick: false
+              })
+              return false
+            }
+            if (text === '检测到新版本，正在下载……') {
+              const swal = require('sweetalert2')
+              swal({
+                title: text,
+                allowOutsideClick: false
               })
               return false
             }
@@ -226,7 +238,8 @@
             const swalWithBootstrapButtons = this.swal.mixin({
               confirmButtonClass: 'btn btn-success',
               cancelButtonClass: 'btn btn-danger',
-              buttonsStyling: false
+              buttonsStyling: false,
+              allowOutsideClick: false
             })
             swalWithBootstrapButtons({
               title: '检测到新版本，是否更新？',

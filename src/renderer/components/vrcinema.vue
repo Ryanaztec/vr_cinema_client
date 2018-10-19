@@ -187,14 +187,16 @@
         const swalWithBootstrapButtons = this.swal.mixin({
           confirmButtonClass: 'btn btn-success',
           cancelButtonClass: 'btn btn-danger',
-          buttonsStyling: false
+          buttonsStyling: false,
+          allowOutsideClick: false
         })
 
         if (activeSeats.length === 0) {
           const swal = require('sweetalert2')
           swal({
             type: 'error',
-            title: '请先选择座椅'
+            title: '请先选择座椅',
+            allowOutsideClick: false
           })
           return false
         }
@@ -243,7 +245,8 @@
                 const swalWithBootstrapButtons = this.swal.mixin({
                   confirmButtonClass: 'btn btn-success',
                   cancelButtonClass: 'btn btn-danger',
-                  buttonsStyling: false
+                  buttonsStyling: false,
+                  allowOutsideClick: false
                 })
                 swalWithBootstrapButtons({ type: 'error', title: '座椅' + seatNumbers + '未下载该电影' })
               }
@@ -262,7 +265,8 @@
         let swalWithBootstrapButtons = this.swal.mixin({
           confirmButtonClass: 'btn btn-success',
           cancelButtonClass: 'btn btn-danger',
-          buttonsStyling: false
+          buttonsStyling: false,
+          allowOutsideClick: false
         })
         activeSeats.map(item => {
           activeSeatNum.push(item.seat_number)
