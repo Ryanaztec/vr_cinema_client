@@ -88,12 +88,14 @@ const actions = {
     let mainSeatIp = this.state.seat.mainSeat.ip_address
     let unzip = function (fileName) {
       var Zip = require('node-7z') // Name the class as you want!
+      var fs = require('fs')
       var myTask = new Zip()
       myTask.extractFull('./resources/' + fileName, 'C:\\MOVIE', { p: '123456' })
         .progress(function (files) {
           console.log('Some files are extracting', files)
         })
         .then(function () {
+          fs.unlink('./resources/' + fileName, () => { console.log('source file deleted') })
           console.log('Extracting done!')
         })
         .catch(function (err) {
