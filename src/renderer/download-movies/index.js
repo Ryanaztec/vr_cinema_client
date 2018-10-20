@@ -5,12 +5,12 @@ const OSS = require('ali-oss')
 const fs = require('fs')
 
 export const getStream = async (configuration) => {
-  const aliSignature = store.state.public.ali_oss_signature
+  // const aliSignature = store.state.public.ali_oss_signature
   let client = new OSS({
-    region: aliSignature.region,
-    accessKeyId: aliSignature.accessid,
-    accessKeySecret: aliSignature.access_secret,
-    bucket: aliSignature.bucket
+    region: 'oss-cn-beijing',
+    accessKeyId: 'LTAI5RzMjZkrWMn4',
+    accessKeySecret: 'erglwEf1UIzmr3XOLYyGVKrcaoJDp4',
+    bucket: 'vr-movies'
   })
   let result = await client.getStream(configuration.remoteFile)
   let writeStream = fs.createWriteStream(configuration.localFile)
