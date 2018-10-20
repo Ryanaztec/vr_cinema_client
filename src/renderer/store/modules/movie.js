@@ -87,20 +87,13 @@ const actions = {
   oss_downloadMovie (store, data) {
     let mainSeatIp = this.state.seat.mainSeat.ip_address
     let unzip = function (fileName) {
-      var Zip = require('node-7z') // Name the class as you want!
+      var exec = require('child_process').execFile
       var fs = require('fs')
-      var myTask = new Zip()
-      myTask.extractFull('./resources/' + fileName, 'C:\\MOVIE', { p: '123456' })
-        .progress(function (files) {
-          console.log('Some files are extracting', files)
-        })
-        .then(function () {
+      exec('./7-Zip/7z.exe', ['x', './resources/' + fileName, '-oc:\\MOVIE'], (err, stdout, stderr) => {
+        if (stdout) {
           fs.unlink('./resources/' + fileName, () => { console.log('source file deleted') })
-          console.log('Extracting done!')
-        })
-        .catch(function (err) {
-          console.error(err)
-        })
+        }
+      })
     }
     downloader({
       // remoteFile: '/test.rar',
@@ -146,7 +139,7 @@ const actions = {
           // 避免计算有细微误差时，压缩包还未下载结束就开始解压
           setTimeout(() => {
             unzip(data.file_name)
-          }, 1000 * 5)
+          }, 1000)
         }
       }).catch(() => {
         let msg = {

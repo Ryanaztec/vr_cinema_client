@@ -104,18 +104,13 @@
     methods: {
       // unzip: function () {
       //   console.log(123)
-      //   var Zip = require('node-7z') // Name the class as you want!
-      //   var myTask = new Zip()
-      //   myTask.extractFull('./resources/resources.7z', 'C:\\MOVIE', { p: '123456' })
-      //     .progress(function (files) {
-      //       console.log('Some files are extracted: %s', files)
-      //     })
-      //     .then(function () {
-      //       console.log('Extracting done!')
-      //     })
-      //     .catch(function (err) {
-      //       console.error(err)
-      //     })
+      //   var exec = require('child_process').execFile
+      //   var fs = require('fs')
+      //   exec('./7-Zip/7z.exe', ['x', './resources/ziyou.7z', '-oc:\\MOVIE'], (err, stdout, stderr) => {
+      //     if (stdout) {
+      //       fs.unlink('./resources/' + 'ziyou.7z', () => { console.log('source file deleted') })
+      //     }
+      //   })
       // },
       activeTag: function (index, item) {
         this.active = index
