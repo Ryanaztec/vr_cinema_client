@@ -40,9 +40,10 @@ const actions = {
         if (interfaces.hasOwnProperty(i)) {
           interfaces[i].map(function mapInterface (intface) {
             if (intface.family === 'IPv4' && !intface.internal) {
-              store.commit('SET_MAC_ADDRESS', intface.mac)
+              let mac = state.macAddress || intface.mac
+              store.commit('SET_MAC_ADDRESS', mac)
               store.commit('SET_LOCAL_IP', intface.address)
-              resolve(intface.mac)
+              resolve(mac)
             }
           })
         }
