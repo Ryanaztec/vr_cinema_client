@@ -4,6 +4,7 @@ const state = {
   showLoading: true,
   macAddress: '',
   ip_address: '',
+  local_ip: '',
   ali_oss_signature: ''
 }
 
@@ -19,6 +20,9 @@ const mutations = {
   },
   SET_ALI_OSS_SIGNATURE: (state, data) => {
     state.ali_oss_signature = data
+  },
+  SET_LOCAL_IP: (state, data) => {
+    state.local_ip = data
   }
 }
 
@@ -31,14 +35,18 @@ const actions = {
   },
   async getMacAddress (store) {
     return new Promise(function (resolve, reject) {
-      require('getmac').getMac(function (err, macAddress) {
-        if (err) {
-          reject(err)
-        } else {
-          store.commit('SET_MAC_ADDRESS', macAddress)
-          resolve(macAddress)
+      var interfaces = require('os').networkInterfaces()
+      for (var i in interfaces) {
+        if (interfaces.hasOwnProperty(i)) {
+          interfaces[i].map(function mapInterface (intface) {
+            if (intface.family === 'IPv4' && !intface.internal) {
+              store.commit('SET_MAC_ADDRESS', intface.mac)
+              store.commit('SET_LOCAL_IP', intface.address)
+              resolve(intface.mac)
+            }
+          })
         }
-      })
+      }
     })
   },
   subSeatsLogin (store, seats) {

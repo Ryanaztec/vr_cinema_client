@@ -16,13 +16,15 @@
                   <template v-if="!hasLogin">
                     <b-dropdown-item v-b-modal.modalLogin class="user_login">管理员登录</b-dropdown-item>
                     <b-dropdown-item class="check_update" @click="check_update">检查更新</b-dropdown-item>
+                    <b-dropdown-item class="get_mac_ip" @click="getMacIp">获取MAC和IP</b-dropdown-item>
                   </template>
                   <template v-else>
                     <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
                     <b-dropdown-item class="manage_admin" v-if="$store.state.seat.isMain" @click="open_manege">影院管理后台</b-dropdown-item>
                     <b-dropdown-item class="dmz_host" v-if="$store.state.seat.isMain" @click="closeAllSeat">关闭所有主机</b-dropdown-item>
-                    <b-dropdown-item to="/" class="log_out" @click="logout" v-if="$store.state.seat.isMain">注销登录</b-dropdown-item>
+                    <b-dropdown-item to="/" class="log_out" @click="logout">注销登录</b-dropdown-item>
                     <b-dropdown-item class="check_update" @click="check_update">检查更新</b-dropdown-item>
+                    <b-dropdown-item class="get_mac_ip" @click="getMacIp">获取MAC和IP</b-dropdown-item>
                   </template>
               </b-dropdown>
           <img class="navbar_small" src="../assets/header/small.png" @click="minWindow"/>
@@ -112,6 +114,16 @@
       //     }
       //   })
       // },
+      getMacIp: function () {
+        this.$store.dispatch('getMacAddress').then(response => {
+          const swal = require('sweetalert2')
+          swal({
+            type: 'success',
+            html: '<div style="color: white;"><div>' + 'IP:' + this.$store.state.public.local_ip + '</div><div>MAC: ' + response + '</div></div>',
+            allowOutsideClick: false
+          })
+        })
+      },
       activeTag: function (index, item) {
         this.active = index
         this.$parent.searchByTag(item)
