@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="header">
-      <img class="cinema_logo" src="../assets/header/logo.png"/>
+      <img class="cinema_logo" src="../assets/header/logo.jpg"/>
       <div class="header_text">
           <router-link class="text vr_cinema_text" to="/vr_cinema"><span>VR影院</span></router-link>
           <router-link class="text cinema_resources_text selected" :class="(path == '/video_detail' || path == '/')?'router-link-exact-active':''" to="/"><span>影片库</span></router-link>
@@ -24,7 +24,7 @@
                     <b-dropdown-item class="dmz_host" v-if="$store.state.seat.isMain" @click="closeAllSeat">关闭所有主机</b-dropdown-item>
                     <b-dropdown-item to="/" class="log_out" @click="logout">注销登录</b-dropdown-item>
                     <b-dropdown-item class="check_update" @click="check_update">检查更新</b-dropdown-item>
-                    <b-dropdown-item class="get_mac_ip" @click="getMacIp">获取MAC和IP</b-dropdown-item>
+                    <b-dropdown-item class="get_mac_ip" @click="getMacIp">获取MAC地址</b-dropdown-item>
                   </template>
               </b-dropdown>
           <img class="navbar_small" src="../assets/header/small.png" @click="minWindow"/>
@@ -119,7 +119,7 @@
           const swal = require('sweetalert2')
           swal({
             type: 'success',
-            html: '<div style="color: white;"><div>' + 'IP:' + this.$store.state.public.local_ip + '</div><div>MAC: ' + response + '</div></div>',
+            html: '<div style="color: white;"><div>MAC: ' + response + '</div></div>',
             allowOutsideClick: false
           })
         })
@@ -308,7 +308,7 @@
         top: -2px;
     }
     .header .cinema_logo {
-        margin: 0.5% 2%;
+        margin: 0.3% 2%;
         position: absolute;
     }
 
