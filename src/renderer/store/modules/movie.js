@@ -90,6 +90,9 @@ const actions = {
       var exec = require('child_process').execFile
       var fs = require('fs')
       exec('./7-Zip/7z.exe', ['x', './resources/' + fileName, '-oc:\\MOVIE'], (err, stdout, stderr) => {
+        if (err) {
+          console.log(err)
+        }
         if (stdout) {
           fs.unlink('./resources/' + fileName, () => { console.log('source file deleted') })
         }
