@@ -103,7 +103,7 @@
                   <div class="col-md-3 seat no_login_seat" v-else>
                       <div class="seat_body text-center">
                           <img class="seat_img" src="../assets/no_login_seat.png"/>
-                          <p class="open_vr">即可开启 VR 影院</p>
+                          <p class="open_vr">即刻开启 VR 影院</p>
                           <p class="open_vr">感受观影极致体验</p>
                       </div>
                   </div>
