@@ -65,7 +65,11 @@
         </div>
     </div>
     <login-modal></login-modal>
+      <div class="progress_body" v-show="show_download">
+          <b-progress :value="downloadPercent" show-progress class="mb-3"></b-progress>
+      </div>
   </div>
+
 </template>
 
 <script>
@@ -89,7 +93,9 @@
         keyword: '',
         newMoviesCount: localStorage.getItem('newMoviesCount'),
         timer: null,
-        isMainSeat: localStorage.getItem('is_main_seat')
+        isMainSeat: localStorage.getItem('is_main_seat'),
+        downloadPercent: 0,
+        show_download: false
       }
     },
     props: ['video_name'],
@@ -233,15 +239,20 @@
               return false
             }
             if (text === '检测到新版本，正在下载……') {
+              this.show_download = true
               const swal = require('sweetalert2')
               swal({
                 title: text,
-                allowOutsideClick: false
+                html: this.downloadPercent,
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                customClass: 'download_sweet_alert'
               })
               return false
             }
           })
           ipcRenderer.on('isUpdateNow', () => {
+            this.show_download = false
             const swalWithBootstrapButtons = this.swal.mixin({
               confirmButtonClass: 'btn btn-success',
               cancelButtonClass: 'btn btn-danger',
@@ -261,6 +272,9 @@
                 ipcRenderer.send('isUpdateNow')
               }
             })
+          })
+          ipcRenderer.on('downloadProgress', (event, progressObj) => {
+            this.downloadPercent = progressObj.percent || 0
           })
         }
       }
@@ -511,6 +525,18 @@
     }
     .menubar_bg .menubar_body .menubar_list .more_btn {
         font-family: "Microsoft YaHei";
+    }
+    .progress_body {
+        position: absolute;
+        width: 100%;
+        z-index: 9999;
+        height: 100%;
+        bottom: -55%;
+        left: 50%;
+        margin-left: -125px;
+    }
+    .progress_body .progress {
+        width: 250px;
     }
 
 </style>
