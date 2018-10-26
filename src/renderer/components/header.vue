@@ -16,7 +16,7 @@
                   <template v-if="!hasLogin">
                     <b-dropdown-item v-b-modal.modalLogin class="user_login">管理员登录</b-dropdown-item>
                     <b-dropdown-item class="check_update" @click="check_update">检查更新</b-dropdown-item>
-                    <b-dropdown-item class="get_mac_ip" @click="getMacIp">获取MAC和IP</b-dropdown-item>
+                    <b-dropdown-item class="get_mac_ip" @click="getMacIp">获取MAC地址</b-dropdown-item>
                   </template>
                   <template v-else>
                     <b-dropdown-item to="/" class="account_name">账户：{{username}}</b-dropdown-item>
