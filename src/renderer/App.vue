@@ -25,4 +25,5 @@
 
 <style>
   @import 'css/index.css';
+  @import 'css/font.css';
 </style>

@@ -8,9 +8,11 @@
           centered
           ok-only
           ok-title="登录"
-          no-close-on-backdrop
           hide-footer
+          v-model="show"
+          :hide-header-close=true
       >
+      <img class="close_img" src="../../assets/header/login_close.png" @click="show=false"/>
       <b-form @submit.stop.prevent="handleOk" class="form">
         <b-form-group class="login-username">
           <input v-model="username"
@@ -41,7 +43,8 @@ export default {
   data () {
     return {
       username: '',
-      password: ''
+      password: '',
+      show: false
     }
   },
   methods: {
@@ -57,6 +60,9 @@ export default {
       } else {
         this.handleSubmit()
       }
+    },
+    hideModal () {
+      this.$refs.myModalRef.hide()
     },
     handleSubmit () {
       this.$store.dispatch('Login', {username: this.username, password: this.password}).then((response) => {
@@ -89,5 +95,28 @@ export default {
   .login-form .form .phone {
     color: white;
     margin-bottom: -25px;
+    font-size: 20px;
   }
+  .close_img {
+    position: absolute;
+    top: -50px;
+    right: 10px;
+    cursor: pointer;
+  }
+  #modalLogin___BV_modal_body_ .form input::-webkit-input-placeholder {
+    color: #999999;
+    font-size: 18px;
+  }
+  .btn-primary {
+    border-color: transparent;
+    width: 380px !important;
+    height: 50px;
+    font-size: 22px;
+    margin-top: 25px;
+  }
+  .btn-primary:hover {
+    color: #000;
+  }
+
+
 </style>

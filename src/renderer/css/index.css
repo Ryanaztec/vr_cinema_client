@@ -7,11 +7,12 @@
 }
 
 body {
-    font-family: 'Source Sans Pro', sans-serif;
+    font-family: 'Microsoft YaHei';
     background: url("../assets/homePageBg.png") no-repeat center center fixed;
     background-size:cover;
     min-width: 1250px;
     overflow: scroll;
+    overflow-x: hidden;
 }
 
 .container_body {
@@ -28,7 +29,7 @@ body {
 .container_body .video_box .video {
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.102);
-    padding: 2%;
+    padding: 8px 10px 2% 10px;
     cursor: pointer;
 }
 .container_body .video_box .video .video_time, .container_body .video_box .video .video_status {
@@ -172,13 +173,18 @@ body {
     border-style: solid;
     margin-top: 12px;
 }
+.modal-dialog.modal-md.modal-dialog-centered{
+    max-width: 600px;
+}
 
 .modal-content {
     background: url("../assets/log_bg.png");
     background-size: cover;
-    border-radius: 23px !important;
+    border-radius: 27px !important;
     box-shadow: 0px 0px 5px 1px #aaa;
     font-family: "Microsoft YaHei";
+    width: 600px;
+    height: 440px;
 }
 .menubar_bg .menubar_body .menubar_list .dropdown {
     z-index: 99;
@@ -219,16 +225,16 @@ body {
 
 .login-form .modal-header {
     color: white;
-    height: 50px;
+    margin-bottom: -5px;
     padding-top: 10px !important;
+    text-align: center;
+    border-bottom: 1px solid rgb(153, 153, 153) !important;
 }
 
 .login-form .modal-header .modal-title {
-    margin-left: 180px;
-}
-
-.login-form .modal-header .close {
-    margin: -1rem -1rem -1rem 0px;
+    width: 100%;
+    font-size: 24px;
+    color: rgb(254, 254, 255);
 }
 
 .login-form .form-control {
@@ -241,26 +247,20 @@ body {
     color: #000 !important;
 }
 
-.login-form .form .btn-primary:hover {
-    border-color: rgb(255, 255, 255);
-    color: rgb(0, 0, 0);
-}
-
 .login-form input  {
-    width: 80% !important;
-    color: #373737 !important;
+    width: 380px !important;
+    color: white !important;
     display: block;
-    height: calc(2.25rem + 2px);
+    height: 50px;
     padding: 0.375rem 0.75rem;
     font-size: 1rem;
     line-height: 1.5;
-    background-color: #fff;
+    background: none;
     background-clip: padding-box;
-    border: 1px solid #ced4da;
+    border: 1px solid #ffffff;
     border-radius: 0.25rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
-
 .modal-body {
     text-align: center;
 }

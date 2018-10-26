@@ -3,8 +3,8 @@
     <div class="header">
       <img class="cinema_logo" src="../assets/header/logo.jpg"/>
       <div class="header_text">
-          <router-link class="text vr_cinema_text" to="/vr_cinema"><span>VR影院</span></router-link>
-          <router-link class="text cinema_resources_text selected" :class="(path == '/video_detail' || path == '/')?'router-link-exact-active':''" to="/"><span>影片库</span></router-link>
+          <router-link class="text vr_cinema_text" to="/vr_cinema"><span class="span"><span class="vr">VR</span>影院</span></router-link>
+          <router-link class="text cinema_resources_text selected" :class="(path == '/video_detail' || path == '/')?'router-link-exact-active':''" to="/"><span class="span">影片库</span></router-link>
           <span class="new_mv_count" v-if="hasLogin && newMoviesCount">{{newMoviesCount}}</span>
       </div>
         <img class="navbar_right_bg" src="../assets/header/navbar_right_bg1.png"/>
@@ -331,7 +331,7 @@
         padding-top: 2px;
     }
 
-    .header .header_text .router-link-exact-active span {
+    .header .header_text .router-link-exact-active span.span {
         background: url("../assets/header/choosed_header_center.png") 0 2px;
         padding: 14px 13px;
         background-size: 100% 100%;
@@ -339,11 +339,15 @@
 
     .header .header_text .text {
         padding: 0.8% 1%;
-        font-weight: bold;
         color: white;
         font-size: 38px;
-        font-family: "HYk2gj";
-
+        font-family: "HYK2GJ";
+    }
+    .header .header_text .text .vr {
+        font-family: N2DB;
+        font-size: 44px;
+        display: table-caption;
+        margin-bottom: -24px;
     }
 
     .header .header_text {
@@ -471,7 +475,10 @@
         width: 120%;
     }
     .search_box #search_input::-webkit-input-placeholder {
-        color: rgb(153, 153, 153);
+        color: #999999;
+        font-size: 18px;
+        font-family: "Microsoft YaHei";
+
     }
     .search_box #search_input:focus {
         outline: none;
@@ -479,9 +486,11 @@
     .search_box .search_icon {
         position: absolute;
         right: -20px;
-        margin-top: -30px;
+        margin-top: -34px;
         color: rgb(25, 234, 234) !important;
         cursor: pointer;
+        width: 22px;
+        height: 22px;
     }
     .return_resource {
         padding: 20px 0;
@@ -499,6 +508,9 @@
         font-size: 20px;
         font-family: "Microsoft YaHei";
         color: rgb(255, 255, 255);
+    }
+    .menubar_bg .menubar_body .menubar_list .more_btn {
+        font-family: "Microsoft YaHei";
     }
 
 </style>

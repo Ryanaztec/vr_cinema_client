@@ -30,9 +30,9 @@
                                   <div class="choose_seat_text">选择座椅</div>
                                   <div class="seat_list topnav_box">
                                       <div v-if="seats.length==0 && showSeats">暂没有配置座椅!</div>
-                                      <div :class="(7 > seats.length && 4 < seats.length) ? 'middle_seat' : ((6 < seats.length) ? 'small_seat' : '')" v-else>
+                                      <div :class="(7 > seats.length && 2 < seats.length) ? 'middle_seat' : ((6 < seats.length && 17 > seats.length) ? 'small_seat' : ((16 < seats.length && 21 > seats.length) ? 'least_seat' : 'big_seat'))" v-else>
                                           <div class="row" v-if="!is_main_seat">
-                                              <div class="seat_box" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" v-for="(item,$index) in seats">
+                                              <div class="seat_box" :class="(7 > seats.length && 2 < seats.length) ? 'col-md-4' : ((6 < seats.length && 17 > seats.length) ? 'col-md-3' : ((16 < seats.length && 21 > seats.length) ? 'col-md-1-5' : 'col-md-6'))" v-for="(item,$index) in seats">
                                                   <img class="seat_img" src="../assets/seat.png"
                                                        v-show="!item.is_playing && !item.is_active && !(item.mac_address===current_mac_address)"/>
                                                   <img class="seat_img selected_seat_img" src="../assets/selected_seat.png"
@@ -45,7 +45,7 @@
                                               </div>
                                           </div>
                                           <div class="row" v-else>
-                                              <div class="seat_box admin_view_seat" :class="(7 > seats.length && 4 < seats.length) ? 'col-md-4' : ((6 < seats.length) ? 'col-md-3' : 'col-md-6')" @click="activeSeat($index)"
+                                              <div class="seat_box admin_view_seat" :class="(7 > seats.length && 2 < seats.length) ? 'col-md-4' : ((6 < seats.length && 17 > seats.length) ? 'col-md-3' : ((16 < seats.length && 21 > seats.length) ? 'col-md-1-5' : 'col-md-6'))" @click="activeSeat($index)"
                                                    v-for="(item,$index) in seats">
                                                   <img class="seat_img" src="../assets/seat.png" v-show="!item.is_playing && !item.is_active"/>
                                                   <img class="seat_img selected_seat_img" src="../assets/selected_seat.png"
@@ -508,6 +508,21 @@
         margin-bottom: 20px;
         margin-top: 15px;
     }
+  .seat .big_seat .seat_img {
+      max-width: 93px;
+  }
+  .seat .middle_seat .seat_img {
+      max-width: 67px;
+  }
+  .seat .small_seat .seat_img {
+      max-width: 59px;
+  }
+  .seat .least_seat .seat_img {
+      max-width: 43px;
+  }
+  .seat .least_seat .check_body .text-green {
+      width: 12px;
+  }
   .seat .seat_img.active_seat_img, .seat .admin_view_seat{
       cursor: pointer;
   }
@@ -527,6 +542,10 @@
       bottom: 32%;
       font-size: 1.2rem;
   }
+  .seat .least_seat .seat_number {
+      bottom: 32%;
+      font-size: 1.2rem;
+  }
   .seat .broadcast_pace_bg {
       padding: 3%;
       background-image: -moz-linear-gradient( 0deg, rgba(153,153,153,0.05098) 0%, rgba(153,153,153,0.4) 49%, rgba(153,153,153,0.05098) 100%);
@@ -543,8 +562,6 @@
       padding: 0px 8%;
       margin-bottom: 5%;
       min-height: 220px;
-      max-height: 420px;
-      overflow-y: scroll;
       margin-right: 0px;
   }
   .seat .seat_list .seat_box {
@@ -591,7 +608,7 @@
   }
 
   .video_list .video_picture {
-    max-width: 420px;
+    max-width: 450px;
     max-height: 200px;
   }
 
@@ -626,6 +643,9 @@
   }
   .seat .check_body .text-black {
       color: #343a40 !important;
+  }
+  .col-md-1-5 {
+      width: 20%;
   }
   @media (max-width:1250px){
       .seat .middle_seat .seat_number, .seat .small_seat .seat_number {
