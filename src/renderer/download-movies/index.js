@@ -42,7 +42,8 @@ export const downloader = (configuration) => {
             // 读取出错
             clearInterval(timer)
             store.commit('REMOVE_DOWNLOADING_MOVIES', data)
-            Sender.sendMessage({movie_id: data.movie_id, seat_id: data.seat_id, status: 'error', type: 'downloading-progress'}, store.state.seat.mainSeat.ip_address, false)
+            const message = JSON.stringify({movie_id: data.movie_id, seat_id: data.seat_id, status: 'error', type: 'downloading-progress'})
+            Sender.sendMessage(message, store.state.seat.mainSeat.ip_address, false)
             console.log(err)
           }
         })
