@@ -48,7 +48,7 @@
                                             <span v-else-if="movieIsDownloading(item)" class="download_progress">
                                               <b-progress :value="currentMovieDownloadingProgress(item)" animated show-progress variant="success"></b-progress>
                                             </span>
-                                            <span class="video_status" v-else>未下载</span>
+                                            <span class="video_status not_download" @click="subSeatDownloadMovie(item)" v-else>下载影片</span>
                                           </template>
                                       </div>
                                   </div>
@@ -127,6 +127,28 @@
         return API.getNeedDownloadSeats({ cinema_id: this.$store.state.currentUser.cinemaId, movie_id: item.id }).then(response => {
           return response.data.data
         })
+      },
+      subSeatDownloadMovie (item) {
+        // 判断是否登录：
+        if (!this.$store.state.currentUser.isLogin) {
+          const swalWithBootstrapButtons = this.swal.mixin({
+            confirmButtonClass: 'btn btn-success',
+            cancelButtonClass: 'btn btn-danger',
+            buttonsStyling: false,
+            allowOutsideClick: false
+          })
+          swalWithBootstrapButtons({ type: 'error', title: '请先登录' })
+          return false
+        }
+        let data = {
+          file_name: item.file_name,
+          movie_id: item.id,
+          cinema_id: this.$store.state.currentUser.cinemaId,
+          seat_id: this.$store.state.seat.currentSeat.id,
+          size: item.size
+        }
+        // console.log(data)
+        this.$store.dispatch('oss_downloadMovie', data)
       },
       videoDetail (item) {
         // console.log(item)

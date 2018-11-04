@@ -36,6 +36,9 @@ const mutations = {
       }
     })
   },
+  CLEAR_DOWNLOADING_MOVIES: (state) => {
+    state.downloadingMovies = []
+  },
   SET_SUB_SEAT_DOWNLOADING_STATUS: (state, data) => {
     state.subSeatDownloadingStatus.forEach((value, key) => {
       if (value.movie_id === data.movie_id && value.seat_id === data.seat_id) {

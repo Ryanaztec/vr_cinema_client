@@ -99,6 +99,7 @@ const actions = {
     store.commit('SET_MAIN_SEAT', false)
     store.commit('SET_CINEMA_ID', '')
     store.commit('SET_PLAYING_SEATS', [])
+    store.commit('CLEAR_DOWNLOADING_MOVIES')
   },
   // 刷新 Token
   async RefreshToken ({ commit, store }) {
