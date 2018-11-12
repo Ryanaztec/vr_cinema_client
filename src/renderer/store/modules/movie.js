@@ -80,7 +80,10 @@ const actions = {
           movie_name: value.movie.name,
           movie_time: buffer.join(':'),
           movie_pic: moviePic,
-          movie_id: value.movie_id
+          movie_id: value.movie_id,
+          running_time_hour: value.movie.running_time_hour,
+          running_time_minute: value.movie.running_time_minute,
+          running_time_second: value.movie.running_time_second
         })
       })
       store.commit('SET_CINEMA_MOVIES', response.data.data)

@@ -200,9 +200,11 @@
           })
           return false
         }
-        // 过滤已在播放的座椅：
+        // 过滤已收到返回信息并且在播放的座椅：
         playingSeats.map(item => {
-          playSeatsIds.push(item.seat_id)
+          if (!item.playingStarted) {
+            playSeatsIds.push(item.id)
+          }
         })
         let seatsToPlay = this.activeSeatsIds.filter(item => {
           return playSeatsIds.indexOf(item) === -1
@@ -216,16 +218,18 @@
           reverseButtons: true
         }).then((result) => {
           if (result.value) {
-            API.storePlayRecord({
+            // 判断所选中的座椅是否都下载过电影
+            API.getSeatDownloadStatus({
               cinema_id: this.$store.state.currentUser.cinemaId,
               movie_id: selectedMovie.movie_id,
               seats: seatsToPlay
             }).then(response => {
               if (response.success) {
-                response.data.data.forEach((item, key) => {
+                activeSeats.forEach((item, key) => {
+                  item.movie = selectedMovie
                   this.$store.commit('ADD_PLAYING_SEATS', item)
                   let message = JSON.stringify({ type: 'playing-movie', message: 'start ' + selectedMovie.movie_name, data: item })
-                  Sender.sendMessage(message, item.cinema_seat.ip_address, this.is_main_seat)
+                  Sender.sendMessage(message, item.ip_address, this.is_main_seat)
                 })
                 this.playingProgress = this.calculateProgress()
                 // this.coverClass = 'cover' // 添加遮罩层
@@ -234,6 +238,30 @@
                   text: '开始播放 《' + selectedMovie.movie_name + '》'
                 })
                 this.is_play = true
+                // 检查是否有未返回播放状态的座椅，定时重新发送指令
+                let playingCommandInterval = setInterval(() => {
+                  let _playingSeats = this.$store.state.seat.playingSeats
+                  let count = 0
+                  _playingSeats.forEach((item, index) => {
+                    if (!item.playingStarted) {
+                      activeSeats.forEach((value, key) => {
+                        if (item.id === value.id) {
+                          count++
+                          item.movie = selectedMovie
+                          let message = JSON.stringify({ type: 'playing-movie', message: 'start ' + selectedMovie.movie_name, data: item })
+                          Sender.sendMessage(message, item.ip_address, this.is_main_seat)
+                        }
+                      })
+                      this.$notify({
+                        group: 'foo',
+                        text: '发呀发'
+                      })
+                    }
+                  })
+                  if (count === 0) {
+                    clearInterval(playingCommandInterval)
+                  }
+                }, 1000)
               } else {
                 let seatNumbers = []
                 activeSeats.forEach((item, index) => {
@@ -322,7 +350,7 @@
       activeSeat: function (seatNumber) {
         let currentSeatStatus = false
         this.$store.state.seat.playingSeats.forEach((value, key) => {
-          if (value.seat_id === this.seats[seatNumber].id) {
+          if (value.id === this.seats[seatNumber].id) {
             currentSeatStatus = true
           }
         })
@@ -363,7 +391,9 @@
         return parseToSeconds
       },
       calculateProgress: function () {
-        const playingSeats = this.$store.state.seat.playingSeats
+        const playingSeats = this.$store.state.seat.playingSeats.filter((item) => {
+          return item.playingStarted
+        })
         let progressArr = []
         let removePlayingSeats = []
         let playingSeatsNumber = []
@@ -375,14 +405,14 @@
             }
             let progress = (remainingTime / handleMovieTime(value.movie)) * 100 <= 100 ? (remainingTime / handleMovieTime(value.movie)) * 100 : 100
             progressArr.push({
-              seat_number: value.cinema_seat.seat_number,
+              seat_number: value.seat_number,
               progress: progress,
-              mac_address: value.cinema_seat.mac_address
+              mac_address: value.mac_address
             })
             if (progress >= 100) {
-              removePlayingSeats.push(value.seat_id)
-              playingSeatsNumber.push(value.cinema_seat.seat_number)
-              Sender.sendMessage(JSON.stringify({type: 'stop', message: 'stop'}), value.cinema_seat.ip_address, this.is_main_seat)
+              removePlayingSeats.push(value.id)
+              playingSeatsNumber.push(value.seat_number)
+              Sender.sendMessage(JSON.stringify({type: 'stop', message: 'stop'}), value.ip_address, this.is_main_seat)
             }
           })
           if (removePlayingSeats.length !== 0) {
@@ -414,7 +444,7 @@
         this.seats.forEach((item, index) => {
           item.is_playing = false
           this.$store.state.seat.playingSeats.forEach((value, key) => {
-            if (item.id === value.seat_id) {
+            if (item.id === value.id && value.playingStarted) {
               item.is_playing = true
             }
           })

@@ -129,6 +129,14 @@ export const getOssSignature = () => {
   })
 }
 
+export const getSeatDownloadStatus = params => {
+  return axios({
+    url: '/cinema_seat/check-seat-download',
+    method: 'post',
+    params
+  })
+}
+
 export default {
   example,
   login,
@@ -146,5 +154,6 @@ export default {
   updatePlayRecord,
   storeCinemaMovie,
   getNeedDownloadSeats,
-  getOssSignature
+  getOssSignature,
+  getSeatDownloadStatus
 }

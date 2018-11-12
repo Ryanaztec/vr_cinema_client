@@ -72,7 +72,7 @@ const actions = {
                 store.commit('SET_CURRENT_SEAT', item)
               }
             })
-            if (response.data.is_main_seat) {
+            if (!response.data.is_main_seat) {
               store.dispatch('subSeatsLogin', response.data.data)
             }
           }

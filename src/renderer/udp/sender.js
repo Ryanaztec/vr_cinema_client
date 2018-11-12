@@ -18,9 +18,10 @@ export const sendMessage = (message, ip, isMain) => {
           console.log('发送数据失败')
         }
       })
+    } else if (message.type === 'playing-started') {
+      client.send(JSON.stringify(message), 8413, ip)
     } else {
       // 调用设备UDP开始播放影片
-      console.log(message.message)
       playMovie.startMovie(message.message)
     }
   }

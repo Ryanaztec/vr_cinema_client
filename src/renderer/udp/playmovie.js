@@ -34,7 +34,19 @@ export const startMovie = message => {
   client.send(msg, 0, msg.length, 52427, store.state.public.ip_address)
 }
 
+// 本机发送播放电影指令的异步方法
+export const _startMovie = message => {
+  let p = new Promise((resolve, reject) => {
+    let msg = Buffer.from(message)
+    // 座椅播放电影
+    client.send(msg, 0, msg.length, 52427, store.state.public.ip_address)
+    resolve()
+  })
+  return p
+}
+
 export default {
   startMovie,
-  stopMovie
+  stopMovie,
+  _startMovie
 }

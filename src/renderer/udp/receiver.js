@@ -1,6 +1,8 @@
 import store from '../store/index'
 import Vue from 'vue'
 import playMovie from './playmovie'
+import Sender from './sender'
+import API from '../service/api'
 
 const dgrm = require('dgram')
 const server = dgrm.createSocket('udp4')
@@ -11,7 +13,6 @@ server.on('message', function (message, rinfo) {
   try {
     sendingMessage = JSON.parse(message)
     type = sendingMessage.type
-    console.log(type)
   } catch (e) {
     sendingMessage = message
   }
@@ -42,11 +43,25 @@ server.on('message', function (message, rinfo) {
       }
       break
     case 'playing-movie':
-      if (!store.state.seat.isMain) {
+      if (store.state.seat.isMain) {
+        let mainSeatIp = store.state.seat.mainSeat.ip_address
         // 调用设备UDP开始播放影片
-        playMovie.startMovie(sendingMessage.message)
-        // 插入播放电影的store
-        store.commit('ADD_PLAYING_SEATS', sendingMessage.data)
+        playMovie._startMovie(sendingMessage.message).then(() => {
+          // 插入播放记录
+          API.storePlayRecord({
+            seats: sendingMessage.data.id,
+            cinema_id: sendingMessage.data.cinema_id,
+            movie_id: sendingMessage.data.movie.movie_id
+          }).then(response => {
+            // 插入播放电影的store
+            sendingMessage.data.playingStarted = true
+            sendingMessage.data.play_start_time = response.data.data.play_start_time
+            store.commit('ADD_PLAYING_SEATS', sendingMessage.data)
+            // 像中控发送指令，已经开始播放
+            sendingMessage.type = 'playing-started'
+            Sender.sendMessage(JSON.stringify(sendingMessage), mainSeatIp, false)
+          })
+        })
       }
       break
     case 'stop':
@@ -68,6 +83,10 @@ server.on('message', function (message, rinfo) {
           store.dispatch('oss_downloadMovie', sendingMessage)
         }
       }
+      break
+    case 'playing-started':
+      const data = sendingMessage.data
+      store.commit('UPDATE_PLAYING_SEATS', data)
       break
     case 'shutdown':
       if (!store.state.seat.isMain) {

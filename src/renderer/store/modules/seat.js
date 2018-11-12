@@ -25,6 +25,14 @@ const mutations = {
   },
   SET_MAIN_SEAT: (state, seat) => {
     state.mainSeat = seat
+  },
+  UPDATE_PLAYING_SEATS: (state, seat) => {
+    state.playingSeats.forEach((value, key) => {
+      if (value.id === seat.id) {
+        state.playingSeats.splice(key, 1)
+      }
+    })
+    state.playingSeats.push(seat)
   }
 }
 
@@ -32,6 +40,9 @@ const actions = {
   GetPlayingStatusSeats (store, params) {
     API.getPlayingSeats(params).then(response => {
       if (response.data.data.length !== 0) {
+        response.data.data.forEach((item, index) => {
+          item.playingStarted = true
+        })
         store.commit('SET_PLAYING_SEATS', response.data.data)
       }
     })
