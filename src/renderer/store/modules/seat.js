@@ -39,7 +39,7 @@ const mutations = {
 const actions = {
   GetPlayingStatusSeats (store, params) {
     API.getPlayingSeats(params).then(response => {
-      if (response.data.data.length !== 0) {
+      if (response.data.data && response.data.data.length !== 0) {
         response.data.data.forEach((item, index) => {
           item.playingStarted = true
         })

@@ -13,6 +13,7 @@ server.on('message', function (message, rinfo) {
   try {
     sendingMessage = JSON.parse(message)
     type = sendingMessage.type
+    console.log(sendingMessage)
   } catch (e) {
     sendingMessage = message
   }

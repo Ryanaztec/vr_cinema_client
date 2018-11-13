@@ -498,7 +498,7 @@
         this.seats.forEach((item, index) => {
           if (item.mac_address === this.current_mac_address) {
             this.$store.commit('SET_IP_ADDRESS', item.ip_address)
-            this.$store.commit('SET_CURRENT_SEAT', item)
+            this.$store.commit('SET_CURRENT_SEAT', _.cloneDeep(item))
           }
         })
       }
