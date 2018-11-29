@@ -252,10 +252,6 @@
                           Sender.sendMessage(message, item.ip_address, this.is_main_seat)
                         }
                       })
-                      this.$notify({
-                        group: 'foo',
-                        text: '发呀发'
-                      })
                     }
                   })
                   if (count === 0) {
