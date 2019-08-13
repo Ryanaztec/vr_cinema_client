@@ -322,8 +322,10 @@
         top: -2px;
     }
     .header .cinema_logo {
-        margin: 0.3% 2%;
+        margin: 1% 2%;
         position: absolute;
+        width: 246px;
+        height: 101px;
     }
 
     .header .header_text .router-link-exact-active {
