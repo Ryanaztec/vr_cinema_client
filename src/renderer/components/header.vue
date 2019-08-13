@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="header">
-      <img class="cinema_logo" src="../assets/header/logo.jpg"/>
+      <img class="cinema_logo" src="../assets/header/logo.png"/>
       <div class="header_text">
           <router-link class="text vr_cinema_text" to="/vr_cinema"><span class="span"><span class="vr">VR</span>影院</span></router-link>
           <router-link class="text cinema_resources_text selected" :class="(path == '/video_detail' || path == '/')?'router-link-exact-active':''" to="/"><span class="span">影片库</span></router-link>
