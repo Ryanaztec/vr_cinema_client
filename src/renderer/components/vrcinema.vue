@@ -96,7 +96,7 @@
 
                           <div class="play_stop">
                               <div><b-button class="play" @click="start()" :disabled="is_play">播放</b-button></div>
-                              <div><b-button class="stop" @click="stop()" :disabled="!is_play">停止</b-button></div>
+                              <div><b-button class="stop" @click="stop()">停止</b-button></div>
                           </div>
                       </div>
                   </div>
@@ -324,7 +324,7 @@
                 const movieName = this.selectedMovie.movie_name
                 this.coverClass = '' // 除去遮罩层
                 activeSeats.map(item => {
-                  if (item.is_playing) {
+                  for (let i = 0; i < 3; i++) {
                     Sender.sendMessage(JSON.stringify({type: 'stop', message: 'stop'}), item.ip_address, this.is_main_seat)
                   }
                 })
