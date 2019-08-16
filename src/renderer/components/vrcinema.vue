@@ -388,7 +388,7 @@
       },
       calculateProgress: function () {
         const playingSeats = this.$store.state.seat.playingSeats.filter((item) => {
-          return item.playingStarted
+          return item.play_start_time != null
         })
         let progressArr = []
         let removePlayingSeats = []
@@ -401,7 +401,7 @@
             }
             let progress = (remainingTime / handleMovieTime(value.movie)) * 100 <= 100 ? (remainingTime / handleMovieTime(value.movie)) * 100 : 100
             progressArr.push({
-              seat_number: value.seat_number,
+              seat_number: value.cinema_seat ? value.cinema_seat.seat_number : value.seat_number,
               progress: progress,
               mac_address: value.mac_address
             })
