@@ -202,12 +202,15 @@
         }
         // 过滤已收到返回信息并且在播放的座椅：
         playingSeats.map(item => {
-          if (!item.playingStarted) {
+          if (item.playingStarted) {
             playSeatsIds.push(item.id)
           }
         })
-        let seatsToPlay = this.activeSeatsIds.filter(item => {
+        let seatsToPlayIds = this.activeSeatsIds.filter(item => {
           return playSeatsIds.indexOf(item) === -1
+        })
+        let seatsToPlay = activeSeats.filter(item => {
+          return playSeatsIds.indexOf(item.id) === -1
         })
         swalWithBootstrapButtons({
           title: '确定要播放电影 《' + selectedMovie.movie_name + '》',
@@ -217,17 +220,17 @@
           cancelButtonText: '取消 !',
           reverseButtons: true
         }).then((result) => {
-          if (result.value) {
+          if (result.value && seatsToPlay.length !== 0) {
             // 判断所选中的座椅是否都下载过电影
             API.getSeatDownloadStatus({
               cinema_id: this.$store.state.currentUser.cinemaId,
               movie_id: selectedMovie.movie_id,
-              seats: seatsToPlay
+              seats: seatsToPlayIds
             }).then(response => {
               if (response.success) {
-                activeSeats.forEach((item, key) => {
+                seatsToPlay.forEach((item, key) => {
                   item.movie = selectedMovie
-                  this.$store.commit('ADD_PLAYING_SEATS', item)
+                  // this.$store.commit('ADD_PLAYING_SEATS', item)
                   let message = JSON.stringify({ type: 'playing-movie', message: 'start ' + selectedMovie.movie_name, data: item })
                   Sender.sendMessage(message, item.ip_address, this.is_main_seat)
                 })
