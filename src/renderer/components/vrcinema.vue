@@ -426,7 +426,9 @@
               is_main: this.is_main_seat
             }).then(response => {
               if (response.success) {
-                this.$store.commit('SET_PLAYING_SEATS', response.data.data)
+                removePlayingSeats.forEach((value, key) => {
+                  this.$store.commit('REMOVE_PLAYING_SEATS', value)
+                })
                 this.$notify({
                   group: 'foo',
                   text: '座椅编号：' + playingSeatsNumber.join(',') + ' 播放已结束'
