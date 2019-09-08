@@ -94,7 +94,7 @@ const actions = {
     let mainSeatIp = this.state.seat.mainSeat.ip_address
     let unzip = function (fileName) {
       var exec = require('child_process').execFile
-      var fs = require('fs')
+      // var fs = require('fs')
       exec('./7-Zip/7z.exe', ['x', './resources/' + fileName, '-oc:\\MOVIE'], (err, stdout, stderr) => {
         if (err) {
           console.log(err)
