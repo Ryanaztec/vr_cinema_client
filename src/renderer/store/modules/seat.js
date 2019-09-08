@@ -33,6 +33,14 @@ const mutations = {
       }
     })
     state.playingSeats.push(seat)
+  },
+  REMOVE_PLAYING_SEATS: (state, id) => {
+    state.playingSeats.forEach((value, key) => {
+      if (value.id === id) {
+        state.playingSeats.splice(key, 1)
+      }
+    })
+    console.log(state.playingSeats, id)
   }
 }
 

@@ -289,6 +289,7 @@
       stop: function () {
         let activeSeats = this.currentActiveSeats()
         let activeSeatNum = []
+        let activeSeatIds = []
         let swalWithBootstrapButtons = this.swal.mixin({
           confirmButtonClass: 'btn btn-success',
           cancelButtonClass: 'btn btn-danger',
@@ -297,8 +298,9 @@
         })
         activeSeats.map(item => {
           activeSeatNum.push(item.seat_number)
+          activeSeatIds.push(item.id)
         })
-        activeSeatNum = activeSeatNum.join(', ')
+        const _activeSeatNum = activeSeatNum.join(', ')
         if (activeSeats.length === 0) {
           swalWithBootstrapButtons({
             type: 'error',
@@ -307,7 +309,7 @@
           return false
         }
         swalWithBootstrapButtons({
-          title: '确定要停止座椅编号为 ' + activeSeatNum + ' 的影片播放?',
+          title: '确定要停止座椅编号为 ' + _activeSeatNum + ' 的影片播放?',
           type: 'warning',
           showCancelButton: true,
           confirmButtonText: '确定 !',
@@ -323,7 +325,9 @@
             }).then(response => {
               if (response.success) {
                 // store中移除停止播放的座椅
-                this.$store.commit('SET_PLAYING_SEATS', response.data.data)
+                activeSeatIds.forEach((value, key) => {
+                  this.$store.commit('REMOVE_PLAYING_SEATS', value)
+                })
                 const movieName = this.selectedMovie.movie_name
                 this.coverClass = '' // 除去遮罩层
                 activeSeats.map(item => {
@@ -490,7 +494,7 @@
       next()
     },
     watch: {
-      '$store.state.seat.playingSeats': function () {
+      '$store.state.seat.playingSeats': function (value) {
         this.initSeatPlayingStatus()
       },
       seats: function () {

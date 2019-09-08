@@ -44,7 +44,7 @@ server.on('message', function (message, rinfo) {
       }
       break
     case 'playing-movie':
-      if (!store.state.seat.isMain) {
+      if (!store.state.seat.isMain && store.state.seat.playingSeats.length === 0) {
         let mainSeatIp = store.state.seat.mainSeat.ip_address
         // 调用设备UDP开始播放影片
         playMovie._startMovie(sendingMessage.message).then(() => {
