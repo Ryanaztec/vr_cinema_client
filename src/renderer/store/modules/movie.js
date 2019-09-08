@@ -100,7 +100,7 @@ const actions = {
           console.log(err)
         }
         if (stdout) {
-          fs.unlink('./resources/' + fileName, () => { console.log('source file deleted') })
+          // fs.unlink('./resources/' + fileName, () => { console.log('source file deleted') })
         }
       })
     }
