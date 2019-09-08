@@ -152,6 +152,7 @@
       },
       videoDetail (item) {
         // console.log(item)
+        item.page = this.currentPage
         this.$router.push({ name: 'video_detail', params: { data: item } })
       },
       searchByTag: function (val) {
@@ -162,6 +163,7 @@
       getMovies (keyword, tag, page) {
         const cinemaId = this.$store.state.currentUser.cinemaId
         this.$refs.header.active = tag ? this.$refs.header.active : 0
+        page = this.$store.state.public.sourcePage !== -1 ? this.$store.state.public.sourcePage : page
         API.getMoviesByTag({
           cinema_id: cinemaId,
           key_word: keyword,
@@ -172,6 +174,8 @@
             this.all_movies = response.data.data
             this.pageNum = response.data.page
             this.showPagination = this.pageNum >= 1
+            this.$store.commit('SET_SOURCE_PAGE', -1)
+            this.currentPage = parseInt(page) || 1
           }
         })
       },
@@ -292,6 +296,10 @@
           this.getMovies()
         }
       }
+    },
+    beforeRouteLeave (to, from, next) {
+      this.$store.commit('SET_SOURCE_PAGE', -1)
+      next()
     }
   }
 </script>

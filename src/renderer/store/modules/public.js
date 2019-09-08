@@ -5,7 +5,8 @@ const state = {
   macAddress: '',
   ip_address: '',
   local_ip: '',
-  ali_oss_signature: ''
+  ali_oss_signature: '',
+  sourcePage: -1
 }
 
 const mutations = {
@@ -23,6 +24,9 @@ const mutations = {
   },
   SET_LOCAL_IP: (state, data) => {
     state.local_ip = data
+  },
+  SET_SOURCE_PAGE: (state, page) => {
+    state.sourcePage = page
   }
 }
 

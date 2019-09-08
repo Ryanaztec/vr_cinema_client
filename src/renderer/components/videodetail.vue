@@ -197,6 +197,7 @@
       }
     },
     beforeRouteLeave (to, from, next) {
+      this.$store.commit('SET_SOURCE_PAGE', this.currentMovie.page)
       clearInterval(this.intervalId)
       next()
     }
