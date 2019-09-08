@@ -52,10 +52,10 @@ const actions = {
       store.dispatch('getMacAddress').then(response => {
         // 获取所有正在播放的座椅
         let macAddress = response
-        store.dispatch('GetPlayingStatusSeats', {
-          cinema_id: this.state.currentUser.cinemaId,
-          mac_address: macAddress
-        })
+        // store.dispatch('GetPlayingStatusSeats', {
+        //   cinema_id: this.state.currentUser.cinemaId,
+        //   mac_address: macAddress
+        // })
         // 获取影院所有的座椅信息
         API.getSeatByMac({
           cinema_id: this.state.currentUser.cinemaId,
